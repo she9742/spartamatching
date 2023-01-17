@@ -14,18 +14,17 @@ public class Message {
     private long id;
 
     @JoinColumn
-    @ManyToOne
-    private Talk talk;
+    private Long talk;
 
     @Column(nullable = false)
-    private String witer;
+    private String writer;
 
     @Column(nullable = false)
     private String content;
 
-    public Message(Talk talk, Client writer, String content) {
+    public Message(Long talk, Client writer, String content) {
         this.talk = talk;
-        this.witer = writer.getNickname();
+        this.writer = writer.getUsername();
         this.content = content;
     }
 }
