@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 public class Talk {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column(nullable = false)
@@ -22,7 +22,7 @@ public class Talk {
 
     @Column(nullable = false)
     private Client seller;
-    
+
     @Column(nullable = false)
     private boolean open;
 

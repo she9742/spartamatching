@@ -2,7 +2,6 @@ package com.example.entity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.boot.autoconfigure.integration.IntegrationProperties;
 
 import javax.persistence.*;
 
@@ -11,7 +10,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 public class Message {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @JoinColumn
@@ -25,7 +24,7 @@ public class Message {
     private String content;
 
     public Message(Talk talk, Client writer, String content) {
-        this.talk = talk.;
+        this.talk = talk;
         this.witer = writer.getNickname();
         this.content = content;
     }
