@@ -16,10 +16,10 @@ public class ClientReq {
     Long id;
 
     @Column(nullable = false)
-    private Client clientId;
+    private Long clientId;
 
     @Column(nullable = false)
-    private Client sellerId;
+    private Long sellerId;
 
 
 

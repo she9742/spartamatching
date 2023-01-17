@@ -3,8 +3,6 @@ package com.example.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import com.example.entity.Message;
-import com.example.entity.Client;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
