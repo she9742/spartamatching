@@ -1,14 +1,12 @@
 package com.example.repository;
 
-import com.example.entity.Product;
+import com.example.entity.Message;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface ProductRepository extends JpaRepository<Product, Long> {
-
-
-
+public interface MessageRepository extends JpaRepository<Message, Long> {
+    Optional<Message> findByTalk(Long talkId);
 }
