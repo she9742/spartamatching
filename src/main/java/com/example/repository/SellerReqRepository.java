@@ -9,4 +9,5 @@ public interface SellerReqRepository extends JpaRepository<Client, Long> {
 
     List<Client> ClientReqList();
 
+
 }
