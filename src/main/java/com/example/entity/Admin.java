@@ -28,8 +28,7 @@ public class Admin {
 	@Column(nullable = false)
 	private int point;
 
-	public Admin(Long id, String username, String password, String nickname, String image, int point) {
-		this.id = id;
+	public Admin(String username, String password, String nickname, String image, int point) {
 		this.username = username;
 		this.password = password;
 		this.nickname = nickname;

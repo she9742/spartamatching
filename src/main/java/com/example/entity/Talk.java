@@ -18,25 +18,25 @@ public class Talk {
     private long id;
 
     @Column(nullable = false)
-    private Client client;
+    private Long clientId;
 
     @Column(nullable = false)
-    private Client seller;
+    private Long sellerId;
 
     @Column(nullable = false)
-    private boolean open;
+    private boolean activation;
 
     @JoinColumn
     @OneToMany
     private List<Message> messages = new ArrayList<>();
 
-    public Talk(Client client, Client seller) {
-        this.client = client;
-        this.seller = seller;
-        this.open = true;
+    public Talk(Long client, Long seller) {
+        this.clientId = client;
+        this.sellerId = seller;
+        this.activation = true;
     }
 
     public void closeTalk() {
-        this.open = false;
+        this.activation = false;
     }
 }
