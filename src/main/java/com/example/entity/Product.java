@@ -1,5 +1,6 @@
 package com.example.entity;
 
+import com.example.dto.ProductRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,11 +30,11 @@ public class Product {
     @Column
     private Boolean activation;
 
-    public Product(String productName, String information, Long sellerId, int point, Boolean activation) {
-        this.productName = productName;
-        this.information = information;
-        this.sellerId = sellerId;
-        this.point = point;
-        this.activation = activation;
+    public Product(ProductRequestDto dto,Client client) {
+        this.productName = dto.getProductName();
+        this.information = dto.getInformation();
+        this.sellerId = client.getId();
+        this.point = dto.getPoint();
+        this.activation = true;
     }
 }

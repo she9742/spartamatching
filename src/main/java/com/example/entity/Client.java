@@ -1,6 +1,7 @@
 package com.example.entity;
 
 
+import com.example.dto.SallerProfileUpdateRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -60,12 +61,13 @@ public class Client {
         this.image = image;
         //닉네임 이미지
     }
-    public void updateSellerProfile(String nickname, String image, String about, String category){
+
+    public void updateSellerProfile(SallerProfileUpdateRequestDto dto){
         //닉네임 이미지 어바웃 카테코리
-        this.nickname = nickname;
-        this.image = image;
-        this.about =about;
-        this.category = category;
+        this.nickname = dto.getNickname();
+        this.image = dto.getImage();
+        this.about =dto.getAbout();
+        this.category = dto.getCategory();
 
     }
 
