@@ -6,15 +6,15 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class MessageDto {
+public class MessageResponseDto {
     private String writer;
     private String content;
 
-    public MessageDto(Message message) {
+    public MessageResponseDto(Message message) {
         this.writer = message.getWriter();
         this.content = message.getContent();
     }
-    public MessageDto(String content) {
+    public MessageResponseDto(String content) {
         this.content = content;
         this.writer = "관리자";
     }

@@ -1,6 +1,7 @@
 package com.example.service;
 
-import com.example.dto.MessageDto;
+import com.example.dto.MessageRequestDto;
+import com.example.dto.MessageResponseDto;
 import com.example.entity.Client;
 import com.example.entity.Message;
 import com.example.entity.Talk;
@@ -19,26 +20,26 @@ public class ClientService {
     private final TalkRepository talkRepository;
     private final MessageRepository messageRepository;
 
-    public ResponseEntity<List<MessageDto>> getMessages(long talkId) {
+    public ResponseEntity<List<MessageResponseDto>> getMessages(long talkId) {
         List<Message> messages = new ArrayList<>();
         messages = messageRepository.findAllByTalk(talkId);
-        List<MessageDto> messageDtos = new ArrayList<>();
+        List<MessageResponseDto> messageResponseDtos = new ArrayList<>();
         for(Message message : messages) {
-            messageDtos.add(new MessageDto(message));
+            messageResponseDtos.add(new MessageResponseDto(message));
         }
-        return (ResponseEntity<List<MessageDto>>)messageDtos;
+        return (ResponseEntity<List<MessageResponseDto>>) messageResponseDtos;
     }
 
-    public MessageDto sendMessages(long talkId, Client writer,String content) {
+    public MessageResponseDto sendMessages(long talkId, Client writer, MessageRequestDto messageRequestDto) {
         Talk talk = talkRepository.findById(talkId).orElseThrow(
                 () -> new NullPointerException("톡방이 존재하지 않습니다.")
         );
         if(talk.isActivation()) {
-            Message message = new Message(talkId,writer,content);
+            Message message = new Message(talkId,writer, messageRequestDto.getContent());
             messageRepository.save(message);
-            return new MessageDto(message);
+            return new MessageResponseDto(message);
         } else {
-            return new MessageDto("종료된 톡방에는 메시지를 보낼수 없습니다.");
+            return new MessageResponseDto("종료된 톡방에는 메시지를 보낼수 없습니다.");
         }
     }
 }
