@@ -86,9 +86,6 @@ public class SellerService {
 
     @Transactional
     public ResponseEntity<List<ClientReq>> getMatching(Long sellerId) {
-        // 매칭이 들어왔는지 그러니까 매칭 요청 목록(clientReq)을 확인할 수 있다.
-        //내가 셀러 아이디에 해당하는 매칭 요청 목록만 리턴해주고
-        //-> 게시글 조회? 전체 게시글 조회인데 그 아이디가 셀러아이디인 경우
         List<ClientReq> clientReq = clientReqRepository.findAllBySellerId(sellerId);
         return ResponseEntity.ok().body(clientReq);
 
@@ -96,10 +93,9 @@ public class SellerService {
 
     @Transactional
     public String approveMatching(Long ClientReqId) {
-        //승인해줄 클라이언트 아이디값을 넣어주고
-        // 승인이 되면 클라이언트req가 사라지고 대화방이 열린다.
-        //반환값은 String으로 간단하게 해주고 대화방이다
-        // 대화방 열고 지운다 .
+        ClientReq clientReq = clientReqRepository.findById(ClientReqId).orElseThrow(
+                () -> new NullPointerException("")
+        );
         Talk talk = new Talk(clientReq.getClientId(), clientReq.getSellerId()); // 대화방
         clientReqRepository.delete(clientReq);
         return talk.getId() + "번 대화방이 열렸습니다.";
