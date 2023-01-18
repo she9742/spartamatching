@@ -1,3 +1,5 @@
+package com.example.dto;
+
 import com.example.entity.Client;
 import lombok.Getter;
 
