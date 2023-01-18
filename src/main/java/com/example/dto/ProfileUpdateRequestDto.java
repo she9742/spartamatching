@@ -12,3 +12,4 @@ public class ProfileUpdateRequestDto {
         this.nickname = client.getNickname();
         this.image = client.getImage();
     }
+}
