@@ -4,11 +4,12 @@ import com.example.entity.Client;
 import lombok.Getter;
 
 @Getter
-public class ProfileUpdateRequestDto {
+public class ProfileUpdateResonseDto {
     private String nickname;
     private String image;
 
-    public ProfileUpdateRequestDto(Client client) {
+    public ProfileUpdateResonseDto(Client client) {
         this.nickname = client.getNickname();
         this.image = client.getImage();
     }
+}
