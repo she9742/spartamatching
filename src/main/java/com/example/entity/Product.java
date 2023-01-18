@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+import com.example.dto.ProductRequestDto;
+
 @Getter
 @Entity
 @NoArgsConstructor
@@ -37,4 +39,15 @@ public class Product {
         this.point = dto.getPoint();
         this.activation = true;
     }
+    public void update(ProductRequestDto productRequestDto){
+        this.productName = productRequestDto.getProductName();
+        this.information = productRequestDto.getInformation();
+        this.point = productRequestDto.getPoint();
+    }
+
+    public void unactivate(){
+        this.activation=false;
+    }
+
+
 }

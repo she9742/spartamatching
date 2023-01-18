@@ -8,13 +8,13 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class AllProductResponse {
+public class AllProductResponseDto {
 	private String productName;
 	private String category;
 	private int price;
 	private String sellerName;
 
-	public AllProductResponse(Product product, Client client) {
+	public AllProductResponseDto(Product product, Client client) {
 		this.productName = product.getProductName();
 		this.category = client.getCategory();
 		this.price = product.getPoint();
