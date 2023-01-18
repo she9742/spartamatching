@@ -16,7 +16,7 @@ public class Client {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @Column(nullable = false)
     private String username;
@@ -83,5 +83,12 @@ public class Client {
 
     public void withdraw(int point){
         this.point = this.point - point;
+    }
+
+    public boolean getisSeller(){
+        if(isSeller){
+            return true;
+        }
+        return false;
     }
 }

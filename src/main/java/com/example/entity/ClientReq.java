@@ -13,7 +13,7 @@ public class ClientReq {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @Column(nullable = false)
     private Long clientId;

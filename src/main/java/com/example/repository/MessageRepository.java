@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface MessageRepository extends JpaRepository<Message, Long> {
-    Optional<Message> findByTalk(Long talkId);
+    Optional<Message> findAllByTalk(Long talkId);
 }

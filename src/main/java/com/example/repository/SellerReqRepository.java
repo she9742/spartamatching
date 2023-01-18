@@ -1,6 +1,5 @@
 package com.example.repository;
 
-import com.example.entity.Client;
 import com.example.entity.SellerReq;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
