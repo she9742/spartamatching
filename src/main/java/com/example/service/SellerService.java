@@ -3,7 +3,7 @@ package com.example.service;
 import com.example.dto.ClientReqResponseDto;
 import com.example.dto.ProductRequestDto;
 import com.example.dto.ProductResponseDto;
-import com.example.dto.SallerProfileUpdateRequestDto;
+import com.example.dto.SellerProfileUpdateRequestDto;
 import com.example.entity.*;
 import com.example.repository.*;
 
@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,16 +26,15 @@ public class SellerService {
     private final TalkRepository talkRepository;
 
     //판매자 프로필 조회
-
     @Transactional  //판매자 프로필 수정
-    public String getProfile(SallerProfileUpdateRequestDto dto, Client client){
+    public String getProfile(SellerProfileUpdateRequestDto dto, Client client){
         client.updateSellerProfile(dto);
         return "변경 완료";
     }
 
     @Transactional
-    public List<ProductResponseDto> getMyProduct(){
-        List<Product> products = productRepository.findAll();   //판매자 번호를 써줘야함
+    public List<ProductResponseDto> getMyProduct(Long sellerId){
+        List<Product> products = productRepository.findBySellerId(sellerId);
         List<ProductResponseDto> productResponseDtos = new ArrayList<>();
         for(Product product : products){
             productResponseDtos.add(new ProductResponseDto(product));
@@ -46,8 +44,8 @@ public class SellerService {
     }
 
     @Transactional
-    public List<ClientReqResponseDto> getMyClientReq(){
-        List<ClientReq> clientReqs = clientReqRepository.findAll(); //판매자 번호를 써줘야함
+    public List<ClientReqResponseDto> getMyClientReq(Long sellerId){
+        List<ClientReq> clientReqs = clientReqRepository.findAllBySellerId(sellerId);
         List<ClientReqResponseDto> clientReqResponseDtos = new ArrayList<>();
         for(ClientReq clientReq : clientReqs){
             clientReqResponseDtos.add(new ClientReqResponseDto(clientReq));
@@ -59,7 +57,7 @@ public class SellerService {
     @Transactional
     public ProductResponseDto enrollMyProduct(ProductRequestDto dto, Client client){
         Product product = new Product(dto,client);
-        //디비에 추가를 안함
+        productRepository.save(product);
         return new ProductResponseDto(product);
 
 
