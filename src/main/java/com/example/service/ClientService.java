@@ -55,16 +55,15 @@ public class ClientService {
 
     //프로필 만들기
     @Transactional
-    public ProfileUpdateDto.Res updateProfile(ProfileUpdateDto.Req req, Client client){
-        client.updateClientProfile(req.getNickname(), req.getImage());
-        return new ProfileUpdateDto.Res(client);
+    public ProfileUpdateResonseDto updateProfile(ProfileUpdateRequestDto requestDto, Client client){
+        client.updateClientProfile(requestDto.getNickname(), requestDto.getImage());
+        return new ProfileUpdateResonseDto(client);
     }
 
     // 프로필 가져오기
     @Transactional
-    public ProfileUpdateDto.Res getProfile(Client client){
-
-        return new ProfileUpdateDto.Res(client);
+    public ProfileUpdateRequestDto getProfile(Client client){
+        return new ProfileUpdateRequestDto(client);
     }
 
     // 전체 판매상품 목록 조회
