@@ -3,7 +3,7 @@ package com.example.service;
 import com.example.dto.ClientReqResponseDto;
 import com.example.dto.ProductRequestDto;
 import com.example.dto.ProductResponseDto;
-import com.example.dto.SallerProfileUpdateRequestDto;
+import com.example.dto.SellerProfileUpdateRequestDto;
 import com.example.entity.*;
 import com.example.repository.*;
 
@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,16 +26,15 @@ public class SellerService {
     private final TalkRepository talkRepository;
 
     //판매자 프로필 조회
-
     @Transactional  //판매자 프로필 수정
-    public String getProfile(SallerProfileUpdateRequestDto dto, Client client){
+    public String getProfile(SellerProfileUpdateRequestDto dto, Client client){
         client.updateSellerProfile(dto);
         return "변경 완료";
     }
 
     @Transactional
-    public List<ProductResponseDto> getMyProduct(){
-        List<Product> products = productRepository.findAll();   //판매자 번호를 써줘야함
+    public List<ProductResponseDto> getMyProduct(Long sellerId){
+        List<Product> products = productRepository.findBySellerId(sellerId);
         List<ProductResponseDto> productResponseDtos = new ArrayList<>();
         for(Product product : products){
             productResponseDtos.add(new ProductResponseDto(product));
@@ -46,8 +44,8 @@ public class SellerService {
     }
 
     @Transactional
-    public List<ClientReqResponseDto> getMyClientReq(){
-        List<ClientReq> clientReqs = clientReqRepository.findAll(); //판매자 번호를 써줘야함
+    public List<ClientReqResponseDto> getMyClientReq(Long sellerId){
+        List<ClientReq> clientReqs = clientReqRepository.findAllBySellerId(sellerId);
         List<ClientReqResponseDto> clientReqResponseDtos = new ArrayList<>();
         for(ClientReq clientReq : clientReqs){
             clientReqResponseDtos.add(new ClientReqResponseDto(clientReq));
@@ -59,7 +57,7 @@ public class SellerService {
     @Transactional
     public ProductResponseDto enrollMyProduct(ProductRequestDto dto, Client client){
         Product product = new Product(dto,client);
-        //디비에 추가를 안함
+        productRepository.save(product);
         return new ProductResponseDto(product);
 
 
@@ -86,9 +84,6 @@ public class SellerService {
 
     @Transactional
     public ResponseEntity<List<ClientReq>> getMatching(Long sellerId) {
-        // 매칭이 들어왔는지 그러니까 매칭 요청 목록(clientReq)을 확인할 수 있다.
-        //내가 셀러 아이디에 해당하는 매칭 요청 목록만 리턴해주고
-        //-> 게시글 조회? 전체 게시글 조회인데 그 아이디가 셀러아이디인 경우
         List<ClientReq> clientReq = clientReqRepository.findAllBySellerId(sellerId);
         return ResponseEntity.ok().body(clientReq);
 
@@ -96,23 +91,22 @@ public class SellerService {
 
     @Transactional
     public String approveMatching(Long ClientReqId) {
-        //승인해줄 클라이언트 아이디값을 넣어주고
-        // 승인이 되면 클라이언트req가 사라지고 대화방이 열린다.
-        //반환값은 String으로 간단하게 해주고 대화방이다
-        // 대화방 열고 지운다 .
+        ClientReq clientReq = clientReqRepository.findById(ClientReqId).orElseThrow(
+                () -> new NullPointerException("")
+        );
         Talk talk = new Talk(clientReq.getClientId(), clientReq.getSellerId()); // 대화방
         clientReqRepository.delete(clientReq);
         return talk.getId() + "번 대화방이 열렸습니다.";
     }
 
     @Transactional
-    public void getTradeReq(Long sellerId) {
+    public ResponseEntity<List<TradeReq>> getTradeReq(Long sellerId) {
         List<TradeReq> tradeReqs = tradeReqRepository.findAllBySellerId(sellerId);
-        //리턴값 필요(getMatching 참고)
+        return ResponseEntity.ok().body(tradeReqs);
     }
 
     @Transactional
-    public void sellProduct(TradeReq tradeReq, Long productId, Long talkId) {
+    public String sellProduct(TradeReq tradeReq, Long productId, Long talkId) {
         Client client = clientRepository.findById(tradeReq.getClientId()).orElseThrow(
                 () -> new IllegalArgumentException("")
         );
@@ -133,8 +127,13 @@ public class SellerService {
         talk.closeTalk();
 
         // 3. point를 옮긴다.   //혹시 돈이부족하다면?
-        client.withdraw(product.getPoint());
-        seller.deposit(product.getPoint());
+        if (client.getPoint() < product.getPoint()) {
+            throw new IllegalArgumentException("잔액이 부족합니다.");
+        } else {
+            client.withdraw(product.getPoint());
+            seller.deposit(product.getPoint());
+        }
+        return "거래가 완료되었습니다.";
     }
 
 

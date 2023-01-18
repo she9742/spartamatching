@@ -4,14 +4,14 @@ import com.example.entity.Client;
 import lombok.Getter;
 
 @Getter
-public class SallerProfileUpdateRequestDto {
+public class SellerProfileUpdateRequestDto {
 
     private String nickname;
     private String image;
     private String about;
     private String category;
 
-    public SallerProfileUpdateRequestDto(Client client){
+    public SellerProfileUpdateRequestDto(Client client){
         this.nickname = client.getNickname();
         this.image = client.getImage();
         this.about = client.getAbout();
