@@ -1,21 +1,9 @@
 package com.example.service;
 
-import com.example.dto.AllProductResponse;
-import com.example.dto.AllSellerResponse;
-import com.example.dto.MessageRequestDto;
-import com.example.dto.MessageResponseDto;
-import com.example.dto.ProfileUpdateDto;
-import com.example.dto.SellerResponse;
-import com.example.entity.Client;
-import com.example.entity.Message;
-import com.example.entity.Product;
-import com.example.entity.Talk;
-import com.example.repository.ClientRepository;
-import com.example.repository.MessageRepository;
-import com.example.repository.ProductRepository;
-import com.example.repository.TalkRepository;
+import com.example.dto.*;
+import com.example.entity.*;
+import com.example.repository.*;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -31,6 +19,8 @@ public class ClientService {
 	private final MessageRepository messageRepository;
 	private final ClientRepository clientRepository;
 	private final ProductRepository productRepository;
+	private final ClientReqRepository clientReqRepository;
+	private final TradeReqRepository tradeReqRepository;
 
 	public ResponseEntity<List<MessageResponseDto>> getMessages(long talkId) {
 		List<Message> messages = new ArrayList<>();
@@ -102,5 +92,44 @@ public class ClientService {
 		);
 		return new SellerResponse(seller);
 	}
+
+	@Transactional
+	public String sendMatching(Long clientId,Long sellerId){
+		Client client = clientRepository.findById(clientId).orElseThrow(
+				() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
+		);
+		Client seller = clientRepository.findById(sellerId).orElseThrow(
+				() -> new IllegalArgumentException("해당 판매자가 존재하지 않습니다.")
+		);
+		clientReqRepository.save(new ClientReq(clientId,sellerId));
+		return "매칭 요청에 성공했습니다.";
+	}
+
+
+	@Transactional
+	public void buyProduct(Long clientId, Long productId){
+		Client client = clientRepository.findById(clientId).orElseThrow(
+				() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
+		);
+		Product product = productRepository.findById(productId).orElseThrow(
+				() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다.")
+		);
+
+		if (client.getPoint() >= product.getPoint()){
+			tradeReqRepository.save(new TradeReq(clientId,productId));
+		} else throw new IllegalArgumentException("잔액이 부족합니다.");
+
+	}
+
+//    @Transactional
+//    public void withdraw(Long clientId, Long productId){
+//        Client client = clientRepository.findById(clientId).orElseThrow(
+//                () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
+//        );
+//        Product product = productRepository.findById(productId).orElseThrow(
+//                () -> new IllegalArgumentException("해당 상품이 존재하지 않습니다.")
+//        );
+//
+//    }
 
 }
