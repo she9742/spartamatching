@@ -1,21 +1,20 @@
 package com.example.dto;
 
 import com.example.entity.Client;
-import com.example.entity.Product;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class SellerResponse {
+public class AllSellerResponseDto {
 
 	private String nickname;
 	private String image;
 	private String category;
 	private String about;
 
-	public SellerResponse(Client client) {
+	public AllSellerResponseDto(Client client) {
 		this.nickname = client.getNickname();
 		this.image = client.getImage();
 		this.category = client.getCategory();

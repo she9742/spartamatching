@@ -14,5 +14,5 @@ import java.util.Optional;
 @Repository
 public interface ClientReqRepository extends JpaRepository<ClientReq, Long> {
     List<ClientReq> findAllBySellerId(Long sellerId);
-    List<Client> findAllBy(Pageable pageable);
+
 }

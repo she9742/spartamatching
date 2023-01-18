@@ -7,14 +7,14 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class AllSellerResponse {
+public class SellerResponseDto {
 
 	private String nickname;
 	private String image;
 	private String category;
 	private String about;
 
-	public AllSellerResponse(Client client) {
+	public SellerResponseDto(Client client) {
 		this.nickname = client.getNickname();
 		this.image = client.getImage();
 		this.category = client.getCategory();

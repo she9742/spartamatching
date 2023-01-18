@@ -69,13 +69,13 @@ public class ClientService {
 
     // 전체 판매상품 목록 조회
     @Transactional(readOnly = true)
-    public List<AllProductResponse> getAllProducts() {
+    public List<AllProductResponseDto> getAllProducts() {
 
         //모든 상품을 allproducts에 넣는다
         List<Product> AllProducts = productRepository.findAll();
 
         //반환을위해 AllProductsResponse를 만든다
-        List<AllProductResponse> AllProductsResponse = new ArrayList<>();
+        List<AllProductResponseDto> AllProductsResponse = new ArrayList<>();
 
         //하나씩 넣는다
         for (Product product : AllProducts) {
@@ -83,31 +83,31 @@ public class ClientService {
                     //실제로는 마주치지 않는 오류
                     () -> new NullPointerException()
             );
-            AllProductsResponse.add(new AllProductResponse(product, sellers));
+            AllProductsResponse.add(new AllProductResponseDto(product, sellers));
         }
         return AllProductsResponse;
 
     }
     // 전체 판매자 목록 조회
     @Transactional(readOnly = true)
-    public List<AllSellerResponse> getAllSellers(Pageable pageable){
+    public List<AllSellerResponseDto> getAllSellers(Pageable pageable){
         List<Client> sellerList = clientRepository.findAllBy(pageable);
-        List<AllSellerResponse> sellerResponseList = new ArrayList<>();
+        List<AllSellerResponseDto> sellerResponseList = new ArrayList<>();
         for (Client client: sellerList){
             //조건. 판매자인지 확인한다
             if (client.getisSeller()) {
-                sellerResponseList.add(new AllSellerResponse(client));
+                sellerResponseList.add(new AllSellerResponseDto(client));
             }
         }
         return sellerResponseList;
     }
     // 판매자 정보 조회
     @Transactional
-    public SellerResponse getSellerInfo(Long sellerId){
+    public SellerResponseDto getSellerInfo(Long sellerId){
         Client seller = clientRepository.findById(sellerId).orElseThrow(
                 ()-> new RuntimeException("찾으시는 판매자가 없습니다.")
         );
-        return new SellerResponse(seller);
+        return new SellerResponseDto(seller);
     }
 
     @Transactional

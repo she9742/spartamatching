@@ -1,8 +1,13 @@
 package com.example.service;
 
+import com.example.dto.ProductRequestDto;
+import com.example.dto.ProductResponseDto;
 import com.example.entity.ClientReq;
+import com.example.entity.Product;
 import com.example.entity.Talk;
 import com.example.repository.ClientReqRepository;
+import com.example.repository.ProductRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -15,6 +20,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class SellerService {
 
+    private final ProductRepository productRepository;
     private final ClientReqRepository clientReqRepository;
 
     @Transactional
@@ -94,6 +100,24 @@ public class SellerService {
 
     }
 
+    // 나의 판매상품 수정
+    @Transactional
+    public ProductResponseDto updateProduct(Long id, ProductRequestDto requestDto){
+        Product product = productRepository.findById(id).orElseThrow(
+            ()-> new IllegalArgumentException("수정하려는 상품이 없습니다.")
+        );
+        product.update(requestDto);
+        return new ProductResponseDto(product);
+    }
+
+
+    // 판매상품 삭제
+    public void deleteProduct(Long id){
+        Product product = productRepository.findById(id).orElseThrow(
+            ()-> new IllegalArgumentException("수정하려는 상품이 없습니다.")
+        );
+        product.unactivate();
+    }
 
 
 }
