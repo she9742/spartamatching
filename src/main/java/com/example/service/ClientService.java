@@ -32,7 +32,7 @@ public class ClientService {
         for(Message message : messages) {
             messageResponseDtos.add(new MessageResponseDto(message));
         }
-        return (ResponseEntity<List<MessageResponseDto>>) messageResponseDtos;
+        return ResponseEntity.ok().body(messageResponseDtos) ;
     }
 
     @Transactional
