@@ -2,6 +2,7 @@ package com.example.service;
 
 import com.example.dto.MessageRequestDto;
 import com.example.dto.MessageResponseDto;
+import com.example.dto.ProfileUpdateDto;
 import com.example.entity.Client;
 import com.example.entity.Message;
 import com.example.entity.Talk;
@@ -10,6 +11,7 @@ import com.example.repository.TalkRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,4 +44,18 @@ public class ClientService {
             return new MessageResponseDto("종료된 톡방에는 메시지를 보낼수 없습니다.");
         }
     }
+
+    //프로필 만들기
+    @Transactional
+    public ProfileUpdateDto.Res updateProfile(ProfileUpdateDto.Req req, Client client){
+        client.updateClientProfile(req.getNickname(), req.getImage());
+        return new ProfileUpdateDto.Res(client);
+    }
+
+    // 프로필 가져오기
+    @Transactional
+    public ProfileUpdateDto.Res getProfile(Client client){
+        return new ProfileUpdateDto.Res(client);
+    }
+
 }
