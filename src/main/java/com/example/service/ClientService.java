@@ -25,17 +25,17 @@ public class ClientService {
     private final TradeReqRepository tradeReqRepository;
     private final SellerReqRepository sellerReqRepository;
 
-//    public ResponseEntity<List<MessageResponseDto>> getMessages(long talkId) {
-//        List<Message> messages = new ArrayList<>();
-//        Optional<Message> messages = messageRepository.findAllByTalk(talkId);
-//
-//        List<MessageResponseDto> messageResponseDtos = new ArrayList<>();
-//        for(Message message : messages) {
-//            messageResponseDtos.add(new MessageResponseDto(message));
-//        }
-//        return (ResponseEntity<List<MessageResponseDto>>) messageResponseDtos;
-//    }
+    @Transactional
+    public ResponseEntity<List<MessageResponseDto>> getMessages(long talkId) {
+        List<Message> messages = messageRepository.findAllByTalk(talkId);
+        List<MessageResponseDto> messageResponseDtos = new ArrayList<>();
+        for(Message message : messages) {
+            messageResponseDtos.add(new MessageResponseDto(message));
+        }
+        return ResponseEntity.ok().body(messageResponseDtos) ;
+    }
 
+    @Transactional
     public MessageResponseDto sendMessages(Long talkId,String writer, MessageRequestDto messageRequestDto) {
 
         //톡방 존재여부 확인
@@ -44,7 +44,7 @@ public class ClientService {
         );
 
         //톡방 활성화되있다면 메세지 전송 아니면 전송X
-        if(talk.isActivation()) {   //id로 수정!
+        if(talk.isActivation()) {
             Message message = new Message(talkId,writer, messageRequestDto.getContent());
             messageRepository.save(message);
             return new MessageResponseDto(message);
@@ -55,15 +55,16 @@ public class ClientService {
 
     //프로필 만들기
     @Transactional
-    public ProfileUpdateResonseDto updateProfile(ProfileUpdateRequestDto requestDto, Client client){
+    public ProfileUpdateResponseDto updateProfile(ProfileUpdateRequestDto requestDto, Client client){
         client.updateClientProfile(requestDto.getNickname(), requestDto.getImage());
-        return new ProfileUpdateResonseDto(client);
+        return new ProfileUpdateResponseDto(client);
     }
 
     // 프로필 가져오기
     @Transactional
-    public ProfileUpdateRequestDto getProfile(Client client){
-        return new ProfileUpdateRequestDto(client);
+
+    public ProfileUpdateResponseDto getProfile(Client client){
+        return new ProfileUpdateResponseDto(client);
     }
 
     // 전체 판매상품 목록 조회
@@ -145,8 +146,8 @@ public class ClientService {
 
 
         //현재 판매자 등록 요청이 있는지 확인한다
-        Optional<SellerReq> client = sellerReqRepository.findByClientId(clientId);
-        if(client.isPresent()){
+        Optional<SellerReq> sellerReq_ck = sellerReqRepository.findByClientId(client.getId());
+        if(sellerReq_ck.isPresent()){
             //있다면 오류메시지를 띄우고 취소시킨다
             throw new IllegalArgumentException("이미 신청한 유저입니다.");
         }
@@ -161,7 +162,7 @@ public class ClientService {
 
 
         //없다면 DB에 등록 요청을 등록한다
-        SellerReq sellerReq = new SellerReq(clientId);
+        SellerReq sellerReq = new SellerReq(client.getId());
         sellerReqRepository.save(sellerReq);
 
         return new ResponseEntity<>("판매자 신청을 하였습니다.", HttpStatus.OK);

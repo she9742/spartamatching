@@ -77,9 +77,7 @@ public class Client {
         this.category = category;
         this.isSeller = true;
     }
-    public void deposit(int point){
-        this.point = this.point - point;
-    }
+    public void deposit(int point){this.point = this.point + point;}
 
     public void withdraw(int point){
         this.point = this.point - point;
