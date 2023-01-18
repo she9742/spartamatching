@@ -102,13 +102,13 @@ public class SellerService {
     }
 
     @Transactional
-    public void getTradeReq(Long sellerId) {
+    public ResponseEntity<List<TradeReq>> getTradeReq(Long sellerId) {
         List<TradeReq> tradeReqs = tradeReqRepository.findAllBySellerId(sellerId);
-        //리턴값 필요(getMatching 참고)
+        return ResponseEntity.ok().body(tradeReqs);
     }
 
     @Transactional
-    public void sellProduct(TradeReq tradeReq, Long productId, Long talkId) {
+    public String sellProduct(TradeReq tradeReq, Long productId, Long talkId) {
         Client client = clientRepository.findById(tradeReq.getClientId()).orElseThrow(
                 () -> new IllegalArgumentException("")
         );
@@ -129,8 +129,13 @@ public class SellerService {
         talk.closeTalk();
 
         // 3. point를 옮긴다.   //혹시 돈이부족하다면?
-        client.withdraw(product.getPoint());
-        seller.deposit(product.getPoint());
+        if (client.getPoint() < product.getPoint()) {
+            throw new IllegalArgumentException("잔액이 부족합니다.");
+        } else {
+            client.withdraw(product.getPoint());
+            seller.deposit(product.getPoint());
+        }
+        return "거래가 완료되었습니다.";
     }
 
 
