@@ -1,11 +1,12 @@
 package com.example.repository;
 
-import com.example.entity.Client;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
 import java.util.List;
 
-@Repository
-public interface ClientRepository extends JpaRepository<Client, Long> {
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.example.entity.Client;
+
+public interface ClientRepository extends JpaRepository {
+	List<Client> findAllBy(Pageable pageable);
 }
