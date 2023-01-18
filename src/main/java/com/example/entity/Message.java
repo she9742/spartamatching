@@ -22,9 +22,9 @@ public class Message {
     @Column(nullable = false)
     private String content;
 
-    public Message(Long talk, Client writer, String content) {
+    public Message(Long talk, String writer, String content) {
         this.talk = talk;
-        this.writer = writer.getUsername();
+        this.writer = writer;
         this.content = content;
     }
 }

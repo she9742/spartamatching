@@ -25,16 +25,14 @@ public class ClientService {
     private final TradeReqRepository tradeReqRepository;
     private final SellerReqRepository sellerReqRepository;
 
-//    public ResponseEntity<List<MessageResponseDto>> getMessages(long talkId) {
-//        List<Message> messages = new ArrayList<>();
-//        Optional<Message> messages = messageRepository.findAllByTalk(talkId);
-//
-//        List<MessageResponseDto> messageResponseDtos = new ArrayList<>();
-//        for(Message message : messages) {
-//            messageResponseDtos.add(new MessageResponseDto(message));
-//        }
-//        return (ResponseEntity<List<MessageResponseDto>>) messageResponseDtos;
-//    }
+    public ResponseEntity<List<MessageResponseDto>> getMessages(long talkId) {
+        List<Message> messages = messageRepository.findAllByTalk(talkId);
+        List<MessageResponseDto> messageResponseDtos = new ArrayList<>();
+        for(Message message : messages) {
+            messageResponseDtos.add(new MessageResponseDto(message));
+        }
+        return (ResponseEntity<List<MessageResponseDto>>) messageResponseDtos;
+    }
 
     public MessageResponseDto sendMessages(Long talkId,String writer, MessageRequestDto messageRequestDto) {
 
@@ -44,7 +42,7 @@ public class ClientService {
         );
 
         //톡방 활성화되있다면 메세지 전송 아니면 전송X
-        if(talk.isActivation()) {   //id로 수정!
+        if(talk.isActivation()) {
             Message message = new Message(talkId,writer, messageRequestDto.getContent());
             messageRepository.save(message);
             return new MessageResponseDto(message);
@@ -55,16 +53,15 @@ public class ClientService {
 
     //프로필 만들기
     @Transactional
-    public ProfileUpdateDto.Res updateProfile(ProfileUpdateDto.Req req, Client client){
-        client.updateClientProfile(req.getNickname(), req.getImage());
-        return new ProfileUpdateDto.Res(client);
+    public ProfileUpdateResponseDto updateProfile(P requestDto, Client client){
+        client.updateClientProfile(requestDto.getNickname(), requestDto.getImage());
+        return new ProfileUpdateResponseDto(client);
     }
 
     // 프로필 가져오기
     @Transactional
-    public ProfileUpdateDto.Res getProfile(Client client){
-
-        return new ProfileUpdateDto.Res(client);
+    public ProfileUpdateResponseDto getProfile(Client client){
+        return new ProfileUpdateResponseDto(client);
     }
 
     // 전체 판매상품 목록 조회
