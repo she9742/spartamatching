@@ -50,12 +50,8 @@ public class ClientService {
 
     @Transactional
     public String signin(SigninRequestDto signinRequestDto){
+
         // 사용자 확인
-
-
-        //복호화 추가해야함
-
-
         Client client = clientRepository.findByUsername(signinRequestDto.getUsername()).orElseThrow(
                 () -> new IllegalArgumentException("유저가 존재하지 않습니다")
         );
