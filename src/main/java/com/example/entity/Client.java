@@ -79,6 +79,12 @@ public class Client {
         this.category = category;
         this.isSeller = true;
     }
+
+    public void rollbackClient(){
+        this.about = null;
+        this.category = null;
+        this.isSeller = false;
+    }
     public void deposit(int point){this.point = this.point + point;}
 
     public void withdraw(int point){

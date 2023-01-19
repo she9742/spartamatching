@@ -35,4 +35,8 @@ public class Admin {
 		this.nickname = adminSignupRequestDto.getNickname();
 		this.image = adminSignupRequestDto.getImage();
 	}
+
+	public void withdraw(int point){
+		this.point = this.point - point;
+	}
 }
