@@ -1,5 +1,8 @@
 package com.example.controller;
 
+
+    
+
 import com.example.dto.ProfileUpdateRequestDto;
 import com.example.dto.ProfileUpdateResponseDto;
 import com.example.service.ClientService;
@@ -28,5 +31,21 @@ public class ClientController {
 
     public ResponseEntity<ProfileUpdateResponseDto> getProfile(@AuthenticationPrincipal ClientDetailsImpl clientDetails) {
         return clientService.getProfile(clientDetails.getClient());
+//전체 판매 상품 조회
+    @GetMapping("/client/prodcuts")
+    public ResponseEntity<List<AllProductResponseDto>> getAllProduct(){
+        return ResponseEntity.status(HttpStatus.OK).body(clientService.getAllProducts());
+    }
+
+    //전체 판매자 조회
+    @GetMapping("/client/sellers")
+    public ResponseEntity<List<AllSellerResponseDto>> getAllSellers(){
+        return ResponseEntity.status(HttpStatus.OK).body(clientService.getAllSellers());
+    }
+
+    //판매자 선택 조회
+    @GetMapping("/client/seller/{id}")
+    public ResponseEntity<SellerResponseDto> getSellerInfo(@PathVariable Long sellerId){
+        return ResponseEntity.status(HttpStatus.OK).body(clientService.getSellerInfo(sellerId));
     }
 }
