@@ -106,7 +106,7 @@ public class ClientService {
 
     //프로필 만들기
     @Transactional
-    public ProfileUpdateResponseDto updateProfile(ProfileUpdateRequestDto requestDto, Client client){
+    public ProfileUpdateResponseDto updateProfile(ProfileUpdateRequestDto requestDto, Client  client){
         client.updateClientProfile(requestDto.getNickname(), requestDto.getImage());
         return new ProfileUpdateResponseDto(client);
     }
@@ -141,8 +141,8 @@ public class ClientService {
     }
     // 전체 판매자 목록 조회
     @Transactional(readOnly = true)
-    public List<AllSellerResponseDto> getAllSellers(Pageable pageable){
-        List<Client> sellerList = clientRepository.findAllBy(pageable);
+    public List<AllSellerResponseDto> getAllSellers(){
+        List<Client> sellerList = clientRepository.findAll();
         List<AllSellerResponseDto> sellerResponseList = new ArrayList<>();
         for (Client client: sellerList){
             //조건. 판매자인지 확인한다
