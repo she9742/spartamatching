@@ -85,15 +85,15 @@ public class ClientController {
     }
 
 
-    @PostMapping("/sellers/{id}")
+    @PostMapping("/sellers/{sellerId}")
     public String sendMatching(@PathVariable Long sellerId,Long clientId){
         return clientService.sendMatching(clientId,sellerId);
     }
 
 
-    @PostMapping("/buy/{sid}/{pid}")
-    public String buyProduct(@PathVariable Long sellerId, @PathVariable Long productId, Client client){
-        return clientService.buyProduct(client,sellerId,productId);
+    @PostMapping("/buy/{productid}")
+    public String buyProduct(@PathVariable Long productid, Client client){
+        return clientService.buyProduct(client,productid);
     }
 
 

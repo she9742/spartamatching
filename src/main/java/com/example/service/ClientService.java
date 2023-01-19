@@ -179,25 +179,28 @@ public class ClientService {
     @Transactional
     //public String buyProduct(Long clientId, Long productId){
     //public String buyProduct(Client client, Long productId){
-    public String buyProduct(Client client, Long sellerId,Long productId){
+    public String buyProduct(Client client, Long productId){
         //물건 번호만 가지고 물건을 살수있다?
             //->안됨. 연결된 판매자와의 물건만 살 수 있어야함
             //->연결된사람인지 검증수단필요
             //->Talk가 연결된 판매자만 검증됨
 
 
-        //1.닫혔는지 확인
-        //2.스코프 최소화(Long sellerId 제거후 역순으로 조회)
-            Talk talk = talkRepository.findByClientIdAndSellerId(client.getId(),sellerId).orElseThrow(
+
+        //가격입력을 위해 제품정보 로드
+        Product product = productRepository.findById(productId).orElseThrow(
+                () -> new IllegalArgumentException("해당 상품이 존재하지 않습니다.")
+        );
+
+        //해당 셀러와 사용자가 실제 거래중인지 확인
+        Talk talk = talkRepository.findByClientIdAndSellerId(client.getId(),product.getSellerId()).orElseThrow(
                 () -> new IllegalArgumentException("해당 판매자와 거래중이 아닙니다")
         );
 
+        if(!talk.isActivation()){
+            new IllegalArgumentException("비활성화된 거래입니다.");
+        }
 
-        //그런데 해당 상품이 Seller의 제품이라고 확신할수없다.
-            //->SellerId와 productId가 동일한지 확인필요
-        Product product = productRepository.findBySellerIdAndProductId(sellerId,productId).orElseThrow(
-                () -> new IllegalArgumentException("해당 판매자가 취급하는 상품이 아닙니다")
-        );
 
 
 
