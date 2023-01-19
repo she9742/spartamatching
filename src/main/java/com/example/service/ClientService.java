@@ -163,9 +163,11 @@ public class ClientService {
 
     @Transactional
     public String sendMatching(Long clientId,Long sellerId){
-        Client client = clientRepository.findById(clientId).orElseThrow(
-                () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
-        );
+
+        //내가 보냈는데 내가 없을리가없음
+//        Client client = clientRepository.findById(clientId).orElseThrow(
+//                () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
+//        );
         Client seller = clientRepository.findById(sellerId).orElseThrow(
                 () -> new IllegalArgumentException("해당 판매자가 존재하지 않습니다.")
         );
@@ -175,17 +177,39 @@ public class ClientService {
 
 
     @Transactional
-    public String buyProduct(Long clientId, Long productId){
-        Client client = clientRepository.findById(clientId).orElseThrow(
-                () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
+    //public String buyProduct(Long clientId, Long productId){
+    //public String buyProduct(Client client, Long productId){
+    public String buyProduct(Client client, Long sellerId,Long productId){
+        //물건 번호만 가지고 물건을 살수있다?
+            //->안됨. 연결된 판매자와의 물건만 살 수 있어야함
+            //->연결된사람인지 검증수단필요
+            //->Talk가 연결된 판매자만 검증됨
+        Talk talk = talkRepository.findByClientIdAndSellerId(client.getId(),sellerId).orElseThrow(
+                () -> new IllegalArgumentException("해당 판매자와 거래중이 아닙니다")
         );
-        Product product = productRepository.findById(productId).orElseThrow(
-                () -> new IllegalArgumentException("해당 상품이 존재하지 않습니다.")
+
+
+        //그런데 해당 상품이 Seller의 제품이라고 확신할수없다.
+            //->SellerId와 productId가 동일한지 확인필요
+        Product product = productRepository.findBySellerIdAndProductId(sellerId,productId).orElseThrow(
+                () -> new IllegalArgumentException("해당 판매자가 취급하는 상품이 아닙니다")
         );
+
+
+
+        //클라이언트 정보를 통째로 받아오는걸로 수정하면 검색불필요
+//        Client client = clientRepository.findById(clientId).orElseThrow(
+//                () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
+//        );
+
+        //셀러아이디와 같이검색하므로 불필요
+//        Product product = productRepository.findById(productId).orElseThrow(
+//                () -> new IllegalArgumentException("해당 상품이 존재하지 않습니다.")
+//        );
 
         //포인트 비교
         if (client.getPoint() >= product.getPoint()){
-            tradeReqRepository.save(new TradeReq(clientId,productId));
+            tradeReqRepository.save(new TradeReq(client.getId(),productId));
         } else throw new IllegalArgumentException("잔액이 부족합니다.");
 
         return "물건을 구매하였습니다";
