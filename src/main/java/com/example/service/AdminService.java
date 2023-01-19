@@ -145,10 +145,10 @@ public class AdminService {
         // 2. sellerReq를 보낸 Id의 Client를 찾는다.
         // 3. Client의 getisSeller를 true로 바꾼다.
         SellerReq sellerReq = sellerReqRepository.findByClientId(sellerReqId).orElseThrow(
-                () -> new IllegalArgumentException("")
+                () -> new IllegalArgumentException("해당 요청을 찾을 수 없습니다.")
         );
         Client client = clientRepository.findById(sellerReq.getClientId()).orElseThrow(
-                () -> new IllegalArgumentException("")
+                () -> new IllegalArgumentException("존재하지 않는 사용자 입니다.")
         );
         client.updateSeller(client.getNickname(),client.getImage(),client.getAbout(),client.getCategory());
         // 바뀐게 없는거 같은건 기분탓인가?
