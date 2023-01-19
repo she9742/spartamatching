@@ -106,7 +106,7 @@ public class ClientService {
 
     //프로필 만들기
     @Transactional
-    public ProfileUpdateResponseDto updateProfile(ProfileUpdateRequestDto requestDto, Client client){
+    public ProfileUpdateResponseDto updateProfile(ProfileUpdateRequestDto requestDto, Client  client){
         client.updateClientProfile(requestDto.getNickname(), requestDto.getImage());
         return new ProfileUpdateResponseDto(client);
     }
