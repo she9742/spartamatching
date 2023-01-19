@@ -184,7 +184,11 @@ public class ClientService {
             //->안됨. 연결된 판매자와의 물건만 살 수 있어야함
             //->연결된사람인지 검증수단필요
             //->Talk가 연결된 판매자만 검증됨
-        Talk talk = talkRepository.findByClientIdAndSellerId(client.getId(),sellerId).orElseThrow(
+
+
+        //1.닫혔는지 확인
+        //2.스코프 최소화(Long sellerId 제거후 역순으로 조회)
+            Talk talk = talkRepository.findByClientIdAndSellerId(client.getId(),sellerId).orElseThrow(
                 () -> new IllegalArgumentException("해당 판매자와 거래중이 아닙니다")
         );
 
