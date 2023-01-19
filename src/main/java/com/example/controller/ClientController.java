@@ -25,6 +25,7 @@ public class ClientController {
     }
 
     @GetMapping("/profile")
+
     public ResponseEntity<ProfileUpdateResponseDto> getProfile(@AuthenticationPrincipal ClientDetailsImpl clientDetails) {
         return clientService.getProfile(clientDetails.getClient());
     }
