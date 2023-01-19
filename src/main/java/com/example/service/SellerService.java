@@ -121,7 +121,7 @@ public class SellerService {
                 () -> new IllegalArgumentException("")
         );
         // 1. 물건이 판매되면 product,tradeReq 를 삭제한다.
-        productRepository.deleteById(productId);    //삭제가 아니라 비활성화로 변경
+        product.unactivate();   //삭제가 아니라 비활성화로 변경
         tradeReqRepository.delete(tradeReq);
 
         // 2. 대화창을 닫는다.

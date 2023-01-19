@@ -133,15 +133,27 @@ public class AdminService {
 
     @Transactional
         //sellerReq받아서 처리하는걸로
-    public void approveSellerReq(Long clientId){
+//    public void approveSellerReq(Long clientId){
 //        Client client = clientRepository.findById(clientId).orElseThrow(
 //                () -> new IllegalArgumentException("해당 사용자가 존재하지 않습니다.")
 //        );
 //        SellerReq sellerReq = sellerReqRepository.findById(client.getId()).orElseThrow(
-//                () -> new IllegalArgumentException("판매자 요청을 하지 않은 시용자입니다.")
+//                () -> new IllegalArgumentException("판매자 요청을 하지 않은 사용자입니다.")
 //        );
 //        if (Objects.equals(client.getId(), sellerReq.getId())) client.getisSeller();
 
+    public void approveSellerReq(Long sellerReqId){
+        // 1. DB의 sellerReq를 확인한다.
+        // 2. sellerReq를 보낸 Id의 Client를 찾는다.
+        // 3. Client의 getisSeller를 true로 바꾼다.
+        SellerReq sellerReq = sellerReqRepository.findByClientId(sellerReqId).orElseThrow(
+                () -> new IllegalArgumentException("")
+        );
+        Client client = clientRepository.findById(sellerReq.getClientId()).orElseThrow(
+                () -> new IllegalArgumentException("")
+        );
+        client.getisSeller();
+        // 바뀐게 없는거 같은건 기분탓인가?
     }
 
 }
