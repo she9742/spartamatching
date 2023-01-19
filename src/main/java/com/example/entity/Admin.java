@@ -35,4 +35,8 @@ public class Admin {
 		this.image = image;
 		this.point = point;
 	}
+
+	public void withdraw(int point){
+		this.point = this.point - point;
+	}
 }
