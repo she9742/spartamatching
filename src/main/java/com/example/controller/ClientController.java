@@ -74,14 +74,12 @@ public class ClientController {
     //전체메세지조회
     @GetMapping("/talk/{talkId}")
     public ResponseEntity<List<MessageResponseDto>> getMessages(@PathVariable Long talkId, @AuthenticationPrincipal ClientDetailsImpl clientDetails) {
-        //보안체크
         return clientService.getMessages(talkId,clientDetails.getClient());
     }
 
     @PostMapping("/talk/{talkId}")
     public MessageResponseDto sendMessage(@PathVariable Long talkId, @RequestBody MessageRequestDto
             messageRequestDto, @AuthenticationPrincipal ClientDetailsImpl clientDetails) {
-        //보안체크
         return clientService.sendMessages(talkId, clientDetails.getClient(), messageRequestDto);
     }
 

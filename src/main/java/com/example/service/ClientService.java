@@ -83,9 +83,10 @@ public class ClientService {
         Talk talk = talkRepository.findById(talkId).orElseThrow(
                 () -> new NullPointerException("해당 톡방이 존재하지 않습니다.")
         );
-        if (!talk.getClientId().equals(client.getId())){
+        if ((!talk.getClientId().equals(client.getId()))  ||  (!talk.getSellerId().equals(client.getId()))){
             throw new IllegalArgumentException("해당 톡방에 접근권한이 없습니다.");
         }
+
         List<Message> messages = messageRepository.findAllByTalk(talkId);
         List<MessageResponseDto> messageResponseDtos = new ArrayList<>();
         for(Message message : messages) {
@@ -101,7 +102,7 @@ public class ClientService {
         Talk talk = talkRepository.findById(talkId).orElseThrow(
                 () -> new NullPointerException("톡방이 존재하지 않습니다.")
         );
-        if (!talk.getClientId().equals(client.getId())){
+        if ((!talk.getClientId().equals(client.getId()))  ||  (!talk.getSellerId().equals(client.getId()))){
             throw new IllegalArgumentException("해당 톡방에 접근권한이 없습니다.");
         }
         //톡방 활성화되있다면 메세지 전송 아니면 전송X
