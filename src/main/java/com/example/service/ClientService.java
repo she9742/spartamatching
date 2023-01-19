@@ -193,7 +193,7 @@ public class ClientService {
     }
 
     @Transactional
-    public ResponseEntity<String> applySeller(Client client){
+    public ResponseEntity<String> applySeller(Client client,ApplySellerRequestDto applySellerRequestDto){
 
 
         //현재 판매자 등록 요청이 있는지 확인한다
@@ -213,21 +213,11 @@ public class ClientService {
 
 
         //없다면 DB에 등록 요청을 등록한다
-        SellerReq sellerReq = new SellerReq(client.getId());
+        SellerReq sellerReq = new SellerReq(client.getId(),applySellerRequestDto);
         sellerReqRepository.save(sellerReq);
 
         return new ResponseEntity<>("판매자 신청을 하였습니다.", HttpStatus.OK);
     }
 
-//    @Transactional
-//    public void withdraw(Long clientId, Long productId){
-//        Client client = clientRepository.findById(clientId).orElseThrow(
-//                () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
-//        );
-//        Product product = productRepository.findById(productId).orElseThrow(
-//                () -> new IllegalArgumentException("해당 상품이 존재하지 않습니다.")
-//        );
-//
-//    }
 
 }

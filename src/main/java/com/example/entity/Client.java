@@ -71,12 +71,12 @@ public class Client {
 
     }
 
-    public void updateSeller(String nickname, String image, String about, String category){
+    public void updateSeller(String nickname, String image,SellerReq sellerReq){
         //닉네임 이미지 어바웃 카테고리
         this.nickname = nickname;
         this.image = image;
-        this.about =about;
-        this.category = category;
+        this.about = sellerReq.getAbout();
+        this.category = sellerReq.getCategory();
         this.isSeller = true;
     }
 

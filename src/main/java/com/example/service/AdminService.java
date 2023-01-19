@@ -80,13 +80,12 @@ public class AdminService {
                 () -> new NullPointerException("해당된 사용자가 없습니다")
         );
         client.rollbackClient();
-
         productRepository.deleteAllBySellerId(sellerId);
 
-        return "판매자 권한을 박탈당하셨습니다.";
+        return "판매자 권한을 제거하였습니다";
     }
 
-    public String withdraw(WithdrawPointRequestDto requestDto, Admin admin){
+    public String withdraw(WithdrawPointRequestDto requestDto){
 
         Client client = clientRepository.findById(requestDto.getClientId()).orElseThrow(
                 () -> new NullPointerException("사용자를 찾을 수 없습니다.")
@@ -130,16 +129,6 @@ public class AdminService {
     }
 
     @Transactional
-        //sellerReq받아서 처리하는걸로
-//    public void approveSellerReq(Long clientId){
-//        Client client = clientRepository.findById(clientId).orElseThrow(
-//                () -> new IllegalArgumentException("해당 사용자가 존재하지 않습니다.")
-//        );
-//        SellerReq sellerReq = sellerReqRepository.findById(client.getId()).orElseThrow(
-//                () -> new IllegalArgumentException("판매자 요청을 하지 않은 사용자입니다.")
-//        );
-//        if (Objects.equals(client.getId(), sellerReq.getId())) client.getisSeller();
-
     public void approveSellerReq(Long sellerReqId){
         // 1. DB의 sellerReq를 확인한다.
         // 2. sellerReq를 보낸 Id의 Client를 찾는다.
@@ -150,8 +139,7 @@ public class AdminService {
         Client client = clientRepository.findById(sellerReq.getClientId()).orElseThrow(
                 () -> new IllegalArgumentException("존재하지 않는 사용자 입니다.")
         );
-        client.updateSeller(client.getNickname(),client.getImage(),client.getAbout(),client.getCategory());
-        // 바뀐게 없는거 같은건 기분탓인가?
+        client.updateSeller(client.getNickname(),client.getImage(),sellerReq);
     }
 
 }
