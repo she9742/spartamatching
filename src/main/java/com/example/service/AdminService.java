@@ -2,6 +2,7 @@ package com.example.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.example.dto.AllClientResponseDto;
 import com.example.dto.AllSellerResponseDto;
@@ -19,8 +20,11 @@ import com.example.entity.Client;
 @Service
 @RequiredArgsConstructor
 public class AdminService {
+
 	private final ClientRepository clientRepository;
 	private final AdminRepository adminRepository;
+  private final SellerReqRepository sellerReqRepository;
+  private final ClientRepository clientRepository;
 
 
 	public String rollbackClient(Long sellerId){
@@ -75,6 +79,26 @@ public class AdminService {
 		}
 		return sellerResponseList;
 	}
+  
+    @Transactional
+    public ResponseEntity<List<SellerReq>> getApplySellerList(Long clientId){
+        List<SellerReq> sellerReqs = sellerReqRepository.findAllByClientId(clientId);
+        return ResponseEntity.ok().body(sellerReqs);
+    }
+
+    @Transactional
+    public void approveSellerReq(Long clientId){
+        Client client = clientRepository.findById(clientId).orElseThrow(
+                () -> new IllegalArgumentException("해당 사용자가 존재하지 않습니다.")
+        );
+        SellerReq sellerReq = sellerReqRepository.findById(client.getId()).orElseThrow(
+                () -> new IllegalArgumentException("판매자 요청을 하지 않은 시용자입니다.")
+        );
+        if (Objects.equals(client.getId(), sellerReq.getId())) client.getisSeller();
+
+    }
+
+}
 
 
 }
