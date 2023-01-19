@@ -5,14 +5,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.example.dto.AdminSigninRequestDto;
-import com.example.dto.AdminSignupRequestDto;
-import com.example.dto.AllClientResponseDto;
-import com.example.dto.AllSellerResponseDto;
+import com.example.dto.*;
 import com.example.entity.Admin;
+import com.example.entity.Product;
 import com.example.entity.SellerReq;
 import com.example.repository.AdminRepository;
 import com.example.repository.ClientRepository;
+import com.example.repository.ProductRepository;
 import com.example.repository.SellerReqRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -32,6 +31,7 @@ public class AdminService {
     private final AdminRepository adminRepository;
     private final SellerReqRepository sellerReqRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ProductRepository productRepository;
 
     @Transactional
     public String adminSignup(AdminSignupRequestDto adminSignupRequestDto){
@@ -82,25 +82,18 @@ public class AdminService {
                 () -> new NullPointerException("해당된 사용자가 없습니다")
         );
         client.rollbackClient();
-        //DB에서 자신에게 연결된 상품들 찾아서 없앰
+
+        productRepository.deleteAllBySellerId(sellerId);
 
         return "판매자 권한을 박탈당하셨습니다.";
     }
 
-    public String withdraw(int point,Long adminId, Long clientId){
-//public String withdraw(int point, Long clientId dto,Admin admin 로 묶어서 가저옴){
-        Client client = clientRepository.findById(clientId).orElseThrow(
+    public String withdraw(WithdrawPointRequestDto requestDto, Admin admin){
+
+        Client client = clientRepository.findById(requestDto.getClientId()).orElseThrow(
                 () -> new NullPointerException("사용자를 찾을 수 없습니다.")
         );
-//        Admin admin = adminRepository.findById(adminId).orElseThrow(
-//                () -> new NullPointerException("해당 관리자를 찾을 수 없습니다.")
-//        );
-//        if(point > admin.getPoint()){
-//            throw new IllegalArgumentException("관리자의 포인트가 부족합니다.");
-//        } else{
-            //admin.withdraw(point);
-            client.deposit(point);
-        //}
+            client.deposit(requestDto.getPoint());
         return "포인트를 지급했습니다.";
     }
 
