@@ -150,7 +150,7 @@ public class AdminService {
         Client client = clientRepository.findById(sellerReq.getClientId()).orElseThrow(
                 () -> new IllegalArgumentException("")
         );
-        client.getisSeller();
+        client.updateSeller(client.getNickname(),client.getImage(),client.getAbout(),client.getCategory());
         // 바뀐게 없는거 같은건 기분탓인가?
     }
 
