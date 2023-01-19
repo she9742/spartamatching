@@ -2,6 +2,7 @@ package com.example.entity;
 
 
 import com.example.dto.SellerProfileUpdateRequestDto;
+import com.example.dto.SignupRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -47,12 +48,11 @@ public class Client {
     @Column(nullable = false)
     private boolean isSeller;
 
-    public Client(String username, String password, String nickname, String image, int point) {
-        this.username = username;
+    public Client(SignupRequestDto signupRequestDto,String password) {
+        this.username = signupRequestDto.getUsername();
         this.password = password;
-        this.nickname = nickname;
-        this.image = image;
-        this.point = point;
+        this.nickname = signupRequestDto.getNickname();
+        this.image = signupRequestDto.getImage();
         this.isSeller = false;
     }
 

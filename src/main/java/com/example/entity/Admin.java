@@ -6,6 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import com.example.dto.AdminSignupRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -28,11 +29,10 @@ public class Admin {
 	@Column(nullable = false)
 	private int point;
 
-	public Admin(String username, String password, String nickname, String image, int point) {
-		this.username = username;
+	public Admin(AdminSignupRequestDto adminSignupRequestDto, String password) {
+		this.username = adminSignupRequestDto.getUsername();
 		this.password = password;
-		this.nickname = nickname;
-		this.image = image;
-		this.point = point;
+		this.nickname = adminSignupRequestDto.getNickname();
+		this.image = adminSignupRequestDto.getImage();
 	}
 }

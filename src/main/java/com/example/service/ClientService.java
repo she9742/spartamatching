@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,54 @@ public class ClientService {
     private final ClientReqRepository clientReqRepository;
     private final TradeReqRepository tradeReqRepository;
     private final SellerReqRepository sellerReqRepository;
+    private final PasswordEncoder passwordEncoder;
+
+
+
+    @Transactional
+    public String signup(SignupRequestDto signupRequestDto){
+
+        //비밀번호 인코드
+        String password = passwordEncoder.encode(signupRequestDto.getPassword());
+        //회원 중복 확인
+        Optional<Client> clients = clientRepository.findByUsername(signupRequestDto.getUsername());
+        if (clients.isPresent()) {
+            throw new IllegalArgumentException("이미 존재하는 유저입니다.");
+        }
+
+        Client client = new Client(signupRequestDto,password);
+        clientRepository.save(client);
+
+        return "가입 완료";
+    }
+
+
+    @Transactional
+    public String signin(SigninRequestDto signinRequestDto){
+        // 사용자 확인
+        Client client = clientRepository.findByUsername(signinRequestDto.getUsername()).orElseThrow(
+                () -> new IllegalArgumentException("유저가 존재하지 않습니다")
+        );
+        // 비밀번호 확인
+        //스프링 시큐리티 내부기능사용 입력된 비밀번호와 저장된 비밀번호 비교
+        if (!passwordEncoder.matches(signinRequestDto.getPassword(), client.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 올바르지 않습니다");
+        }
+
+
+        //리프레쉬토큰,엑세스토큰 연동필요
+//        String accessToken = jwtUtil.createToken(client.getUsername(), client.권한());
+//        String refreshToken1 = jwtUtil.refreshToken(client.getUsername(), client.권한());
+//        return new TokenResponseDto(accessToken, refreshToken1);
+
+        return "로그인 완료";
+
+    }
+
+
+
+
+
 
     @Transactional
     public ResponseEntity<List<MessageResponseDto>> getMessages(long talkId) {

@@ -1,9 +1,6 @@
 package com.example.service;
 
-import com.example.dto.ClientReqResponseDto;
-import com.example.dto.ProductRequestDto;
-import com.example.dto.ProductResponseDto;
-import com.example.dto.SellerProfileUpdateRequestDto;
+import com.example.dto.*;
 import com.example.entity.*;
 import com.example.repository.*;
 
@@ -26,8 +23,12 @@ public class SellerService {
     private final TalkRepository talkRepository;
 
     //판매자 프로필 조회
+    public SellerProfileResponseDto getProfile(Client client){
+        return new SellerProfileResponseDto(client);
+    }
+
     @Transactional  //판매자 프로필 수정
-    public String getProfile(SellerProfileUpdateRequestDto dto, Client client){
+    public String updateProfile(SellerProfileUpdateRequestDto dto, Client client){
         client.updateSellerProfile(dto);
         return "변경 완료";
     }
