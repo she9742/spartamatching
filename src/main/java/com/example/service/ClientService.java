@@ -34,6 +34,7 @@ public class ClientService {
 
         //비밀번호 인코드
         String password = passwordEncoder.encode(signupRequestDto.getPassword());
+
         //회원 중복 확인
         Optional<Client> clients = clientRepository.findByUsername(signupRequestDto.getUsername());
         if (clients.isPresent()) {
@@ -50,6 +51,11 @@ public class ClientService {
     @Transactional
     public String signin(SigninRequestDto signinRequestDto){
         // 사용자 확인
+
+
+        //복호화 추가해야함
+
+
         Client client = clientRepository.findByUsername(signinRequestDto.getUsername()).orElseThrow(
                 () -> new IllegalArgumentException("유저가 존재하지 않습니다")
         );

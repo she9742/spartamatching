@@ -26,8 +26,7 @@ public class Admin {
 	private String nickname;
 	@Column(nullable = false)
 	private String image;
-	@Column(nullable = false)
-	private int point;
+
 
 	public Admin(AdminSignupRequestDto adminSignupRequestDto, String password) {
 		this.username = adminSignupRequestDto.getUsername();
@@ -36,7 +35,7 @@ public class Admin {
 		this.image = adminSignupRequestDto.getImage();
 	}
 
-	public void withdraw(int point){
-		this.point = this.point - point;
-	}
+//	public void withdraw(int point){
+//		this.point = this.point - point;
+//	}
 }
