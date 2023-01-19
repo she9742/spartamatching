@@ -2,6 +2,7 @@ package com.example.controller;
 
 import com.example.dto.*;
 import com.example.entity.Client;
+import com.example.entity.Talk;
 import com.example.service.ClientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -72,9 +73,9 @@ public class ClientController {
 
     //전체메세지조회
     @GetMapping("/talk/{talkId}")
-    public ResponseEntity<List<MessageResponseDto>> getMessages(@PathVariable Long talkId) {
+    public ResponseEntity<List<MessageResponseDto>> getMessages(@PathVariable Long talkId, @AuthenticationPrincipal ClientDetailsImpl clientDetails) {
         //보안체크
-        return clientService.getMessages(talkId);
+        return clientService.getMessages(talkId,clientDetails.getClient());
     }
 
     @PostMapping("/talk/{talkId}")

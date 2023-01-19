@@ -77,7 +77,15 @@ public class ClientService {
 
 
     @Transactional
-    public ResponseEntity<List<MessageResponseDto>> getMessages(long talkId) {
+    public ResponseEntity<List<MessageResponseDto>> getMessages(Long talkId, Client client) {
+        // 1. talk.getClientId와 clientId 가 일치하는지 확인 해야함
+        // 2. 불일치한다면, 불일치 메세지를 날리고, 일치하면 메소드를 실행시킴.
+        Talk talk = talkRepository.findById(talkId).orElseThrow(
+                () -> new NullPointerException("해당 톡방이 존재하지 않습니다.")
+        );
+        if (!talk.getClientId().equals(client.getId())){
+            throw new IllegalArgumentException("해당 톡방에 접근권한이 없습니다.");
+        }
         List<Message> messages = messageRepository.findAllByTalk(talkId);
         List<MessageResponseDto> messageResponseDtos = new ArrayList<>();
         for(Message message : messages) {
@@ -87,16 +95,18 @@ public class ClientService {
     }
 
     @Transactional
-    public MessageResponseDto sendMessages(Long talkId,String writer, MessageRequestDto messageRequestDto) {
+    public MessageResponseDto sendMessages(Long talkId, Client client, MessageRequestDto messageRequestDto) {
 
         //톡방 존재여부 확인
         Talk talk = talkRepository.findById(talkId).orElseThrow(
                 () -> new NullPointerException("톡방이 존재하지 않습니다.")
         );
-
+        if (!talk.getClientId().equals(client.getId())){
+            throw new IllegalArgumentException("해당 톡방에 접근권한이 없습니다.");
+        }
         //톡방 활성화되있다면 메세지 전송 아니면 전송X
         if(talk.isActivation()) {
-            Message message = new Message(talkId,writer, messageRequestDto.getContent());
+            Message message = new Message(talkId,client.getUsername(), messageRequestDto.getContent());
             messageRepository.save(message);
             return new MessageResponseDto(message);
         } else {
