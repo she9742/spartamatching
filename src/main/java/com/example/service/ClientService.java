@@ -124,7 +124,6 @@ public class ClientService {
 
     // 프로필 가져오기
     @Transactional
-
     public ProfileUpdateResponseDto getProfile(Client client){
         return new ProfileUpdateResponseDto(client);
     }
