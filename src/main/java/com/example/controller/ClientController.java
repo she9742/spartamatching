@@ -34,7 +34,7 @@ public class ClientController {
 
     @PostMapping("/seller")
     public ResponseEntity<String> applySeller(@RequestBody ApplySellerRequestDto applySellerRequestDto, @AuthenticationPrincipal ClientDetailsImpl clientDetails) {
-        return ResponseEntity.status(HttpStatus.OK).body(clientService.applySeller(applySellerRequestDto,clientDetails.getClient()));
+        return ResponseEntity.status(HttpStatus.OK).body(clientService.applySeller(clientDetails.getClient(),applySellerRequestDto));
     }
 
     @PutMapping("/profile")
@@ -72,7 +72,7 @@ public class ClientController {
     }
 
     @PostMapping("/talk/{talkId}")
-    public MessageResponseDto sendMessage(@PathVariable Long talkId, @RequestBody MessageRequestDto messageRequestDto, @AuthenticationPrincipal ClientDetailsImpl clientDetails) {
+    public ResponseEntity<MessageResponseDto> sendMessage(@PathVariable Long talkId, @RequestBody MessageRequestDto messageRequestDto, @AuthenticationPrincipal ClientDetailsImpl clientDetails) {
         return ResponseEntity.status(HttpStatus.OK).body(clientService.sendMessages(talkId,clientDetails.getClient(),messageRequestDto));
     }
 
@@ -84,7 +84,7 @@ public class ClientController {
 
 
     @PostMapping("/buy/{productid}")
-    public ResponseEntity<String> buyProduct(Client client, @PathVariable Long productid){
-        return ResponseEntity.status(HttpStatus.OK).body(clientService.buyProduct(client,productid));
+    public ResponseEntity<String> buyProduct(Client client, @PathVariable Long productId){
+        return ResponseEntity.status(HttpStatus.OK).body(clientService.buyProduct(client,productId));
     }
 }

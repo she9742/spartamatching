@@ -5,6 +5,7 @@ import com.example.dto.ProductRequestDto;
 import com.example.dto.ProductResponseDto;
 import com.example.dto.SellerProfileResponseDto;
 import com.example.entity.TradeReq;
+import com.example.security.ClientDetailsImpl;
 import com.example.service.SellerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ import java.util.List;
 public class SellerController {
 
     private final SellerService sellerService;
+
 
 
     //판매 상품 등록

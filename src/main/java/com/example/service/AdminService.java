@@ -140,9 +140,9 @@ public class AdminService {
 //    }
 
     @Transactional
-    public ResponseEntity<List<SellerReq>> getApplySellerList() {
+    public List<SellerReq> getApplySellerList() {
         List<SellerReq> sellerReqs = sellerReqRepository.findAll();
-        return ResponseEntity.ok().body(sellerReqs);
+        return sellerReqs;
     }
 
     @Transactional
