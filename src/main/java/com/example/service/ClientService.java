@@ -44,7 +44,7 @@ public class ClientService {
         Client client = new Client(signupRequestDto,password);
         clientRepository.save(client);
 
-        return "가입 완료";
+        return "회원가입 완료";
     }
 
 
@@ -53,7 +53,7 @@ public class ClientService {
 
         // 사용자 확인
         Client client = clientRepository.findByUsername(signinRequestDto.getUsername()).orElseThrow(
-                () -> new IllegalArgumentException("유저가 존재하지 않습니다")
+            () -> new IllegalArgumentException("유저가 존재하지 않습니다")
         );
         // 비밀번호 확인
         //스프링 시큐리티 내부기능사용 입력된 비밀번호와 저장된 비밀번호 비교
@@ -63,25 +63,20 @@ public class ClientService {
 
 
         //리프레쉬토큰,엑세스토큰 연동필요
-//        String accessToken = jwtUtil.createToken(client.getUsername(), client.권한());
-//        String refreshToken1 = jwtUtil.refreshToken(client.getUsername(), client.권한());
-//        return new TokenResponseDto(accessToken, refreshToken1);
+        //        String accessToken = jwtUtil.createToken(client.getUsername(), client.권한());
+        //        String refreshToken1 = jwtUtil.refreshToken(client.getUsername(), client.권한());
+        //        return new TokenResponseDto(accessToken, refreshToken1);
 
-        return "로그인 완료";
+        return "로그인 성공!";
 
     }
 
-
-
-
-
-
     @Transactional
-    public ResponseEntity<List<MessageResponseDto>> getMessages(Long talkId, Client client) {
+    public List<MessageResponseDto> getMessages(Long talkId, Client client) {
         // 1. talk.getClientId와 clientId 가 일치하는지 확인 해야함
         // 2. 불일치한다면, 불일치 메세지를 날리고, 일치하면 메소드를 실행시킴.
         Talk talk = talkRepository.findById(talkId).orElseThrow(
-                () -> new NullPointerException("해당 톡방이 존재하지 않습니다.")
+            () -> new NullPointerException("해당 톡방이 존재하지 않습니다.")
         );
         if ((!talk.getClientId().equals(client.getId()))  ||  (!talk.getSellerId().equals(client.getId()))){
             throw new IllegalArgumentException("해당 톡방에 접근권한이 없습니다.");
@@ -92,7 +87,7 @@ public class ClientService {
         for(Message message : messages) {
             messageResponseDtos.add(new MessageResponseDto(message));
         }
-        return ResponseEntity.ok().body(messageResponseDtos) ;
+        return messageResponseDtos ;
     }
 
     @Transactional
@@ -100,7 +95,7 @@ public class ClientService {
 
         //톡방 존재여부 확인
         Talk talk = talkRepository.findById(talkId).orElseThrow(
-                () -> new NullPointerException("톡방이 존재하지 않습니다.")
+            () -> new NullPointerException("톡방이 존재하지 않습니다.")
         );
         if ((!talk.getClientId().equals(client.getId()))  ||  (!talk.getSellerId().equals(client.getId()))){
             throw new IllegalArgumentException("해당 톡방에 접근권한이 없습니다.");
@@ -111,7 +106,7 @@ public class ClientService {
             messageRepository.save(message);
             return new MessageResponseDto(message);
         } else {
-            return new MessageResponseDto("종료된 톡방에는 메시지를 보낼수 없습니다.");
+            return new MessageResponseDto("종료된 톡방에는 메시지를 보낼 수 없습니다.");
         }
     }
 
@@ -124,7 +119,6 @@ public class ClientService {
 
     // 프로필 가져오기
     @Transactional
-
     public ProfileUpdateResponseDto getProfile(Client client){
         return new ProfileUpdateResponseDto(client);
     }
@@ -143,8 +137,8 @@ public class ClientService {
         //하나씩 넣는다
         for (Product product : AllProducts) {
             Client sellers = clientRepository.findById(product.getSellerId()).orElseThrow(
-                    //실제로는 마주치지 않는 오류
-                    () -> new NullPointerException()
+                //실제로는 마주치지 않는 오류
+                () -> new NullPointerException()
             );
             AllProductsResponse.add(new AllProductResponseDto(product, sellers));
         }
@@ -168,7 +162,7 @@ public class ClientService {
     @Transactional
     public SellerResponseDto getSellerInfo(Long sellerId){
         Client seller = clientRepository.findById(sellerId).orElseThrow(
-                ()-> new RuntimeException("찾으시는 판매자가 없습니다.")
+            ()-> new RuntimeException("찾으시는 판매자가 없습니다.")
         );
         return new SellerResponseDto(seller);
     }
@@ -177,11 +171,11 @@ public class ClientService {
     public String sendMatching(Long clientId,Long sellerId){
 
         //내가 보냈는데 내가 없을리가없음
-//        Client client = clientRepository.findById(clientId).orElseThrow(
-//                () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
-//        );
+        //        Client client = clientRepository.findById(clientId).orElseThrow(
+        //                () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
+        //        );
         Client seller = clientRepository.findById(sellerId).orElseThrow(
-                () -> new IllegalArgumentException("해당 판매자가 존재하지 않습니다.")
+            () -> new IllegalArgumentException("해당 판매자가 존재하지 않습니다.")
         );
         clientReqRepository.save(new ClientReq(clientId,sellerId));
         return "매칭 요청에 성공했습니다.";
@@ -193,20 +187,20 @@ public class ClientService {
     //public String buyProduct(Client client, Long productId){
     public String buyProduct(Client client, Long productId){
         //물건 번호만 가지고 물건을 살수있다?
-            //->안됨. 연결된 판매자와의 물건만 살 수 있어야함
-            //->연결된사람인지 검증수단필요
-            //->Talk가 연결된 판매자만 검증됨
+        //->안됨. 연결된 판매자와의 물건만 살 수 있어야함
+        //->연결된사람인지 검증수단필요
+        //->Talk가 연결된 판매자만 검증됨
 
 
 
         //가격입력을 위해 제품정보 로드
         Product product = productRepository.findById(productId).orElseThrow(
-                () -> new IllegalArgumentException("해당 상품이 존재하지 않습니다.")
+            () -> new IllegalArgumentException("해당 상품이 존재하지 않습니다.")
         );
 
         //해당 셀러와 사용자가 실제 거래중인지 확인
         Talk talk = talkRepository.findByClientIdAndSellerId(client.getId(),product.getSellerId()).orElseThrow(
-                () -> new IllegalArgumentException("해당 판매자와 거래중이 아닙니다")
+            () -> new IllegalArgumentException("해당 판매자와 거래중이 아닙니다")
         );
 
         if(!talk.isActivation()){
@@ -214,23 +208,17 @@ public class ClientService {
         }
 
 
-
-
         //클라이언트 정보를 통째로 받아오는걸로 수정하면 검색불필요
-//        Client client = clientRepository.findById(clientId).orElseThrow(
-//                () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
-//        );
+        //        Client client = clientRepository.findById(clientId).orElseThrow(
+        //                () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
+        //        );
 
         //셀러아이디와 같이검색하므로 불필요
-//        Product product = productRepository.findById(productId).orElseThrow(
-//                () -> new IllegalArgumentException("해당 상품이 존재하지 않습니다.")
-//        );
+        //        Product product = productRepository.findById(productId).orElseThrow(
+        //                () -> new IllegalArgumentException("해당 상품이 존재하지 않습니다.")
+        //        );
 
         //포인트 비교
-
-
-
-
 
         if (client.getPoint() >= product.getPoint()){
             tradeReqRepository.save(new TradeReq(client.getId(),product.getSellerId(),productId));
@@ -241,7 +229,7 @@ public class ClientService {
     }
 
     @Transactional
-    public ResponseEntity<String> applySeller(Client client,ApplySellerRequestDto applySellerRequestDto){
+    public String applySeller(Client client,ApplySellerRequestDto applySellerRequestDto){
 
 
         //현재 판매자 등록 요청이 있는지 확인한다
@@ -257,15 +245,10 @@ public class ClientService {
         //2.컨트롤러에서 userDetails를 사용하여 확인후 메소드 진입
         //->컨트롤러 생성후 이방식으로 변경
 
-
-
-
         //없다면 DB에 등록 요청을 등록한다
         SellerReq sellerReq = new SellerReq(client.getId(),applySellerRequestDto);
         sellerReqRepository.save(sellerReq);
 
-        return new ResponseEntity<>("판매자 신청을 하였습니다.", HttpStatus.OK);
+        return "판매자 신청을 하였습니다.";
     }
-
-
 }
