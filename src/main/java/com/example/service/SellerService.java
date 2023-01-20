@@ -34,7 +34,10 @@ public class SellerService {
     }
 
     @Transactional
-    public List<ProductResponseDto> getMyProduct(Long sellerId){
+    public List<ProductResponseDto> getMyProduct(Long sellerId, Client seller){
+        if (!sellerId.equals(seller.getId())){
+            throw new IllegalArgumentException("조회할 권한이 없습니다.");
+        }
         List<Product> products = productRepository.findBySellerId(sellerId);
         List<ProductResponseDto> productResponseDtos = new ArrayList<>();
         for(Product product : products){
@@ -45,7 +48,10 @@ public class SellerService {
     }
 
     @Transactional
-    public List<ClientReqResponseDto> getMyClientReq(Long sellerId){
+    public List<ClientReqResponseDto> getMyClientReq(Long sellerId, Client seller){
+        if (!sellerId.equals(seller.getId())){
+            throw new IllegalArgumentException("조회할 권한이 없습니다.");
+        }
         List<ClientReq> clientReqs = clientReqRepository.findAllBySellerId(sellerId);
         List<ClientReqResponseDto> clientReqResponseDtos = new ArrayList<>();
         for(ClientReq clientReq : clientReqs){
@@ -56,8 +62,11 @@ public class SellerService {
     }
 
     @Transactional
-    public ProductResponseDto enrollMyProduct(ProductRequestDto dto, Client client){
-        Product product = new Product(dto,client);
+    public ProductResponseDto enrollMyProduct(ProductRequestDto dto, Client seller){
+        if(!seller.getisSeller()){
+            throw new IllegalArgumentException("상품을 등록할 권한이 없습니다.");
+        }
+        Product product = new Product(dto,seller);
         productRepository.save(product);
         return new ProductResponseDto(product);
 
@@ -66,35 +75,45 @@ public class SellerService {
 
     // 나의 판매상품 수정
     @Transactional
-    public ProductResponseDto updateMyProduct(Long id, ProductRequestDto requestDto) {
+    public ProductResponseDto updateMyProduct(Long id, ProductRequestDto requestDto, Client seller) {
         Product product = productRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("수정하려는 상품이 없습니다.")
         );
+        if(!product.getSellerId().equals(seller.getId())){
+            throw new IllegalArgumentException("상품을 수정할 권한이 없습니다.");
+        }
         product.update(requestDto);
         return new ProductResponseDto(product);
     }
 
 
     // 판매상품 삭제
-    public void deleteMyProduct(Long id) {
+    @Transactional
+    public String deleteMyProduct(Long id, Client seller) {
         Product product = productRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("삭제하려는 상품이 없습니다.")
         );
+        if(!product.getSellerId().equals(seller.getId())){
+            throw new IllegalArgumentException("상품을 수정할 권한이 없습니다.");
+        }
         product.unactivate();
+        return "상품이 삭제되었습니다.";
     }
 
     @Transactional
-    public ResponseEntity<List<ClientReq>> getMatching(Long sellerId) {
-        List<ClientReq> clientReq = clientReqRepository.findAllBySellerId(sellerId);
+    public ResponseEntity<List<ClientReq>> getMatching(Client seller){
+        List<ClientReq> clientReq = clientReqRepository.findAllBySellerId(seller.getId());
         return ResponseEntity.ok().body(clientReq);
-
     }
 
     @Transactional
-    public String approveMatching(Long ClientReqId) {
-        ClientReq clientReq = clientReqRepository.findById(ClientReqId).orElseThrow(
+    public String approveMatching(Long clientReqId, Client seller) {
+        ClientReq clientReq = clientReqRepository.findById(clientReqId).orElseThrow(
                 () -> new NullPointerException("")
         );
+        if (!clientReq.getSellerId().equals(seller.getId())){
+            throw new IllegalArgumentException("승인 할 수 없는 요청입니다.");
+        }
         Talk talk = new Talk(clientReq.getClientId(), clientReq.getSellerId()); // 대화방
         talkRepository.save(talk);
         clientReqRepository.delete(clientReq);
