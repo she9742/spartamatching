@@ -4,6 +4,7 @@ import com.example.dto.ClientReqResponseDto;
 import com.example.dto.ProductRequestDto;
 import com.example.dto.ProductResponseDto;
 import com.example.dto.SellerProfileResponseDto;
+import com.example.entity.TradeReq;
 import com.example.service.SellerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,14 +26,12 @@ public class SellerController {
     //판매 상품 등록
     @PostMapping("/products")
     ResponseEntity<ProductResponseDto> enrollMyProdcut(@RequestBody ProductRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
-        ProductResponseDto productResponseDto = sellerService.enrollMyProduct(requestDto,userDetails.getUser());
-        return ResponseEntity.status(HttpStatus.CREATED).body(productResponseDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(sellerService.enrollMyProduct(requestDto, userDetails));
     }
     //판매 상품 수정
     @PatchMapping("/products/{id}")
     ResponseEntity<ProductResponseDto> updateMyProduct(@PathVariable Long id, @RequestBody ProductRequestDto productRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
-        ProductResponseDto productResponseDtos = sellerService.updateMyProduct(id, productRequestDto, userDetails.getUser());
-        return ResponseEntity.status(HttpStatus.OK).body(productResponseDtos);
+        return ResponseEntity.status(HttpStatus.OK).body(sellerService.updateMyProduct(id,productRequestDto,userDetails));
     }
 
     //판매 상품 삭제
@@ -66,10 +65,14 @@ public class SellerController {
     }
 
     // 거래 요청 조회
-//    @GetMapping("/Lists")
+//    @GetMapping("/tradeLists")
 //    public ResponseEntity<List<ClientReqResponseDto>> getMyClientReq(@PathVariable Long sellerID,@AuthenticationPrincipal ClientDetailsImpl clientDetails){
 //        return ResponseEntity.status(HttpStatus.OK).body(sellerService.getMyClientReq(sellerID,clientDetails.getClient()));
 //    }
+    @GetMapping("/tradeLists")
+    public ResponseEntity<List<TradeReq>> getTradeReq(@AuthenticationPrincipal ClientDetailsImpl clientDetails){
+        return ResponseEntity.status(HttpStatus.OK).body(sellerService.getTradeReq(clientDetails.getClient()));
+    }
 
     @PostMapping("/sell/{tradereqid}")
     public String sellProduct(@PathVariable Long tradereqid,@AuthenticationPrincipal ClientDetailsImpl clientDetails){
