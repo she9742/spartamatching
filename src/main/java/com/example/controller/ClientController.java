@@ -11,6 +11,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 
@@ -94,6 +95,14 @@ public class ClientController {
     public String buyProduct(@PathVariable Long productid, Client client){
         return clientService.buyProduct(client,productid);
     }
+
+
+    @PostMapping("/refresh")
+    public TokenResponseDto refresh(HttpServletRequest request, @RequestBody TokenResponseDto tokenResponseDto,)
+
+
+
+
 
 
 }

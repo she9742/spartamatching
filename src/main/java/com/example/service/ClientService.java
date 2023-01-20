@@ -136,6 +136,7 @@ public class ClientService {
         //모든 상품을 allproducts에 넣는다
         List<Product> AllProducts = productRepository.findAll();
 
+
         //반환을위해 AllProductsResponse를 만든다
         List<AllProductResponseDto> AllProductsResponse = new ArrayList<>();
 
