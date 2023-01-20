@@ -141,7 +141,6 @@ public class SellerService {
             throw new IllegalArgumentException("본인의 거래가 아닙니다.");
         }
 
-
         Client client = clientRepository.findById(tradeReq.getClientId()).orElseThrow(
                 () -> new IllegalArgumentException("해당 구매자가 존재하지 않습니다.")
         );

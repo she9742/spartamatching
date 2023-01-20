@@ -40,10 +40,16 @@ public class SellerController {
         return sellerService.deleteMyProduct(id,userDetails.getUser());
     }
 
-    // 고객의 요청 목록을 조회
+    // 고객의 매칭요청 목록을 조회
     @GetMapping("/clientLists")
     public ResponseEntity<List<ClientReq>> getMatching(@AuthenticationPrincipal SellerDetailsImpl sellerDetails){
         return sellerService.getMatching(sellerDetails.getSeller());
+    }
+
+    // 고객의 거래요청 목록을 조회
+    @GetMapping("/tradeLists")
+    public ResponseEntity<List<TradeReq>> getTradeReq(@AuthenticationPrincipal ClientDetailsImpl clientDetails){
+        return ResponseEntity.status(HttpStatus.OK).body(sellerService.getTradeReq(clientDetails.getClient()));
     }
 
     // 고객의 요청을 처리
@@ -62,16 +68,6 @@ public class SellerController {
     @GetMapping("/products")
     public ResponseEntity<List<ProductResponseDto>> getMyProduct(@AuthenticationPrincipal ClientDetailsImpl clientDetails ){
         return ResponseEntity.status(HttpStatus.OK).body(sellerService.getMyProduct(clientDetails.getClient()));
-    }
-
-    // 거래 요청 조회
-//    @GetMapping("/tradeLists")
-//    public ResponseEntity<List<ClientReqResponseDto>> getMyClientReq(@PathVariable Long sellerID,@AuthenticationPrincipal ClientDetailsImpl clientDetails){
-//        return ResponseEntity.status(HttpStatus.OK).body(sellerService.getMyClientReq(sellerID,clientDetails.getClient()));
-//    }
-    @GetMapping("/tradeLists")
-    public ResponseEntity<List<TradeReq>> getTradeReq(@AuthenticationPrincipal ClientDetailsImpl clientDetails){
-        return ResponseEntity.status(HttpStatus.OK).body(sellerService.getTradeReq(clientDetails.getClient()));
     }
 
     @PostMapping("/sell/{tradereqid}")
