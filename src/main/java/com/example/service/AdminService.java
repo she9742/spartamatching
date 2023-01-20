@@ -129,7 +129,7 @@ public class AdminService {
     }
 
     @Transactional
-    public String approveSellerReq(Long sellerReqId){
+    public void approveSellerReq(Long sellerReqId){
         // 1. DB의 sellerReq를 확인한다.
         // 2. sellerReq를 보낸 Id의 Client를 찾는다.
         // 3. Client의 getisSeller를 true로 바꾼다.
@@ -140,8 +140,6 @@ public class AdminService {
                 () -> new IllegalArgumentException("존재하지 않는 사용자 입니다.")
         );
         client.updateSeller(client.getNickname(),client.getImage(),sellerReq);
-
-        return "사용자에게 판매자 권한을 부여하였습니다";
     }
 
 }
