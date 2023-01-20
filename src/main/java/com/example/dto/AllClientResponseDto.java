@@ -12,8 +12,11 @@ public class AllClientResponseDto {
 	private String nickname;
 	private String image;
 
+	private int point;
+
 	public AllClientResponseDto(Client client) {
 		this.nickname = client.getNickname();
 		this.image = client.getImage();
+		this.point = client.getPoint();
 	}
 }
