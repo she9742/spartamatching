@@ -1,27 +1,80 @@
 package com.example.controller;
 
-
-import com.example.entity.Client;
+import com.example.dto.ClientReqResponseDto;
+import com.example.dto.ProductRequestDto;
+import com.example.dto.ProductResponseDto;
+import com.example.dto.SellerProfileResponseDto;
 import com.example.service.SellerService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import com.example.entity.ClientReq;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/seller")
-//@SecurityRequirement(name = "Bearer Authentication")
 public class SellerController {
 
     private final SellerService sellerService;
 
-    @PostMapping("/sell/{tradereqid}")
-    public String sellProduct(@PathVariable Long tradereqid){
-        return sellerService.sellProduct(tradereqid);
+
+    //판매 상품 등록
+    @PostMapping("/products")
+    ResponseEntity<ProductResponseDto> enrollMyProdcut(@RequestBody ProductRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        ProductResponseDto productResponseDto = sellerService.enrollMyProduct(requestDto,userDetails.getUser());
+        return ResponseEntity.status(HttpStatus.CREATED).body(productResponseDto);
+    }
+    //판매 상품 수정
+    @PatchMapping("/products/{id}")
+    ResponseEntity<ProductResponseDto> updateMyProduct(@PathVariable Long id, @RequestBody ProductRequestDto productRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        ProductResponseDto productResponseDtos = sellerService.updateMyProduct(id, productRequestDto, userDetails.getUser());
+        return ResponseEntity.status(HttpStatus.OK).body(productResponseDtos);
     }
 
+    //판매 상품 삭제
+    @PutMapping("/products/{id}")
+    public ResponseEntity<String> deleteMyProduct(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return sellerService.deleteMyProduct(id,userDetails.getUser());
+    }
+
+    // 고객의 요청 목록을 조회
+    @GetMapping("/clientLists")
+    public ResponseEntity<List<ClientReq>> getMatching(@AuthenticationPrincipal SellerDetailsImpl sellerDetails){
+        return sellerService.getMatching(sellerDetails.getSeller());
+    }
+
+    // 고객의 요청을 처리
+    @PostMapping("/clients/{clientReqId}")
+    public String approveMatching(@PathVariable Long clientReqId ,@AuthenticationPrincipal SellerDetailsImpl sellerDetails){
+        return sellerService.approveMatching(clientReqId,sellerDetails.getSeller());
+    }
+
+    // 프로필 조회
+    @GetMapping("/profile")
+    public ResponseEntity<SellerProfileResponseDto> getProfile(
+            @AuthenticationPrincipal ClientDetailsImpl clientDetails) {
+        return sellerService.getProfile(clientDetails.getClient());
+    }
+    // 판매 상품 조회
+    @GetMapping("/products")
+    public ResponseEntity<List<ProductResponseDto>> getMyProduct(@AuthenticationPrincipal ClientDetailsImpl clientDetails ){
+        return ResponseEntity.status(HttpStatus.OK).body(sellerService.getMyProduct(clientDetails.getClient()));
+    }
+
+    // 거래 요청 조회
+//    @GetMapping("/Lists")
+//    public ResponseEntity<List<ClientReqResponseDto>> getMyClientReq(@PathVariable Long sellerID,@AuthenticationPrincipal ClientDetailsImpl clientDetails){
+//        return ResponseEntity.status(HttpStatus.OK).body(sellerService.getMyClientReq(sellerID,clientDetails.getClient()));
+//    }
+
+    @PostMapping("/sell/{tradereqid}")
+    public String sellProduct(@PathVariable Long tradereqid,@AuthenticationPrincipal ClientDetailsImpl clientDetails){
+        return sellerService.sellProduct(tradereqid,clientDetails.getClient());
+    }
 
 
 }

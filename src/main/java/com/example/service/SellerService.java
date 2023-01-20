@@ -34,11 +34,8 @@ public class SellerService {
     }
 
     @Transactional
-    public List<ProductResponseDto> getMyProduct(Long sellerId, Client seller){
-        if (!sellerId.equals(seller.getId())){
-            throw new IllegalArgumentException("조회할 권한이 없습니다.");
-        }
-        List<Product> products = productRepository.findBySellerId(sellerId);
+    public List<ProductResponseDto> getMyProduct(Client seller){
+        List<Product> products = productRepository.findBySellerId(seller.getId());
         List<ProductResponseDto> productResponseDtos = new ArrayList<>();
         for(Product product : products){
             productResponseDtos.add(new ProductResponseDto(product));
@@ -109,10 +106,10 @@ public class SellerService {
     @Transactional
     public String approveMatching(Long clientReqId, Client seller) {
         ClientReq clientReq = clientReqRepository.findById(clientReqId).orElseThrow(
-                () -> new NullPointerException("")
+                () -> new NullPointerException("매칭 정보를 찾을수 없습니다.")
         );
         if (!clientReq.getSellerId().equals(seller.getId())){
-            throw new IllegalArgumentException("승인 할 수 없는 요청입니다.");
+            throw new IllegalArgumentException("자신의 거래가 아닙니다");
         }
         Talk talk = new Talk(clientReq.getClientId(), clientReq.getSellerId()); // 대화방
         talkRepository.save(talk);
@@ -129,7 +126,7 @@ public class SellerService {
     @Transactional
     //TradeReq tradeReq 를통째로 보내는 상황이 없음 + talkId를 컨트롤러에서 보내야한다?
     //public String sellProduct(TradeReq tradeReq, Long talkId) {
-    public String sellProduct(Long tradeReqId) {
+    public String sellProduct(Long tradeReqId,Client seller) {  //보안체크해야함
 
 
         //회원삭제가 없기때문에 회원이 존재하지 않을 확률은 없으나, 삭제기능(비활성화기능)도입을 고려하여 설계함
@@ -142,7 +139,7 @@ public class SellerService {
         Client client = clientRepository.findById(tradeReq.getClientId()).orElseThrow(
                 () -> new IllegalArgumentException("해당 구매자가 존재하지 않습니다.")
         );
-        Client seller = clientRepository.findById(tradeReq.getSellerId()).orElseThrow(
+        Client sellers = clientRepository.findById(tradeReq.getSellerId()).orElseThrow(
                 () -> new IllegalArgumentException("해당 판매자가 존재하지 않습니다.")
         );
         Product product = productRepository.findById(tradeReq.getProduectId()).orElseThrow(
@@ -158,7 +155,7 @@ public class SellerService {
 //        Talk talk = talkRepository.findById(talkId).orElseThrow(
 //                () -> new IllegalArgumentException("")
 //        );
-        Talk talk = talkRepository.findByClientIdAndSellerId(client.getId(), seller.getId()).orElseThrow(
+        Talk talk = talkRepository.findByClientIdAndSellerId(client.getId(), sellers.getId()).orElseThrow(
                 () -> new IllegalArgumentException("거래중인 대상이 올바르지 않습니다")
         );
         //해당 거래방이 활성화된 거래방인지 체크
@@ -179,7 +176,7 @@ public class SellerService {
             throw new IllegalArgumentException("잔액이 부족합니다.");
         } else {
             client.withdraw(product.getPoint());
-            seller.deposit(product.getPoint());
+            sellers.deposit(product.getPoint());
         }
         return "거래가 완료되었습니다.";
     }
