@@ -135,11 +135,7 @@ public class ClientService {
 
         //하나씩 넣는다
         for (Product product : AllProducts) {
-            Client sellers = clientRepository.findById(product.getSellerId()).orElseThrow(
-                //실제로는 마주치지 않는 오류
-                () -> new NullPointerException()
-            );
-            AllProductsResponse.add(new AllProductResponseDto(product, sellers));
+            AllProductsResponse.add(new AllProductResponseDto(product, product.getSellerId()));
         }
         return AllProductsResponse;
 
@@ -198,7 +194,7 @@ public class ClientService {
         );
 
         //해당 셀러와 사용자가 실제 거래중인지 확인
-        Talk talk = talkRepository.findByClientIdAndSellerId(client.getId(),product.getSellerId()).orElseThrow(
+        Talk talk = talkRepository.findByClientIdAndSellerId(client.getId(),product.getSellerId().getId()).orElseThrow(
             () -> new IllegalArgumentException("해당 판매자와 거래중이 아닙니다")
         );
 
@@ -220,7 +216,7 @@ public class ClientService {
         //포인트 비교
 
         if (client.getPoint() >= product.getPoint()){
-            tradeReqRepository.save(new TradeReq(client.getId(),product.getSellerId(),productId));
+            tradeReqRepository.save(new TradeReq(client.getId(),product.getSellerId().getId(),productId));
         } else throw new IllegalArgumentException("잔액이 부족합니다.");
 
         return "물건을 구매하였습니다";

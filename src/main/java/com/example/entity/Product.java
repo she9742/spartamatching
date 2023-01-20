@@ -23,8 +23,10 @@ public class Product {
     @Column
     private String information;
 
-    @Column
-    private Long sellerId;
+
+    @JoinColumn
+    @ManyToOne
+    private Client sellerId;
 
     @Column(nullable = false)
     private int point;
@@ -32,10 +34,12 @@ public class Product {
     @Column
     private Boolean activation;
 
+
+
     public Product(ProductRequestDto dto,Client client) {
         this.productName = dto.getProductName();
         this.information = dto.getInformation();
-        this.sellerId = client.getId();
+        this.sellerId = client;
         this.point = dto.getPoint();
         this.activation = true;
     }
