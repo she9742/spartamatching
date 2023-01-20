@@ -27,8 +27,8 @@ public class AdminController {
 
     // 전체 고객 목록 조회
     @GetMapping("/client")
-    public List<AllClientResponseDto> getClientList() {
-        return adminService.getClientList();
+    public ResponseEntity<List<AllClientResponseDto>> getClientList() {
+        return ResponseEntity.status(HttpStatus.OK).body(adminService.getClientList());
     }
 
 
@@ -42,9 +42,10 @@ public class AdminController {
 //    }
 
 
+    // 서비스 단에서 작업 완료
     @GetMapping("/seller/request")
     public ResponseEntity<List<SellerReq>> getApplySellerList() {
-        return adminService.getApplySellerList();
+        return ResponseEntity.status(HttpStatus.OK).body(adminService.getApplySellerList());
     }
 
     @PostMapping("/signup")
@@ -71,8 +72,8 @@ public class AdminController {
 
 
     @PostMapping("/seller/enroll/{id}")
-    public String approveSellerReq(@PathVariable Long id){
-        return adminService.approveSellerReq(id);
+    public ResponseEntity<String> approveSellerReq(@PathVariable Long id){
+        return ResponseEntity.status(HttpStatus.OK).body(adminService.approveSellerReq(id));
 
     }
 }

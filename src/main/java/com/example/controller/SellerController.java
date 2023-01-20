@@ -23,6 +23,7 @@ public class SellerController {
     private final SellerService sellerService;
 
 
+
     //판매 상품 등록
     @PostMapping("/products")
     public ResponseEntity<ProductResponseDto> enrollMyProdcut(@RequestBody ProductRequestDto requestDto, @AuthenticationPrincipal ClientDetailsImpl clientDetails){

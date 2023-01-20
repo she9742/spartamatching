@@ -84,7 +84,7 @@ public class ClientController {
 
 
     @PostMapping("/buy/{productid}")
-    public ResponseEntity<String> buyProduct(Client client, @PathVariable Long productid){
-        return ResponseEntity.status(HttpStatus.OK).body(clientService.buyProduct(client,productid));
+    public ResponseEntity<String> buyProduct(Client client, @PathVariable Long productId){
+        return ResponseEntity.status(HttpStatus.OK).body(clientService.buyProduct(client,productId));
     }
 }
