@@ -96,6 +96,7 @@ public class SellerService {
                 () -> new NullPointerException("")
         );
         Talk talk = new Talk(clientReq.getClientId(), clientReq.getSellerId()); // 대화방
+        talkRepository.save(talk);
         clientReqRepository.delete(clientReq);
         return talk.getId() + "번 대화방이 열렸습니다.";
     }
@@ -107,19 +108,46 @@ public class SellerService {
     }
 
     @Transactional
-    public String sellProduct(TradeReq tradeReq, Long productId, Long talkId) {
+    //TradeReq tradeReq 를통째로 보내는 상황이 없음 + talkId를 컨트롤러에서 보내야한다?
+    //public String sellProduct(TradeReq tradeReq, Long talkId) {
+    public String sellProduct(Long tradeReqId) {
+
+
+        //회원삭제가 없기때문에 회원이 존재하지 않을 확률은 없으나, 삭제기능(비활성화기능)도입을 고려하여 설계함
+        //->만약 삭제기능(비활성화기능)을 추가한다면 아래검색로직이후 활성화된 계정인지 체크하는 로직필요
+
+        //지나치게 DB접근 자주함. 성능개선을위해 회원이 없어지거나 상품이 비활성화될때 관련된 예약데이터를 모두 지우는 방식으로 변경가능
+        TradeReq tradeReq = tradeReqRepository.findById(tradeReqId).orElseThrow(
+                () -> new IllegalArgumentException("거래신청이 존재하지 않습니다")
+        );
         Client client = clientRepository.findById(tradeReq.getClientId()).orElseThrow(
-                () -> new IllegalArgumentException("")
+                () -> new IllegalArgumentException("해당 구매자가 존재하지 않습니다.")
         );
         Client seller = clientRepository.findById(tradeReq.getSellerId()).orElseThrow(
                 () -> new IllegalArgumentException("해당 판매자가 존재하지 않습니다.")
         );
-        Product product = productRepository.findById(productId).orElseThrow(
+        Product product = productRepository.findById(tradeReq.getProduectId()).orElseThrow(
                 () -> new IllegalArgumentException("해당 상품이 존재하지 않습니다.")
         );
-        Talk talk = talkRepository.findById(talkId).orElseThrow(
-                () -> new IllegalArgumentException("")
+
+        //해당 상품이 활성화된 상품인지 체크
+        if(!product.getActivation()){
+            new IllegalArgumentException("판매중인 상품이 아닙니다.");
+        }
+
+
+//        Talk talk = talkRepository.findById(talkId).orElseThrow(
+//                () -> new IllegalArgumentException("")
+//        );
+        Talk talk = talkRepository.findByClientIdAndSellerId(client.getId(), seller.getId()).orElseThrow(
+                () -> new IllegalArgumentException("거래중인 대상이 올바르지 않습니다")
         );
+        //해당 거래방이 활성화된 거래방인지 체크
+        if(!talk.isActivation()){
+            new IllegalArgumentException("활성화된 거래방이 아닙니다.");
+        }
+
+
         // 1. 물건이 판매되면 product,tradeReq 를 삭제한다.
         product.unactivate();   //삭제가 아니라 비활성화로 변경
         tradeReqRepository.delete(tradeReq);

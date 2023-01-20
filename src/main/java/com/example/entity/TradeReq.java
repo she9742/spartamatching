@@ -22,9 +22,13 @@ public class TradeReq {
     @Column(nullable = false)
     private Long sellerId;
 
+    @Column(nullable = false)
+    private Long produectId;
 
-    public TradeReq(Long clientId, Long sellerId) {
+
+    public TradeReq(Long clientId, Long sellerId,Long produectId) {
         this.clientId = clientId;
         this.sellerId = sellerId;
+        this.produectId = produectId;
     }
 }
