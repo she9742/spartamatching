@@ -34,7 +34,7 @@ public class AdminService {
     private final ProductRepository productRepository;
 
     @Transactional
-    public String adminSignup(AdminSignupRequestDto adminSignupRequestDto){
+    public String adminSignup(AdminSignupRequestDto adminSignupRequestDto) {
 
         //비밀번호 인코드
         String password = passwordEncoder.encode(adminSignupRequestDto.getPassword());
@@ -44,7 +44,7 @@ public class AdminService {
             throw new IllegalArgumentException("이미 존재하는 관리자입니다.");
         }
 
-        Admin admin = new Admin(adminSignupRequestDto,password);
+        Admin admin = new Admin(adminSignupRequestDto, password);
         adminRepository.save(admin);
 
         return "가입 완료";
@@ -52,7 +52,7 @@ public class AdminService {
 
 
     @Transactional
-    public String Adminsignin(AdminSigninRequestDto adminSigninRequestDto){
+    public String Adminsignin(AdminSigninRequestDto adminSigninRequestDto) {
 
         // 사용자 확인
         Admin admin = adminRepository.findByUsername(adminSigninRequestDto.getUsername()).orElseThrow(
@@ -75,7 +75,7 @@ public class AdminService {
     }
 
 
-    public String rollbackClient(Long sellerId){
+    public String rollbackClient(Long sellerId) {
         Client client = clientRepository.findById(sellerId).orElseThrow(
                 () -> new NullPointerException("해당된 사용자가 없습니다")
         );
@@ -85,51 +85,62 @@ public class AdminService {
         return "판매자 권한을 제거하였습니다";
     }
 
-    public String withdraw(WithdrawPointRequestDto requestDto){
+    public String withdraw(WithdrawPointRequestDto requestDto) {
 
         Client client = clientRepository.findById(requestDto.getClientId()).orElseThrow(
                 () -> new NullPointerException("사용자를 찾을 수 없습니다.")
         );
-            client.deposit(requestDto.getPoint());
+        client.deposit(requestDto.getPoint());
         return "포인트를 지급했습니다.";
     }
 
     //전체 고객 조회
+//    @Transactional(readOnly = true)
+//    public List<AllClientResponseDto> getClientList(){
+//        List<Client> clientList = clientRepository.findAll();
+//        List<AllClientResponseDto> clientResponseList = new ArrayList<>();
+//        for(Client client : clientList){
+//            // 판매자 조회와 다르게 ! 적용
+//
+//            if (!client.getisSeller()){
+//                clientResponseList.add(new AllClientResponseDto(client));
+//            }
+//        }
+//        return clientResponseList;
+//    }
     @Transactional(readOnly = true)
-    public List<AllClientResponseDto> getClientList(){
-        List<Client> clientList = clientRepository.findAll();
-        List<AllClientResponseDto> clientResponseList = new ArrayList<>();
-        for(Client client : clientList){
-            // 판매자 조회와 다르게 ! 적용
 
-            if (!client.getisSeller()){
-                clientResponseList.add(new AllClientResponseDto(client));
-            }
+    public List<AllClientResponseDto> getClientList() {
+        List<Client> clients = clientRepository.findAll();
+        List<AllClientResponseDto> clientList = new ArrayList<>();
+        for (Client client : clients) {
+            // 판매자도 Client이기 때문에 전체 고객 조회 포함되는게 맞다고 생각함
+            clientList.add(new AllClientResponseDto(client));
         }
-        return clientResponseList;
+        return clientList;
     }
 
     // 전체 판매자 조회
     @Transactional(readOnly = true)
-    public List<AllSellerResponseDto> getSellerList(){
-        List<Client> sellerList = clientRepository.findAll();
-        List<AllSellerResponseDto> sellerResponseList = new ArrayList<>();
-        for (Client client : sellerList){
-            if (client.getisSeller()){
-                sellerResponseList.add(new AllSellerResponseDto(client));
+    public List<AllSellerResponseDto> getSellerList() {
+        List<Client> sellers = clientRepository.findAll();
+        List<AllSellerResponseDto> sellerList = new ArrayList<>();
+        for (Client client : sellers) {
+            if (client.getisSeller()) {
+                sellerList.add(new AllSellerResponseDto(client));
             }
         }
-        return sellerResponseList;
+        return sellerList;
     }
 
     @Transactional
-    public ResponseEntity<List<SellerReq>> getApplySellerList(){
+    public ResponseEntity<List<SellerReq>> getApplySellerList() {
         List<SellerReq> sellerReqs = sellerReqRepository.findAll();
         return ResponseEntity.ok().body(sellerReqs);
     }
 
     @Transactional
-    public void approveSellerReq(Long sellerReqId){
+    public void approveSellerReq(Long sellerReqId) {
         // 1. DB의 sellerReq를 확인한다.
         // 2. sellerReq를 보낸 Id의 Client를 찾는다.
         // 3. Client의 getisSeller를 true로 바꾼다.
@@ -139,7 +150,7 @@ public class AdminService {
         Client client = clientRepository.findById(sellerReq.getClientId()).orElseThrow(
                 () -> new IllegalArgumentException("존재하지 않는 사용자 입니다.")
         );
-        client.updateSeller(client.getNickname(),client.getImage(),sellerReq);
+        client.updateSeller(client.getNickname(), client.getImage(), sellerReq);
     }
 
 }
