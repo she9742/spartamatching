@@ -34,7 +34,10 @@ public class SellerService {
     }
 
     @Transactional
-    public List<ProductResponseDto> getMyProduct(Long sellerId){
+    public List<ProductResponseDto> getMyProduct(Long sellerId, Client seller){
+        if (!sellerId.equals(seller.getId())){
+            throw new IllegalArgumentException("조회할 권한이 없습니다.");
+        }
         List<Product> products = productRepository.findBySellerId(sellerId);
         List<ProductResponseDto> productResponseDtos = new ArrayList<>();
         for(Product product : products){
@@ -45,7 +48,10 @@ public class SellerService {
     }
 
     @Transactional
-    public List<ClientReqResponseDto> getMyClientReq(Long sellerId){
+    public List<ClientReqResponseDto> getMyClientReq(Long sellerId, Client seller){
+        if (!sellerId.equals(seller.getId())){
+            throw new IllegalArgumentException("조회할 권한이 없습니다.");
+        }
         List<ClientReq> clientReqs = clientReqRepository.findAllBySellerId(sellerId);
         List<ClientReqResponseDto> clientReqResponseDtos = new ArrayList<>();
         for(ClientReq clientReq : clientReqs){

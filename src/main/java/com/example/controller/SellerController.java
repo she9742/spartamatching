@@ -1,7 +1,9 @@
 package com.example.controller;
 
+import com.example.dto.ClientReqResponseDto;
 import com.example.dto.ProductRequestDto;
 import com.example.dto.ProductResponseDto;
+import com.example.dto.SellerProfileResponseDto;
 import com.example.service.SellerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -49,6 +51,24 @@ public class SellerController {
     @PostMapping("/clients/{clientReqId}")
     public String approveMatching(@PathVariable Long clientReqId ,@AuthenticationPrincipal SellerDetailsImpl sellerDetails){
         return sellerService.approveMatching(sellerDetails.getSeller());
+    }
+
+    // 프로필 조회
+    @GetMapping("/profile")
+    public ResponseEntity<SellerProfileResponseDto> getProfile(
+        @AuthenticationPrincipal ClientDetailsImpl clientDetails) {
+        return sellerService.getProfile(clientDetails.getClient());
+    }
+    // 판매 상품 조회
+    @GetMapping("/products")
+    public ResponseEntity<List<ProductResponseDto>> getMyProduct(@PathVariable Long sellerId,@AuthenticationPrincipal ClientDetailsImpl clientDetails ){
+        return ResponseEntity.status(HttpStatus.OK).body(sellerService.getMyProduct(sellerId,clientDetails.getClient()));
+    }
+
+    // 고객 요청 목록 조회
+    @GetMapping("/clientLists")
+    public ResponseEntity<List<ClientReqResponseDto>> getMyClientReq(@PathVariable Long sellerID,@AuthenticationPrincipal ClientDetailsImpl clientDetails){
+        return ResponseEntity.status(HttpStatus.OK).body(sellerService.getMyClientReq(sellerID,clientDetails.getClient()));
     }
 
 }
