@@ -26,14 +26,12 @@ public class SellerController {
     //판매 상품 등록
     @PostMapping("/products")
     ResponseEntity<ProductResponseDto> enrollMyProdcut(@RequestBody ProductRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
-        ProductResponseDto productResponseDto = sellerService.enrollMyProduct(requestDto,userDetails.getUser());
-        return ResponseEntity.status(HttpStatus.CREATED).body(productResponseDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(sellerService.enrollMyProduct(requestDto, userDetails));
     }
     //판매 상품 수정
     @PatchMapping("/products/{id}")
     ResponseEntity<ProductResponseDto> updateMyProduct(@PathVariable Long id, @RequestBody ProductRequestDto productRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
-        ProductResponseDto productResponseDtos = sellerService.updateMyProduct(id, productRequestDto, userDetails.getUser());
-        return ResponseEntity.status(HttpStatus.OK).body(productResponseDtos);
+        return ResponseEntity.status(HttpStatus.OK).body(sellerService.updateMyProduct(id,productRequestDto,userDetails));
     }
 
     //판매 상품 삭제
