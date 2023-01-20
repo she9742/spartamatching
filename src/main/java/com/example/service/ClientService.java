@@ -44,7 +44,7 @@ public class ClientService {
         Client client = new Client(signupRequestDto,password);
         clientRepository.save(client);
 
-        return "가입 완료";
+        return "회원가입 완료";
     }
 
 
@@ -67,17 +67,12 @@ public class ClientService {
 //        String refreshToken1 = jwtUtil.refreshToken(client.getUsername(), client.권한());
 //        return new TokenResponseDto(accessToken, refreshToken1);
 
-        return "로그인 완료";
+        return "로그인 성공!";
 
     }
 
-
-
-
-
-
     @Transactional
-    public ResponseEntity<List<MessageResponseDto>> getMessages(Long talkId, Client client) {
+    public List<MessageResponseDto> getMessages(Long talkId, Client client) {
         // 1. talk.getClientId와 clientId 가 일치하는지 확인 해야함
         // 2. 불일치한다면, 불일치 메세지를 날리고, 일치하면 메소드를 실행시킴.
         Talk talk = talkRepository.findById(talkId).orElseThrow(
@@ -92,7 +87,7 @@ public class ClientService {
         for(Message message : messages) {
             messageResponseDtos.add(new MessageResponseDto(message));
         }
-        return ResponseEntity.ok().body(messageResponseDtos) ;
+        return messageResponseDtos ;
     }
 
     @Transactional
@@ -111,7 +106,7 @@ public class ClientService {
             messageRepository.save(message);
             return new MessageResponseDto(message);
         } else {
-            return new MessageResponseDto("종료된 톡방에는 메시지를 보낼수 없습니다.");
+            return new MessageResponseDto("종료된 톡방에는 메시지를 보낼 수 없습니다.");
         }
     }
 
@@ -124,7 +119,6 @@ public class ClientService {
 
     // 프로필 가져오기
     @Transactional
-
     public ProfileUpdateResponseDto getProfile(Client client){
         return new ProfileUpdateResponseDto(client);
     }
@@ -213,8 +207,6 @@ public class ClientService {
         }
 
 
-
-
         //클라이언트 정보를 통째로 받아오는걸로 수정하면 검색불필요
 //        Client client = clientRepository.findById(clientId).orElseThrow(
 //                () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
@@ -227,10 +219,6 @@ public class ClientService {
 
         //포인트 비교
 
-
-
-
-
         if (client.getPoint() >= product.getPoint()){
             tradeReqRepository.save(new TradeReq(client.getId(),product.getSellerId(),productId));
         } else throw new IllegalArgumentException("잔액이 부족합니다.");
@@ -240,7 +228,7 @@ public class ClientService {
     }
 
     @Transactional
-    public ResponseEntity<String> applySeller(Client client,ApplySellerRequestDto applySellerRequestDto){
+    public String applySeller(Client client,ApplySellerRequestDto applySellerRequestDto){
 
 
         //현재 판매자 등록 요청이 있는지 확인한다
@@ -256,15 +244,12 @@ public class ClientService {
         //2.컨트롤러에서 userDetails를 사용하여 확인후 메소드 진입
         //->컨트롤러 생성후 이방식으로 변경
 
-
-
-
         //없다면 DB에 등록 요청을 등록한다
         SellerReq sellerReq = new SellerReq(client.getId(),applySellerRequestDto);
         sellerReqRepository.save(sellerReq);
 
-        return new ResponseEntity<>("판매자 신청을 하였습니다.", HttpStatus.OK);
+        return "판매자 신청을 하였습니다.";
     }
-
-
 }
+
+

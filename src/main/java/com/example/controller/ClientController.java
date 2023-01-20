@@ -22,35 +22,28 @@ import java.util.List;
 public class ClientController {
     private final ClientService clientService;
 
-
     @PostMapping("/signup")
     public ResponseEntity<String> signup(@RequestBody SignupRequestDto signupRequestDto) {
-        clientService.signup(signupRequestDto);
-        return new ResponseEntity<>("회원 가입이 완료되었습니다.", HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).body(clientService.signup(signupRequestDto));
     }
-
     @PostMapping("/signin")
     public ResponseEntity<String> signin(@RequestBody SigninRequestDto signinRequestDto) {
-        clientService.signin(signinRequestDto);
-        return new ResponseEntity<>("로그인이 되었습니다.", HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK).body(clientService.signin(signinRequestDto));
     }
 
     @PostMapping("/seller")
-    public ResponseEntity<String> applySeller(@RequestBody ApplySellerRequestDto applySellerRequestDto,
-                                              @AuthenticationPrincipal ClientDetailsImpl clientDetails) {
-        return clientService.applySeller(clientDetails.getClient(), applySellerRequestDto);
+    public ResponseEntity<String> applySeller(@RequestBody ApplySellerRequestDto applySellerRequestDto, @AuthenticationPrincipal ClientDetailsImpl clientDetails) {
+        return ResponseEntity.status(HttpStatus.OK).body(clientService.applySeller(applySellerRequestDto,clientDetails.getClient()));
     }
 
     @PutMapping("/profile")
-    public ResponseEntity<ProfileUpdateResponseDto> updateProfile(@RequestBody ProfileUpdateRequestDto requestDto,
-                                                                  @AuthenticationPrincipal ClientDetailsImpl clientDetails) {
-        return clientService.updateProfile(requestDto, clientDetails.getClient());
+    public ResponseEntity<ProfileUpdateResponseDto> updateProfile(@RequestBody ProfileUpdateRequestDto requestDto, @AuthenticationPrincipal ClientDetailsImpl clientDetails) {
+        return ResponseEntity.status(HttpStatus.OK).body(clientService.updateProfile(requestDto,clientDetails.getClient()));
     }
 
     @GetMapping("/profile")
-    public ResponseEntity<ProfileUpdateResponseDto> getProfile(
-            @AuthenticationPrincipal ClientDetailsImpl clientDetails) {
-        return clientService.getProfile(clientDetails.getClient());
+    public ResponseEntity<ProfileUpdateResponseDto> getProfile(@AuthenticationPrincipal ClientDetailsImpl clientDetails) {
+        return ResponseEntity.status(HttpStatus.OK).body(clientService.getProfile(clientDetails.getClient()));
     }
 
     //전체 판매 상품 조회
@@ -74,26 +67,23 @@ public class ClientController {
     //전체메세지조회
     @GetMapping("/talk/{talkId}")
     public ResponseEntity<List<MessageResponseDto>> getMessages(@PathVariable Long talkId, @AuthenticationPrincipal ClientDetailsImpl clientDetails) {
-        return clientService.getMessages(talkId,clientDetails.getClient());
+        return ResponseEntity.status(HttpStatus.OK).body(clientService.getMessages(talkId,clientDetails.getClient()));
     }
 
     @PostMapping("/talk/{talkId}")
-    public MessageResponseDto sendMessage(@PathVariable Long talkId, @RequestBody MessageRequestDto
-            messageRequestDto, @AuthenticationPrincipal ClientDetailsImpl clientDetails) {
-        return clientService.sendMessages(talkId, clientDetails.getClient(), messageRequestDto);
+    public MessageResponseDto sendMessage(@PathVariable Long talkId, @RequestBody MessageRequestDto messageRequestDto, @AuthenticationPrincipal ClientDetailsImpl clientDetails) {
+        return ResponseEntity.status(HttpStatus.OK).body(clientService.sendMessages(talkId,clientDetails.getClient(),messageRequestDto));
     }
 
 
     @PostMapping("/sellers/{sellerId}")
-    public String sendMatching(@PathVariable Long sellerId,Long clientId){
-        return clientService.sendMatching(clientId,sellerId);
+    public ResponseEntity<String> sendMatching(@PathVariable Long sellerId,Long clientId){
+        return ResponseEntity.status(HttpStatus.OK).body(clientService.sendMatching(clientId,sellerId));
     }
 
 
     @PostMapping("/buy/{productid}")
-    public String buyProduct(@PathVariable Long productid, Client client){
-        return clientService.buyProduct(client,productid);
+    public ResponseEntity<String> buyProduct(Client client, @PathVariable Long productid){
+        return ResponseEntity.status(HttpStatus.OK).body(clientService.buyProduct(client,productid));
     }
-
-
 }
