@@ -4,6 +4,7 @@ import com.example.dto.ClientReqResponseDto;
 import com.example.dto.ProductRequestDto;
 import com.example.dto.ProductResponseDto;
 import com.example.dto.SellerProfileResponseDto;
+import com.example.entity.TradeReq;
 import com.example.service.SellerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -66,10 +67,14 @@ public class SellerController {
     }
 
     // 거래 요청 조회
-//    @GetMapping("/Lists")
+//    @GetMapping("/tradeLists")
 //    public ResponseEntity<List<ClientReqResponseDto>> getMyClientReq(@PathVariable Long sellerID,@AuthenticationPrincipal ClientDetailsImpl clientDetails){
 //        return ResponseEntity.status(HttpStatus.OK).body(sellerService.getMyClientReq(sellerID,clientDetails.getClient()));
 //    }
+    @GetMapping("/tradeLists")
+    public ResponseEntity<List<TradeReq>> getTradeReq(@AuthenticationPrincipal ClientDetailsImpl clientDetails){
+        return ResponseEntity.status(HttpStatus.OK).body(sellerService.getTradeReq(clientDetails.getClient()));
+    }
 
     @PostMapping("/sell/{tradereqid}")
     public String sellProduct(@PathVariable Long tradereqid,@AuthenticationPrincipal ClientDetailsImpl clientDetails){

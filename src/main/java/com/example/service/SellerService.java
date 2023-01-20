@@ -44,19 +44,19 @@ public class SellerService {
 
     }
 
-    @Transactional
-    public List<ClientReqResponseDto> getMyClientReq(Long sellerId, Client seller){
-        if (!sellerId.equals(seller.getId())){
-            throw new IllegalArgumentException("조회할 권한이 없습니다.");
-        }
-        List<ClientReq> clientReqs = clientReqRepository.findAllBySellerId(sellerId);
-        List<ClientReqResponseDto> clientReqResponseDtos = new ArrayList<>();
-        for(ClientReq clientReq : clientReqs){
-            clientReqResponseDtos.add(new ClientReqResponseDto(clientReq));
-        }
-        return clientReqResponseDtos;
-
-    }
+//    @Transactional
+//    public List<ClientReqResponseDto> getMyClientReq(Long sellerId, Client seller){
+//        if (!sellerId.equals(seller.getId())){
+//            throw new IllegalArgumentException("조회할 권한이 없습니다.");
+//        }
+//        List<ClientReq> clientReqs = clientReqRepository.findAllBySellerId(sellerId);
+//        List<ClientReqResponseDto> clientReqResponseDtos = new ArrayList<>();
+//        for(ClientReq clientReq : clientReqs){
+//            clientReqResponseDtos.add(new ClientReqResponseDto(clientReq));
+//        }
+//        return clientReqResponseDtos;
+//
+//    }
 
     @Transactional
     public ProductResponseDto enrollMyProduct(ProductRequestDto dto, Client seller){
@@ -118,8 +118,8 @@ public class SellerService {
     }
 
     @Transactional
-    public ResponseEntity<List<TradeReq>> getTradeReq(Long sellerId) {
-        List<TradeReq> tradeReqs = tradeReqRepository.findAllBySellerId(sellerId);
+    public ResponseEntity<List<TradeReq>> getTradeReq(Client seller) {
+        List<TradeReq> tradeReqs = tradeReqRepository.findAllBySellerId(seller.getId());
         return ResponseEntity.ok().body(tradeReqs);
     }
 
