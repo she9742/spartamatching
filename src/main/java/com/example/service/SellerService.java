@@ -126,8 +126,7 @@ public class SellerService {
     @Transactional
     //TradeReq tradeReq 를통째로 보내는 상황이 없음 + talkId를 컨트롤러에서 보내야한다?
     //public String sellProduct(TradeReq tradeReq, Long talkId) {
-    public String sellProduct(Long tradeReqId,Client seller) {  //보안체크해야함
-
+    public String sellProduct(Long tradeReqId,Client seller) {
 
         //회원삭제가 없기때문에 회원이 존재하지 않을 확률은 없으나, 삭제기능(비활성화기능)도입을 고려하여 설계함
         //->만약 삭제기능(비활성화기능)을 추가한다면 아래검색로직이후 활성화된 계정인지 체크하는 로직필요
@@ -136,6 +135,13 @@ public class SellerService {
         TradeReq tradeReq = tradeReqRepository.findById(tradeReqId).orElseThrow(
                 () -> new IllegalArgumentException("거래신청이 존재하지 않습니다")
         );
+
+        //보안체크
+        if (!tradeReq.getSellerId().equals(seller.getId())){
+            throw new IllegalArgumentException("본인의 거래가 아닙니다.");
+        }
+
+
         Client client = clientRepository.findById(tradeReq.getClientId()).orElseThrow(
                 () -> new IllegalArgumentException("해당 구매자가 존재하지 않습니다.")
         );
