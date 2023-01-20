@@ -52,7 +52,7 @@ public class AdminService {
 
 
     @Transactional
-    public String Adminsignin(AdminSigninRequestDto adminSigninRequestDto){
+    public String adminSignin(AdminSigninRequestDto adminSigninRequestDto){
 
         // 사용자 확인
         Admin admin = adminRepository.findByUsername(adminSigninRequestDto.getUsername()).orElseThrow(
