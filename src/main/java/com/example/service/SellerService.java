@@ -84,17 +84,19 @@ public class SellerService {
     }
 
     @Transactional
-    public ResponseEntity<List<ClientReq>> getMatching(Long sellerId) {
-        List<ClientReq> clientReq = clientReqRepository.findAllBySellerId(sellerId);
+    public ResponseEntity<List<ClientReq>> getMatching(Client seller){
+        List<ClientReq> clientReq = clientReqRepository.findAllBySellerId(seller.getId());
         return ResponseEntity.ok().body(clientReq);
-
     }
 
     @Transactional
-    public String approveMatching(Long ClientReqId) {
-        ClientReq clientReq = clientReqRepository.findById(ClientReqId).orElseThrow(
+    public String approveMatching(Long clientReqId, Client seller) {
+        ClientReq clientReq = clientReqRepository.findById(clientReqId).orElseThrow(
                 () -> new NullPointerException("")
         );
+        if (!clientReq.getSellerId().equals(seller.getId())){
+            throw new IllegalArgumentException("승인 할 수 없는 요청입니다.");
+        }
         Talk talk = new Talk(clientReq.getClientId(), clientReq.getSellerId()); // 대화방
         clientReqRepository.delete(clientReq);
         return talk.getId() + "번 대화방이 열렸습니다.";
