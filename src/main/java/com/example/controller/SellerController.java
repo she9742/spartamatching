@@ -1,14 +1,14 @@
 package com.example.controller;
 
-import com.example.dto.ClientReqResponseDto;
 import com.example.dto.ProductRequestDto;
 import com.example.dto.ProductResponseDto;
 import com.example.dto.SellerProfileResponseDto;
+import com.example.entity.ClientReq;
 import com.example.entity.TradeReq;
+import com.example.security.ClientDetailsImpl;
 import com.example.service.SellerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import com.example.entity.ClientReq;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;

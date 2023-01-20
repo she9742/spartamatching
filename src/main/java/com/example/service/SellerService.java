@@ -86,9 +86,9 @@ public class SellerService {
     }
 
     @Transactional
-    public ResponseEntity<List<ClientReq>> getMatching(Client seller){
+    public List<ClientReq> getMatching(Client seller){
         List<ClientReq> clientReq = clientReqRepository.findAllBySellerId(seller.getId());
-        return ResponseEntity.ok().body(clientReq);
+        return clientReq;
     }
 
     @Transactional
