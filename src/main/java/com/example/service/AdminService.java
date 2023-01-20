@@ -79,6 +79,11 @@ public class AdminService {
         Client client = clientRepository.findById(sellerId).orElseThrow(
                 () -> new NullPointerException("해당된 사용자가 없습니다")
         );
+
+        if(!client.getisSeller()){
+            throw new IllegalArgumentException("판매자로 등록되어 있는 사용자가 아닙니다.");
+        }
+
         client.rollbackClient();
         productRepository.deleteAllBySellerId(sellerId);
 
@@ -114,25 +119,25 @@ public class AdminService {
         List<Client> clientList = clientRepository.findAll();
         List<AllClientResponseDto> clientResponseList = new ArrayList<>();
         for (Client client : clientList) {
-            // 판매자도 Client이므로 포함되어야 한다고 생각함.
+            // 판매자도 Client이므로 포함되어야 한다고 생각함. 맞는듯
 
             clientResponseList.add(new AllClientResponseDto(client));
         }
         return clientResponseList;
     }
 
-    // 전체 판매자 조회
-    @Transactional(readOnly = true)
-    public List<AllSellerResponseDto> getSellerList() {
-        List<Client> sellerList = clientRepository.findAll();
-        List<AllSellerResponseDto> sellerResponseList = new ArrayList<>();
-        for (Client client : sellerList) {
-            if (client.getisSeller()) {
-                sellerResponseList.add(new AllSellerResponseDto(client));
-            }
-        }
-        return sellerResponseList;
-    }
+//    // 전체 판매자 조회
+//    @Transactional(readOnly = true)
+//    public List<AllSellerResponseDto> getSellerList() {
+//        List<Client> sellerList = clientRepository.findAll();
+//        List<AllSellerResponseDto> sellerResponseList = new ArrayList<>();
+//        for (Client client : sellerList) {
+//            if (client.getisSeller()) {
+//                sellerResponseList.add(new AllSellerResponseDto(client));
+//            }
+//        }
+//        return sellerResponseList;
+//    }
 
     @Transactional
     public ResponseEntity<List<SellerReq>> getApplySellerList() {
@@ -141,7 +146,7 @@ public class AdminService {
     }
 
     @Transactional
-    public void approveSellerReq(Long sellerReqId) {
+    public String approveSellerReq(Long sellerReqId) {
         // 1. DB의 sellerReq를 확인한다.
         // 2. sellerReq를 보낸 Id의 Client를 찾는다.
         // 3. Client의 getisSeller를 true로 바꾼다.
@@ -152,6 +157,8 @@ public class AdminService {
                 () -> new IllegalArgumentException("존재하지 않는 사용자 입니다.")
         );
         client.updateSeller(client.getNickname(), client.getImage(), sellerReq);
+
+        return "권한을 부여하였습니다.";
     }
 
 }

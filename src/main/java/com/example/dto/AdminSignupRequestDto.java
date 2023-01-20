@@ -10,4 +10,5 @@ public class AdminSignupRequestDto {
     private String nickname;
     private String image;
 
+
 }

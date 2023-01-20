@@ -32,13 +32,14 @@ public class AdminController {
     }
 
 
+    //클라이언트컨트롤러의 기능과 100%겹치므로 지워도 될듯하다. -> 추후에 삭제
     // 전체 판매자 조회
     // Client에도 똑같은 기능이 있는데 굳이 Admin에 필요할까????
     // ClientService 와 AdminService 의 코드가 완전히 동일함
-    @GetMapping("/seller")
-    public List<AllSellerResponseDto> getSellerList() {
-        return adminService.getSellerList();
-    }
+//    @GetMapping("/seller")
+//    public List<AllSellerResponseDto> getSellerList() {
+//        return adminService.getSellerList();
+//    }
 
 
     @GetMapping("/seller/request")
