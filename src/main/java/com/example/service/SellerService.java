@@ -106,9 +106,9 @@ public class SellerService {
     }
 
     @Transactional
-    public ResponseEntity<List<TradeReq>> getTradeReq(Client seller) {
+    public List<TradeReq> getTradeReq(Client seller) {
         List<TradeReq> tradeReqs = tradeReqRepository.findAllBySellerId(seller.getId());
-        return ResponseEntity.ok().body(tradeReqs);
+        return tradeReqs;
     }
 
     @Transactional
