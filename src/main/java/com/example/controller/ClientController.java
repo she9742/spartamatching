@@ -3,6 +3,7 @@ package com.example.controller;
 import com.example.dto.*;
 import com.example.entity.Client;
 import com.example.entity.Talk;
+import com.example.security.ClientDetailsImpl;
 import com.example.service.ClientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

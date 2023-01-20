@@ -1,6 +1,6 @@
 package com.example.controller;
 
-import com.example.dto.ClientReqResponseDto;
+import com.example.security.ClientDetailsImpl;
 import com.example.dto.ProductRequestDto;
 import com.example.dto.ProductResponseDto;
 import com.example.dto.SellerProfileResponseDto;
@@ -25,25 +25,25 @@ public class SellerController {
 
     //판매 상품 등록
     @PostMapping("/products")
-    ResponseEntity<ProductResponseDto> enrollMyProdcut(@RequestBody ProductRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
-        return ResponseEntity.status(HttpStatus.CREATED).body(sellerService.enrollMyProduct(requestDto, userDetails));
+    ResponseEntity<ProductResponseDto> enrollMyProdcut(@RequestBody ProductRequestDto requestDto, @AuthenticationPrincipal ClientDetailsImpl userDetails){
+        return ResponseEntity.status(HttpStatus.CREATED).body(sellerService.enrollMyProduct(requestDto, userDetails.getClient()));
     }
     //판매 상품 수정
     @PatchMapping("/products/{id}")
-    ResponseEntity<ProductResponseDto> updateMyProduct(@PathVariable Long id, @RequestBody ProductRequestDto productRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
-        return ResponseEntity.status(HttpStatus.OK).body(sellerService.updateMyProduct(id,productRequestDto,userDetails));
+    ResponseEntity<ProductResponseDto> updateMyProduct(@PathVariable Long id, @RequestBody ProductRequestDto productRequestDto, @AuthenticationPrincipal ClientDetailsImpl userDetails){
+        return ResponseEntity.status(HttpStatus.OK).body(sellerService.updateMyProduct(id,productRequestDto,userDetails.getClient()));
     }
 
     //판매 상품 삭제
     @PutMapping("/products/{id}")
-    public ResponseEntity<String> deleteMyProduct(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails){
-        return sellerService.deleteMyProduct(id,userDetails.getUser());
+    public ResponseEntity<String> deleteMyProduct(@PathVariable Long id, @AuthenticationPrincipal ClientDetailsImpl userDetails){
+        return sellerService.deleteMyProduct(id,userDetails.getClient());
     }
 
     // 고객의 매칭요청 목록을 조회
     @GetMapping("/clientLists")
-    public ResponseEntity<List<ClientReq>> getMatching(@AuthenticationPrincipal SellerDetailsImpl sellerDetails){
-        return sellerService.getMatching(sellerDetails.getSeller());
+    public ResponseEntity<List<ClientReq>> getMatching(@AuthenticationPrincipal ClientDetailsImpl sellerDetails){
+        return sellerService.getMatching(sellerDetails.getClient());
     }
 
     // 고객의 거래요청 목록을 조회
@@ -54,8 +54,8 @@ public class SellerController {
 
     // 고객의 요청을 처리
     @PostMapping("/clients/{clientReqId}")
-    public String approveMatching(@PathVariable Long clientReqId ,@AuthenticationPrincipal SellerDetailsImpl sellerDetails){
-        return sellerService.approveMatching(clientReqId,sellerDetails.getSeller());
+    public String approveMatching(@PathVariable Long clientReqId ,@AuthenticationPrincipal ClientDetailsImpl sellerDetails){
+        return sellerService.approveMatching(clientReqId,sellerDetails.getClient());
     }
 
     // 프로필 조회
