@@ -1,10 +1,10 @@
 package com.example.controller;
 
-import com.example.dto.AllClientResponseDto;
-import com.example.dto.AllSellerResponseDto;
+import com.example.dto.*;
 import com.example.entity.SellerReq;
 import com.example.service.AdminService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,8 +27,8 @@ public class AdminController {
 
     // 전체 고객 목록 조회
     @GetMapping("/client")
-    public List<AllClientResponseDto> getClientList(@AuthenticationPrincipal ClientDetailsImpl clientDetails) {
-        return adminService.getClientList(clientDetails.getClinet());
+    public List<AllClientResponseDto> getClientList() {
+        return adminService.getClientList();
     }
 
 
