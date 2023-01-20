@@ -56,8 +56,11 @@ public class SellerService {
     }
 
     @Transactional
-    public ProductResponseDto enrollMyProduct(ProductRequestDto dto, Client client){
-        Product product = new Product(dto,client);
+    public ProductResponseDto enrollMyProduct(ProductRequestDto dto, Client seller){
+        if(!seller.getisSeller()){
+            throw new IllegalArgumentException("상품을 등록할 권한이 없습니다.");
+        }
+        Product product = new Product(dto,seller);
         productRepository.save(product);
         return new ProductResponseDto(product);
 
@@ -66,21 +69,29 @@ public class SellerService {
 
     // 나의 판매상품 수정
     @Transactional
-    public ProductResponseDto updateMyProduct(Long id, ProductRequestDto requestDto) {
+    public ProductResponseDto updateMyProduct(Long id, ProductRequestDto requestDto, Client seller) {
         Product product = productRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("수정하려는 상품이 없습니다.")
         );
+        if(!product.getSellerId().equals(seller.getId())){
+            throw new IllegalArgumentException("상품을 수정할 권한이 없습니다.");
+        }
         product.update(requestDto);
         return new ProductResponseDto(product);
     }
 
 
     // 판매상품 삭제
-    public void deleteMyProduct(Long id) {
+    @Transactional
+    public String deleteMyProduct(Long id, Client seller) {
         Product product = productRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("삭제하려는 상품이 없습니다.")
         );
+        if(!product.getSellerId().equals(seller.getId())){
+            throw new IllegalArgumentException("상품을 수정할 권한이 없습니다.");
+        }
         product.unactivate();
+        return "상품이 삭제되었습니다.";
     }
 
     @Transactional
