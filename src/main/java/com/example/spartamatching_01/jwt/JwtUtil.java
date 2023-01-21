@@ -80,11 +80,11 @@ public class JwtUtil {
     // 리프레시 토큰 생성
     public String refreshToken(String username, UserRoleEnum role) {
         Date date = new Date();
-        return BEARER_PREFIX +
+        return REFRESH_PREFIX +
                 Jwts.builder()
                         .setSubject(username)
                         .claim(AUTHORIZATION_KEY, role)
-                        .setExpiration(new Date(date.getTime() + ACCESS_TOKEN_TIME))
+                        .setExpiration(new Date(date.getTime() + REFRESH_TOKEN_TIME))
                         .setIssuedAt(date)
                         .signWith(key, signatureAlgorithm)
                         .compact();
@@ -141,8 +141,6 @@ public class JwtUtil {
 
     //리프레시토큰으로 재발급시 사용
     public Authentication getAuthentication(String token) {
-        UserRoleEnum user = UserRoleEnum.USER;
-        UserRoleEnum admin = UserRoleEnum.ADMIN;
         // Jwt 에서 claims 추출
         Claims claims = getUserInfoFromToken(token);
 
@@ -151,7 +149,7 @@ public class JwtUtil {
             throw new IllegalStateException("잘못된 권한정보입니다");
         }
         //토큰이 들고있는 권한이 어드민이라면
-        if(claims.get(AUTHORIZATION_KEY)== admin){
+        if(claims.get(AUTHORIZATION_KEY).equals("ADMIN")){
             UserDetails adminDetails = adminDetailsService.loadUserByUsername(claims.getSubject());
             //유저정보 + 크리티컬한정보 저장 + 유저의권한
             return new UsernamePasswordAuthenticationToken(adminDetails, null, adminDetails.getAuthorities());

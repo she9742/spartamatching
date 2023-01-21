@@ -64,7 +64,7 @@ public class ClientService {
 
         String accessToken = jwtUtil.createToken(client.getUsername(), client.getRole());
         String refreshToken1 = jwtUtil.refreshToken(client.getUsername(), client.getRole());
-        return new MessageResponseDto("accessToken = " + accessToken + "\n" + "refreshToken = " + refreshToken1);
+        return new MessageResponseDto("accessToken = " + accessToken + "  " + "refreshToken = " + refreshToken1);
         //return new TokenResponseDto(accessToken, refreshToken1);
 
 
@@ -119,6 +119,7 @@ public class ClientService {
     // 프로필 가져오기
     @Transactional
     public ProfileUpdateResponseDto getProfile(Client client){
+        System.out.println("2번");
         return new ProfileUpdateResponseDto(client);
     }
 

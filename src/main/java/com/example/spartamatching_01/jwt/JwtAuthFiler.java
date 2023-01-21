@@ -53,6 +53,7 @@ public class JwtAuthFiler extends OncePerRequestFilter {
     }
 
     public void setAuthentication(String username,String role) {
+        System.out.println("1-2번지점  " + username);
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         Authentication authentication = jwtUtil.createAuthentication(username,role);
         context.setAuthentication(authentication);
@@ -82,16 +83,14 @@ public class JwtAuthFiler extends OncePerRequestFilter {
 
     public void SetAuthentication(String Token, HttpServletResponse response){
         Claims info = jwtUtil.getUserInfoFromToken(Token);
-        UserRoleEnum user = UserRoleEnum.USER;
-        UserRoleEnum admin = UserRoleEnum.ADMIN;
 
 
         //토큰이 들고있는 권한이 어드민이라면
-        if(info.get(JwtUtil.AUTHORIZATION_KEY)== admin){
+        if(info.get(JwtUtil.AUTHORIZATION_KEY).equals("ADMIN")){
             setAuthentication(info.getSubject(),"admin");
         }
         //토큰이 들고있는 권한이 유저라면
-        if(info.get(JwtUtil.AUTHORIZATION_KEY)== user){
+        if(info.get(JwtUtil.AUTHORIZATION_KEY).equals("USER")){
             setAuthentication(info.getSubject(),"user");
         }
         //토큰이 권한을 들고있지않다면
