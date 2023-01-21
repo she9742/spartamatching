@@ -1,8 +1,8 @@
-package com.example.jwt;
+package com.example.spartamatching_01.jwt;
 
 
-import com.example.dto.SecurityExceptionDto;
-import com.example.entity.UserRoleEnum;
+import com.example.spartamatching_01.dto.SecurityExceptionDto;
+import com.example.spartamatching_01.entity.UserRoleEnum;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +18,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-
-import static com.example.jwt.JwtUtil.AUTHORIZATION_KEY;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -89,15 +87,15 @@ public class JwtAuthFiler extends OncePerRequestFilter {
 
 
         //토큰이 들고있는 권한이 어드민이라면
-        if(info.get(AUTHORIZATION_KEY)== admin){
+        if(info.get(JwtUtil.AUTHORIZATION_KEY)== admin){
             setAuthentication(info.getSubject(),"admin");
         }
         //토큰이 들고있는 권한이 유저라면
-        if(info.get(AUTHORIZATION_KEY)== user){
+        if(info.get(JwtUtil.AUTHORIZATION_KEY)== user){
             setAuthentication(info.getSubject(),"user");
         }
         //토큰이 권한을 들고있지않다면
-        if (info.get(AUTHORIZATION_KEY) == null) {
+        if (info.get(JwtUtil.AUTHORIZATION_KEY) == null) {
             throw new IllegalStateException("잘못된 권한정보입니다");
         }
     }

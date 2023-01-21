@@ -1,7 +1,7 @@
-package com.example.security;
+package com.example.spartamatching_01.security;
 
-import com.example.entity.Admin;
-import com.example.repository.AdminRepository;
+import com.example.spartamatching_01.entity.Admin;
+import com.example.spartamatching_01.repository.AdminRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

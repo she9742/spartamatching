@@ -1,6 +1,6 @@
-package com.example.exception;
+package com.example.spartamatching_01.exception;
 
-import com.example.dto.SecurityExceptionDto;
+import com.example.spartamatching_01.dto.SecurityExceptionDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

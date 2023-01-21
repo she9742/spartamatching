@@ -1,11 +1,12 @@
-package com.example.service;
+package com.example.spartamatching_01.service;
 
-import com.example.dto.*;
-import com.example.entity.*;
-import com.example.repository.*;
-
+import com.example.spartamatching_01.dto.ProductRequestDto;
+import com.example.spartamatching_01.dto.ProductResponseDto;
+import com.example.spartamatching_01.dto.SellerProfileResponseDto;
+import com.example.spartamatching_01.dto.SellerProfileUpdateRequestDto;
+import com.example.spartamatching_01.entity.*;
+import com.example.spartamatching_01.repository.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

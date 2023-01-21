@@ -1,24 +1,22 @@
-package com.example.service;
+package com.example.spartamatching_01.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
-import com.example.dto.*;
-import com.example.entity.*;
-import com.example.jwt.JwtUtil;
-import com.example.repository.AdminRepository;
-import com.example.repository.ClientRepository;
-import com.example.repository.ProductRepository;
-import com.example.repository.SellerReqRepository;
+import com.example.spartamatching_01.dto.*;
+import com.example.spartamatching_01.entity.Admin;
+import com.example.spartamatching_01.entity.Client;
+import com.example.spartamatching_01.entity.SellerReq;
+import com.example.spartamatching_01.jwt.JwtUtil;
+import com.example.spartamatching_01.repository.AdminRepository;
+import com.example.spartamatching_01.repository.ClientRepository;
+import com.example.spartamatching_01.repository.ProductRepository;
+import com.example.spartamatching_01.repository.SellerReqRepository;
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

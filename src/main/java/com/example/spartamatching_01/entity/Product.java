@@ -1,12 +1,10 @@
-package com.example.entity;
+package com.example.spartamatching_01.entity;
 
-import com.example.dto.ProductRequestDto;
+import com.example.spartamatching_01.dto.ProductRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-
-import com.example.dto.ProductRequestDto;
 
 @Getter
 @Entity
@@ -32,7 +30,7 @@ public class Product {
     @Column
     private Boolean activation;
 
-    public Product(ProductRequestDto dto,Client client) {
+    public Product(ProductRequestDto dto, Client client) {
         this.productName = dto.getProductName();
         this.information = dto.getInformation();
         this.sellerId = client.getId();

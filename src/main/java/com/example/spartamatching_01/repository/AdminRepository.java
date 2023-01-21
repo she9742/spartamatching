@@ -1,9 +1,8 @@
-package com.example.repository;
+package com.example.spartamatching_01.repository;
 
-import com.example.entity.Client;
+import com.example.spartamatching_01.entity.Admin;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.example.entity.Admin;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;

@@ -1,4 +1,4 @@
-package com.example.entity;
+package com.example.spartamatching_01.entity;
 
 public enum UserRoleEnum {
     USER(Authority.USER),  // 사용자 권한

@@ -1,12 +1,12 @@
-package com.example.security;
+package com.example.spartamatching_01.security;
 
-import com.example.repository.ClientRepository;
+import com.example.spartamatching_01.repository.ClientRepository;
+import com.example.spartamatching_01.entity.Client;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import com.example.entity.Client;
 
 @Service
 @RequiredArgsConstructor

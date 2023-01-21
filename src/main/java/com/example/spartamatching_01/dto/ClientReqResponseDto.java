@@ -1,6 +1,6 @@
-package com.example.dto;
+package com.example.spartamatching_01.dto;
 
-import com.example.entity.ClientReq;
+import com.example.spartamatching_01.entity.ClientReq;
 import lombok.Getter;
 
 @Getter

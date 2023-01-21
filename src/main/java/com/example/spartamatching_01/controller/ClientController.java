@@ -1,26 +1,21 @@
-package com.example.controller;
+package com.example.spartamatching_01.controller;
 
-import com.example.dto.*;
-import com.example.entity.Client;
-import com.example.entity.UserRoleEnum;
-import com.example.jwt.JwtUtil;
-import com.example.security.ClientDetailsImpl;
-import com.example.service.AdminService;
-import com.example.service.ClientService;
-import io.jsonwebtoken.Claims;
+
+import com.example.spartamatching_01.dto.*;
+import com.example.spartamatching_01.entity.Client;
+import com.example.spartamatching_01.jwt.JwtUtil;
+import com.example.spartamatching_01.security.ClientDetailsImpl;
+import com.example.spartamatching_01.service.AdminService;
+import com.example.spartamatching_01.service.ClientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-
-
 
 @RequiredArgsConstructor
 @RestController

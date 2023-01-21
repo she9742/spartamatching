@@ -1,13 +1,10 @@
-package com.example.service;
+package com.example.spartamatching_01.service;
 
-import com.example.dto.*;
-import com.example.entity.*;
-import com.example.jwt.JwtUtil;
-import com.example.repository.*;
+import com.example.spartamatching_01.dto.*;
+import com.example.spartamatching_01.entity.*;
+import com.example.spartamatching_01.jwt.JwtUtil;
+import com.example.spartamatching_01.repository.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,7 +41,7 @@ public class ClientService {
         }
 
         Client client = new Client(signupRequestDto,password);
-        clientRepository.save(client);
+         clientRepository.save(client);
 
         return "회원가입 완료";
     }

@@ -1,6 +1,6 @@
-package com.example.entity;
+package com.example.spartamatching_01.entity;
 
-import com.example.dto.ApplySellerRequestDto;
+import com.example.spartamatching_01.dto.ApplySellerRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

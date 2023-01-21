@@ -1,8 +1,8 @@
-package com.example.entity;
+package com.example.spartamatching_01.entity;
 
 import javax.persistence.*;
 
-import com.example.dto.AdminSignupRequestDto;
+import com.example.spartamatching_01.dto.AdminSignupRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

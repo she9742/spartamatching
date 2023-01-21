@@ -1,6 +1,6 @@
-package com.example.dto;
+package com.example.spartamatching_01.dto;
 
-import com.example.entity.Client;
+import com.example.spartamatching_01.entity.Client;
 
 import lombok.Getter;
 import lombok.Setter;

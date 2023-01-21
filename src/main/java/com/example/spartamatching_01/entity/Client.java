@@ -1,8 +1,8 @@
-package com.example.entity;
+package com.example.spartamatching_01.entity;
 
 
-import com.example.dto.SellerProfileUpdateRequestDto;
-import com.example.dto.SignupRequestDto;
+import com.example.spartamatching_01.dto.SellerProfileUpdateRequestDto;
+import com.example.spartamatching_01.dto.SignupRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -32,13 +32,13 @@ public class Client {
     @Column(nullable = false)
     private String image;
 
-    @Column(nullable = false)
+    @Column
     private int point;
 
-    @Column(nullable = false)
+    @Column
     private String category;
 
-    @Column(nullable = false)
+    @Column
     private String about;
 
     @Column(nullable = false)
@@ -53,7 +53,7 @@ public class Client {
     @Column(nullable = false)
     private boolean isSeller;
 
-    public Client(SignupRequestDto signupRequestDto,String password) {
+    public Client(SignupRequestDto signupRequestDto, String password) {
         this.username = signupRequestDto.getUsername();
         this.password = password;
         this.nickname = signupRequestDto.getNickname();

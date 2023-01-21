@@ -1,4 +1,4 @@
-package com.example.dto;
+package com.example.spartamatching_01.dto;
 
 public class AuthenticatedUserDto {
 

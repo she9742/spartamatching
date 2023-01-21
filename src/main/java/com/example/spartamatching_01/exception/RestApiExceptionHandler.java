@@ -1,4 +1,4 @@
-package com.example.exception;
+package com.example.spartamatching_01.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

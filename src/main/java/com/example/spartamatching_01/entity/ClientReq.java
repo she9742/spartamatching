@@ -1,4 +1,4 @@
-package com.example.entity;
+package com.example.spartamatching_01.entity;
 
 
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.example.aTEMP;
+package com.example.spartamatching_01.aTEMP;
 
 public class CustomUserDetailService {
 }

@@ -1,15 +1,14 @@
-package com.example.controller;
+package com.example.spartamatching_01.controller;
 
-import com.example.dto.ClientReqResponseDto;
-import com.example.dto.ProductRequestDto;
-import com.example.dto.ProductResponseDto;
-import com.example.dto.SellerProfileResponseDto;
-import com.example.entity.TradeReq;
-import com.example.security.ClientDetailsImpl;
-import com.example.service.SellerService;
+import com.example.spartamatching_01.dto.ProductRequestDto;
+import com.example.spartamatching_01.dto.ProductResponseDto;
+import com.example.spartamatching_01.dto.SellerProfileResponseDto;
+import com.example.spartamatching_01.entity.TradeReq;
+import com.example.spartamatching_01.security.ClientDetailsImpl;
+import com.example.spartamatching_01.service.SellerService;
+import com.example.spartamatching_01.entity.ClientReq;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import com.example.entity.ClientReq;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;

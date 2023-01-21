@@ -1,4 +1,4 @@
-package com.example.exception;
+package com.example.spartamatching_01.exception;
 
 
 import lombok.Getter;

@@ -1,6 +1,6 @@
-package com.example.security;
+package com.example.spartamatching_01.security;
 
-import com.example.entity.Admin;
+import com.example.spartamatching_01.entity.Admin;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

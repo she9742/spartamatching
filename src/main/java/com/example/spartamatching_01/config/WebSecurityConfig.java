@@ -1,9 +1,9 @@
-package com.example.config;
+package com.example.spartamatching_01.config;
 
-import com.example.exception.CustomAccessDeniedHandler;
-import com.example.exception.CustomAuthenticationEntryPoint;
-import com.example.jwt.JwtAuthFiler;
-import com.example.jwt.JwtUtil;
+import com.example.spartamatching_01.exception.CustomAccessDeniedHandler;
+import com.example.spartamatching_01.exception.CustomAuthenticationEntryPoint;
+import com.example.spartamatching_01.jwt.JwtAuthFiler;
+import com.example.spartamatching_01.jwt.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;

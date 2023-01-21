@@ -1,12 +1,12 @@
-package com.example.repository;
+package com.example.spartamatching_01.repository;
 
 import java.util.List;
 import java.util.Optional;
 
+import com.example.spartamatching_01.entity.Client;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.example.entity.Client;
 import org.springframework.stereotype.Repository;
 
 @Repository

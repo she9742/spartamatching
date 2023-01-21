@@ -1,10 +1,8 @@
-package com.example.repository;
+package com.example.spartamatching_01.repository;
 
-import com.example.entity.Client;
-import com.example.entity.Product;
+import com.example.spartamatching_01.entity.Client;
+import com.example.spartamatching_01.entity.Product;
 
-import com.example.entity.SellerReq;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -17,7 +15,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
 	List<Product> findAllBy(Pageable pageable);
 	List<Product> findBySellerId(Long SellerId);
-	Optional<Client> findByProductId(Long ProductId);
+//	Optional<Client> findByProductId(Long ProductId);
 
 	void deleteAllBySellerId(Long sellerId);
 

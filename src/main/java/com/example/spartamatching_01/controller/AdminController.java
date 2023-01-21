@@ -1,24 +1,16 @@
-package com.example.controller;
+package com.example.spartamatching_01.controller;
 
-import com.example.dto.*;
-import com.example.entity.Admin;
-import com.example.entity.Client;
-import com.example.entity.SellerReq;
-import com.example.jwt.JwtUtil;
-import com.example.service.AdminService;
-import com.example.service.ClientService;
+import com.example.spartamatching_01.dto.*;
+import com.example.spartamatching_01.entity.Admin;
+import com.example.spartamatching_01.entity.SellerReq;
+import com.example.spartamatching_01.jwt.JwtUtil;
+import com.example.spartamatching_01.service.AdminService;
+import com.example.spartamatching_01.service.ClientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;

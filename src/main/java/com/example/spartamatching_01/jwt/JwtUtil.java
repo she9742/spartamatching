@@ -1,10 +1,9 @@
-package com.example.jwt;
+package com.example.spartamatching_01.jwt;
 
-import com.example.dto.AuthenticatedUserDto;
-import com.example.entity.UserRoleEnum;
-import com.example.security.AdminDetailsImpl;
-import com.example.security.AdminDetailsServiceImpl;
-import com.example.security.ClientDetailsServiceImpl;
+import com.example.spartamatching_01.dto.AuthenticatedUserDto;
+import com.example.spartamatching_01.entity.UserRoleEnum;
+import com.example.spartamatching_01.security.AdminDetailsServiceImpl;
+import com.example.spartamatching_01.security.ClientDetailsServiceImpl;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;

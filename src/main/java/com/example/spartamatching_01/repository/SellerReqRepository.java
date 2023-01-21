@@ -1,6 +1,6 @@
-package com.example.repository;
+package com.example.spartamatching_01.repository;
 
-import com.example.entity.SellerReq;
+import com.example.spartamatching_01.entity.SellerReq;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
