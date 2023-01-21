@@ -8,6 +8,7 @@ import com.example.spartamatching_01.security.ClientDetailsImpl;
 import com.example.spartamatching_01.service.AdminService;
 import com.example.spartamatching_01.service.ClientService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -51,14 +52,14 @@ public class ClientController {
 
     //전체 판매 상품 조회
     @GetMapping("/prodcuts")
-    public ResponseEntity<List<AllProductResponseDto>> getAllProduct() {
-        return ResponseEntity.status(HttpStatus.OK).body(clientService.getAllProducts());
+    public ResponseEntity<Page<AllProductResponseDto>> getAllProduct(@RequestBody PageDto pageDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(clientService.getAllProducts(pageDto));
     }
 
     //전체 판매자 조회
     @GetMapping("/sellers")
-    public ResponseEntity<List<AllSellerResponseDto>> getAllSellers() {
-        return ResponseEntity.status(HttpStatus.OK).body(clientService.getAllSellers());
+    public ResponseEntity<Page<AllSellerResponseDto>> getAllSellers(@RequestBody PageDto pageDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(clientService.getAllSellers(pageDto));
     }
 
     //판매자 선택 조회
