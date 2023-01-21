@@ -123,7 +123,8 @@ public class ClientService {
 
     // 프로필 가져오기
     @Transactional
-    public ProfileUpdateResponseDto getProfile(Client client) {
+    public ProfileUpdateResponseDto getProfile(Client client){
+        System.out.println("2번");
         return new ProfileUpdateResponseDto(client);
     }
 
