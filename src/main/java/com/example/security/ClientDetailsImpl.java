@@ -18,7 +18,7 @@ public class ClientDetailsImpl implements UserDetails {
         this.username = username;
     }
 
-    public com.example.entity.Client getClient() {
+    public Client getClient() {
         return this.client;
     }
 

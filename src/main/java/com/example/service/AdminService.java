@@ -6,9 +6,8 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.example.dto.*;
-import com.example.entity.Admin;
-import com.example.entity.Product;
-import com.example.entity.SellerReq;
+import com.example.entity.*;
+import com.example.jwt.JwtUtil;
 import com.example.repository.AdminRepository;
 import com.example.repository.ClientRepository;
 import com.example.repository.ProductRepository;
@@ -20,8 +19,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.entity.Client;
-
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +29,7 @@ public class AdminService {
     private final SellerReqRepository sellerReqRepository;
     private final PasswordEncoder passwordEncoder;
     private final ProductRepository productRepository;
+    private final JwtUtil jwtUtil;
 
     @Transactional
     public String adminSignup(AdminSignupRequestDto adminSignupRequestDto) {
@@ -52,7 +50,7 @@ public class AdminService {
 
 
     @Transactional
-    public String adminSignin(AdminSigninRequestDto adminSigninRequestDto) {
+    public MessageResponseDto adminSignin(AdminSigninRequestDto adminSigninRequestDto) {
 
         // 사용자 확인
         Admin admin = adminRepository.findByUsername(adminSigninRequestDto.getUsername()).orElseThrow(
@@ -65,12 +63,9 @@ public class AdminService {
         }
 
 
-        //리프레쉬토큰,엑세스토큰 연동필요
-//        String accessToken = jwtUtil.createToken(admin.getUsername(), admin.권한());
-//        String refreshToken1 = jwtUtil.refreshToken(admin.getUsername(), admin.권한());
-//        return new TokenResponseDto(accessToken, refreshToken1);
-
-        return "로그인 완료";
+        String accessToken = jwtUtil.createToken(admin.getUsername(), admin.getRole());
+        String refreshToken1 = jwtUtil.refreshToken(admin.getUsername(), admin.getRole());
+        return new MessageResponseDto("accessToken = " + accessToken + "\n" + "refreshToken = " + refreshToken1);
 
     }
 
@@ -160,6 +155,11 @@ public class AdminService {
 
         return "권한을 부여하였습니다.";
     }
+
+    public Admin findByAdmin(String name) {
+        return adminRepository.findByUsername(name).orElseThrow();
+    }
+
 
 }
 

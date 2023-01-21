@@ -41,6 +41,11 @@ public class Client {
     @Column(nullable = false)
     private String about;
 
+    @Column(nullable = false)
+    @Enumerated(value = EnumType.STRING)
+    private UserRoleEnum role;
+
+
     @JoinColumn
     @OneToMany
     private List<Product> products = new ArrayList<>();
@@ -54,6 +59,7 @@ public class Client {
         this.nickname = signupRequestDto.getNickname();
         this.image = signupRequestDto.getImage();
         this.isSeller = false;
+        this.role = UserRoleEnum.USER;
     }
 
     public void updateClientProfile(String nickname, String image){

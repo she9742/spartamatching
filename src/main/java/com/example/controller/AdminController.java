@@ -1,11 +1,16 @@
 package com.example.controller;
 
 import com.example.dto.*;
+import com.example.entity.Admin;
+import com.example.entity.Client;
 import com.example.entity.SellerReq;
+import com.example.jwt.JwtUtil;
 import com.example.service.AdminService;
+import com.example.service.ClientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,15 +20,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
-
+    private final ClientService clientService;
     private final AdminService adminService;
-
+    private final JwtUtil jwtUtil;
 
     // 전체 고객 목록 조회
     @GetMapping("/client")
@@ -54,7 +60,7 @@ public class AdminController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<String> adminSignin(@RequestBody AdminSigninRequestDto adminSigninRequestDto) {
+    public ResponseEntity<MessageResponseDto> adminSignin(@RequestBody AdminSigninRequestDto adminSigninRequestDto) {
         return ResponseEntity.status(HttpStatus.OK).body(adminService.adminSignin(adminSigninRequestDto));
     }
 
@@ -76,4 +82,30 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.OK).body(adminService.approveSellerReq(id));
 
     }
+    @PostMapping("/refresh")
+    public TokenResponseDto adminRefresh(HttpServletRequest request, @RequestBody TokenRequestDto tokenRequestDto){
+        //bearer 제거
+        String resolvedAccessToken = jwtUtil.resolveAccessToken(tokenRequestDto.getAccessToken());
+
+        //Access 토큰 username가져오기
+        //인증을 확인하고 authenticationAccessToken 변수에 토큰저장
+        Authentication authenticationAccessToken = jwtUtil.getAuthentication(resolvedAccessToken);
+        //DB에 접근하여 위에서만든 토큰에 해당하는 유저의 정보 반환
+        Admin accessUser = adminService.findByAdmin(authenticationAccessToken.getName());
+
+        //Refrest 토큰 username가져오기
+        String refreshToken = request.getHeader(JwtUtil.REFRESH_AUTHORIZATION_HEADER);
+        String resolvedRefreshToken = jwtUtil.resolveRefreshToken(refreshToken);
+        //인증을 확인하고 authenticationFreshToken 변수에 토큰저장
+        Authentication authenticationFreshToken = jwtUtil.getAuthentication(resolvedRefreshToken);
+        //DB에 접근하여 위에서만든 토큰에 해당하는 유저의 정보 반환
+        Admin refreshUser = adminService.findByAdmin(authenticationFreshToken.getName());
+
+        //두개 비교 후 맞으면 재발행 ->엑세스토큰과 리프레시토큰의 유저정보가 같은지 확인하는작업
+        if (accessUser == refreshUser) {
+            return clientService.reissue(refreshUser.getUsername(), refreshUser.getRole());
+        }
+        throw new IllegalStateException("리프레시 토큰과 엑세스토큰의 사용자가 일치하지 않습니다.");
+    }
+
 }

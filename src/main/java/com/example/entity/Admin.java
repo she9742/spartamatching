@@ -1,10 +1,6 @@
 package com.example.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 import com.example.dto.AdminSignupRequestDto;
 import lombok.Getter;
@@ -27,12 +23,17 @@ public class Admin {
 	@Column(nullable = false)
 	private String image;
 
+	@Column(nullable = false)
+	@Enumerated(value = EnumType.STRING)
+	private UserRoleEnum role;
+
 
 	public Admin(AdminSignupRequestDto adminSignupRequestDto, String password) {
 		this.username = adminSignupRequestDto.getUsername();
 		this.password = password;
 		this.nickname = adminSignupRequestDto.getNickname();
 		this.image = adminSignupRequestDto.getImage();
+		this.role = UserRoleEnum.ADMIN;
 	}
 
 //	public void withdraw(int point){

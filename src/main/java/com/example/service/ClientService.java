@@ -2,6 +2,7 @@ package com.example.service;
 
 import com.example.dto.*;
 import com.example.entity.*;
+import com.example.jwt.JwtUtil;
 import com.example.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +27,7 @@ public class ClientService {
     private final TradeReqRepository tradeReqRepository;
     private final SellerReqRepository sellerReqRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
 
 
@@ -49,7 +51,7 @@ public class ClientService {
 
 
     @Transactional
-    public String signin(SigninRequestDto signinRequestDto){
+    public MessageResponseDto signin(SigninRequestDto signinRequestDto){
 
         // 사용자 확인
         Client client = clientRepository.findByUsername(signinRequestDto.getUsername()).orElseThrow(
@@ -62,12 +64,12 @@ public class ClientService {
         }
 
 
-        //리프레쉬토큰,엑세스토큰 연동필요
-        //        String accessToken = jwtUtil.createToken(client.getUsername(), client.권한());
-        //        String refreshToken1 = jwtUtil.refreshToken(client.getUsername(), client.권한());
-        //        return new TokenResponseDto(accessToken, refreshToken1);
 
-        return "로그인 성공!";
+        String accessToken = jwtUtil.createToken(client.getUsername(), client.getRole());
+        String refreshToken1 = jwtUtil.refreshToken(client.getUsername(), client.getRole());
+        return new MessageResponseDto("accessToken = " + accessToken + "\n" + "refreshToken = " + refreshToken1);
+        //return new TokenResponseDto(accessToken, refreshToken1);
+
 
     }
 
@@ -250,5 +252,15 @@ public class ClientService {
         sellerReqRepository.save(sellerReq);
 
         return "판매자 신청을 하였습니다.";
+    }
+
+    public Client findByUsername(String name) {
+        return clientRepository.findByUsername(name).orElseThrow();
+    }
+
+    public TokenResponseDto reissue(String username, UserRoleEnum role) {
+        String newCreatedToken = jwtUtil.createToken(username, role);
+        String refreshToken1 = jwtUtil.refreshToken(username, role);
+        return new TokenResponseDto(newCreatedToken, refreshToken1);
     }
 }
