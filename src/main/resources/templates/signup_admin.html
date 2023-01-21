@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
+  <link type="text/css" th:href="@{/css/style.css}" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>회원가입 페이지</title>
+  <script>
+    function signup() {
+
+      let username = $('#username').val();
+      let password = $('#password').val();
+      let nickname = $('#nickname').val();
+      let image = $('#image').val();
+
+      $.ajax({
+        type:"POST",
+        url: '/admin/signup',
+        data: {
+          username: username,
+          password:password,
+          nickname:nickname,
+          image:image
+        },
+        success:function (data){
+
+        },
+        error:function (){
+          alert("error");
+        }
+      });
+
+    }
+  </script>
+</head>
+<body>
+<div id="login-form">
+  <div id="login-title">Admin Sign up</div>
+
+  <form method="POST" action="/api/user/signup">
+    <div class="login-id-label">Username</div>
+    <input type="text" id="username" placeholder="Username" class="login-input-box">
+
+    <div class="login-id-label">Password</div>
+    <input type="password" id="password" class="login-input-box">
+
+    <div class="login-id-label">Nickname</div>
+    <input type="password" id="nickname" class="login-input-box">
+
+    <div class="login-id-label">image</div>
+    <input type="password" id="image" class="login-input-box">
+
+    <button id="login-id-submit" onclick="signup()">회원 가입</button>
+  </form>
+</div>
+</body>
+</html>
