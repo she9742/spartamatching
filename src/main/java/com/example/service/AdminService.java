@@ -2,12 +2,10 @@ package com.example.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import com.example.dto.*;
 import com.example.entity.Admin;
-import com.example.entity.Product;
 import com.example.entity.SellerReq;
 import com.example.repository.AdminRepository;
 import com.example.repository.ClientRepository;
@@ -15,7 +13,6 @@ import com.example.repository.ProductRepository;
 import com.example.repository.SellerReqRepository;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
