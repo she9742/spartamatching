@@ -1,13 +1,12 @@
 package com.example.spartamatching_01.controller;
 
-import com.example.spartamatching_01.dto.ProductRequestDto;
-import com.example.spartamatching_01.dto.ProductResponseDto;
-import com.example.spartamatching_01.dto.SellerProfileResponseDto;
+
+import com.example.spartamatching_01.dto.*;
 import com.example.spartamatching_01.entity.TradeReq;
 import com.example.spartamatching_01.security.ClientDetailsImpl;
 import com.example.spartamatching_01.service.SellerService;
-import com.example.spartamatching_01.entity.ClientReq;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -41,10 +40,10 @@ public class SellerController {
         return ResponseEntity.status(HttpStatus.OK).body(sellerService.deleteMyProduct(id,clientDetails.getClient()));
     }
 
-    // 고객의 매칭요청 목록을 조회
+    // 고객의 매칭요청 목록을 조회 이거로 페이징하는게 나을듯
     @GetMapping("/clientLists")
-    public ResponseEntity<List<ClientReq>> getMatching(@AuthenticationPrincipal ClientDetailsImpl clientDetails){
-        return ResponseEntity.status(HttpStatus.OK).body(sellerService.getMatching(clientDetails.getClient()));
+    public ResponseEntity<Page<ClientReqResponseDto>> getMatching(@RequestBody PageDto pageDto, @AuthenticationPrincipal ClientDetailsImpl clientDetails){
+        return ResponseEntity.status(HttpStatus.OK).body(sellerService.getMatching(pageDto,clientDetails.getClient()));
     }
 
     // 고객의 거래요청 목록을 조회
@@ -65,10 +64,10 @@ public class SellerController {
             @AuthenticationPrincipal ClientDetailsImpl clientDetails) {
         return ResponseEntity.status(HttpStatus.OK).body(sellerService.getProfile(clientDetails.getClient()));
     }
-    // 판매 상품 조회
+    // 판매 상품 조회 페이징 필요
     @GetMapping("/products")
-    public ResponseEntity<List<ProductResponseDto>> getMyProduct(@AuthenticationPrincipal ClientDetailsImpl clientDetails ){
-        return ResponseEntity.status(HttpStatus.OK).body(sellerService.getMyProduct(clientDetails.getClient()));
+    public ResponseEntity<Page<AllProductResponseDto>> getMyProduct(@RequestBody PageDto pageDto,@AuthenticationPrincipal ClientDetailsImpl clientDetails ){
+        return ResponseEntity.status(HttpStatus.OK).body(sellerService.getMyProduct(pageDto,clientDetails.getClient()));
     }
 
     @PostMapping("/sell/{tradeReqId}")

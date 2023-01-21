@@ -1,5 +1,6 @@
 package com.example.spartamatching_01.entity;
 
+
 import com.example.spartamatching_01.dto.ProductRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,8 +22,15 @@ public class Product {
     @Column
     private String information;
 
+
     @Column
     private Long sellerId;
+
+    @Column
+    private String username;
+
+    @Column
+    private String category;
 
     @Column(nullable = false)
     private int point;
@@ -30,10 +38,14 @@ public class Product {
     @Column
     private Boolean activation;
 
-    public Product(ProductRequestDto dto, Client client) {
+
+    public Product(ProductRequestDto dto,Client client) {
         this.productName = dto.getProductName();
         this.information = dto.getInformation();
         this.sellerId = client.getId();
+        this.username = client.getUsername();
+        this.category = client.getCategory();
+        this.sellerId = dto.getSellerId();
         this.point = dto.getPoint();
         this.activation = true;
     }

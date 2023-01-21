@@ -13,6 +13,5 @@ public interface SellerReqRepository extends JpaRepository<SellerReq, Long> {
 
     Optional<SellerReq> findByClientId(Long clientId);
 
-    List<SellerReq> findAllByClientId(Long clientId);
 
 }

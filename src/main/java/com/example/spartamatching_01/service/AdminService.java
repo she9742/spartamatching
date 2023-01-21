@@ -1,20 +1,24 @@
 package com.example.spartamatching_01.service;
 
+
 import com.example.spartamatching_01.dto.*;
 import com.example.spartamatching_01.entity.Admin;
 import com.example.spartamatching_01.entity.Client;
 import com.example.spartamatching_01.entity.SellerReq;
-import com.example.spartamatching_01.jwt.JwtUtil;
 import com.example.spartamatching_01.repository.AdminRepository;
 import com.example.spartamatching_01.repository.ClientRepository;
 import com.example.spartamatching_01.repository.ProductRepository;
 import com.example.spartamatching_01.repository.SellerReqRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import com.example.spartamatching_01.jwt.JwtUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -92,45 +96,15 @@ public class AdminService {
         return "포인트를 지급했습니다.";
     }
 
-    //전체 고객 조회
-//    @Transactional(readOnly = true)
-//    public List<AllClientResponseDto> getClientList(){
-//        List<Client> clientList = clientRepository.findAll();
-//        List<AllClientResponseDto> clientResponseList = new ArrayList<>();
-//        for(Client client : clientList){
-//            // 판매자 조회와 다르게 ! 적용
-//
-//            if (!client.getisSeller()){
-//                clientResponseList.add(new AllClientResponseDto(client));
-//            }
-//        }
-//        return clientResponseList;
-//    }
-
     @Transactional(readOnly = true)
-    public List<AllClientResponseDto> getClientList() {
-        List<Client> clientList = clientRepository.findAll();
-        List<AllClientResponseDto> clientResponseList = new ArrayList<>();
-        for (Client client : clientList) {
-            // 판매자도 Client이므로 포함되어야 한다고 생각함. 맞는듯
+    public Page<AllClientResponseDto> getClientList(PageDto pageDto)  {
+        Pageable pageable=makePage(pageDto);
 
-            clientResponseList.add(new AllClientResponseDto(client));
-        }
+        Page<Client> clientList = clientRepository.findAll(pageable);
+        Page<AllClientResponseDto> clientResponseList = clientList.map(AllClientResponseDto::new);
         return clientResponseList;
     }
 
-//    // 전체 판매자 조회
-//    @Transactional(readOnly = true)
-//    public List<AllSellerResponseDto> getSellerList() {
-//        List<Client> sellerList = clientRepository.findAll();
-//        List<AllSellerResponseDto> sellerResponseList = new ArrayList<>();
-//        for (Client client : sellerList) {
-//            if (client.getisSeller()) {
-//                sellerResponseList.add(new AllSellerResponseDto(client));
-//            }
-//        }
-//        return sellerResponseList;
-//    }
 
     @Transactional
     public List<SellerReq> getApplySellerList() {
@@ -154,10 +128,14 @@ public class AdminService {
         return "권한을 부여하였습니다.";
     }
 
+    public Pageable makePage(PageDto pageDto) {
+        Sort.Direction direction = pageDto.isAsc() ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, pageDto.getSortBy());
+        return PageRequest.of(pageDto.getPage() - 1, pageDto.getSize(), sort);
+    }
     public Admin findByAdmin(String name) {
         return adminRepository.findByUsername(name).orElseThrow();
     }
-
 
 }
 

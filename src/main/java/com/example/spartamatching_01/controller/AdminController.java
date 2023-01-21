@@ -7,6 +7,7 @@ import com.example.spartamatching_01.jwt.JwtUtil;
 import com.example.spartamatching_01.service.AdminService;
 import com.example.spartamatching_01.service.ClientService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -25,20 +26,10 @@ public class AdminController {
 
     // 전체 고객 목록 조회
     @GetMapping("/client")
-    public ResponseEntity<List<AllClientResponseDto>> getClientList() {
-        return ResponseEntity.status(HttpStatus.OK).body(adminService.getClientList());
+    public ResponseEntity<Page<AllClientResponseDto>> getClientList(@RequestBody PageDto pageDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(adminService.getClientList(pageDto));
+
     }
-
-
-    //클라이언트컨트롤러의 기능과 100%겹치므로 지워도 될듯하다. -> 추후에 삭제
-    // 전체 판매자 조회
-    // Client에도 똑같은 기능이 있는데 굳이 Admin에 필요할까????
-    // ClientService 와 AdminService 의 코드가 완전히 동일함
-//    @GetMapping("/seller")
-//    public List<AllSellerResponseDto> getSellerList() {
-//        return adminService.getSellerList();
-//    }
-
 
     // 서비스 단에서 작업 완료
     @GetMapping("/seller/request")
