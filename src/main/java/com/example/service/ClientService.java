@@ -123,44 +123,60 @@ public class ClientService {
         return new ProfileUpdateResponseDto(client);
     }
 
-    // 전체 판매상품 목록 조회
+    // 전체 판매상품 목록 조회 (혜은)
     @Transactional(readOnly = true)
-    public List<AllProductResponseDto> getAllProducts() {
+    public Page<AllProductResponseDto> getAllProducts(PageDto pageDto) {
+        Pageable pageable = makePage(pageDto);
+        Page<Product> AllProducts = productRepository.findAll(pageable);
+        Page<AllProductResponseDto> allProductsResponse = AllProducts.map(AllProductResponseDto::new);
+        return allProductsResponse;
+    }
+
+        // 전체 판매상품 목록 조회 (용재)
+/*    @Transactional(readOnly = true)
+    public List<AllProductResponseDto> getAllProducts(int page, int size, String sortBy, boolean isAsc) {
+        Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, sortBy);
+        Pageable pageable = PageRequest.of(page,size,sort);
 
         //모든 상품을 allproducts에 넣는다
-        List<Product> AllProducts = productRepository.findAll();
+        List<Product> AllProducts = productRepository.findAllByOrderByModifiedAtDesc(pageable);
+        return AllProducts.stream().map(AllProductResponseDto::new).collect(Collectors.toList());*/
+//
+//        //반환을위해 AllProductsResponse를 만든다
+//        List<AllProductResponseDto> AllProductsResponse = new ArrayList<>();
+//
+//        //하나씩 넣는다
+//        for (Product product : AllProducts) {
+//            Client sellers = clientRepository.findById(product.getId()).orElseThrow(
+//                    //실제로는 마주치지 않는 오류
+//                    () -> new NullPointerException()
+//            );
+//            AllProductsResponse.add(new AllProductResponseDto(product, sellers));
+//        }
+//        return AllProductsResponse;
+//}
 
-        //반환을위해 AllProductsResponse를 만든다
-        List<AllProductResponseDto> AllProductsResponse = new ArrayList<>();
 
-        //하나씩 넣는다
-        for (Product product : AllProducts) {
-            AllProductsResponse.add(new AllProductResponseDto(product, product.getSellerId()));
+
+
+
+        // 전체 판매자 목록 조회
+        @Transactional(readOnly = true)
+        public Page<AllSellerResponseDto> getAllSellers (PageDto pageDto){
+            Pageable pageable = makePage(pageDto);
+            Page<Client> sellerList = clientRepository.findAll(pageable);
+            Page<AllSellerResponseDto> sellerResponseList = sellerList.map(AllSellerResponseDto::new);
+            return sellerResponseList;
         }
-        return AllProductsResponse;
-
-    }
-    // 전체 판매자 목록 조회
-    @Transactional(readOnly = true)
-    public List<AllSellerResponseDto> getAllSellers(){
-        List<Client> sellerList = clientRepository.findAll();
-        List<AllSellerResponseDto> sellerResponseList = new ArrayList<>();
-        for (Client client: sellerList){
-            //조건. 판매자인지 확인한다
-            if (client.getisSeller()) {
-                sellerResponseList.add(new AllSellerResponseDto(client));
-            }
+        // 판매자 정보 조회
+        @Transactional
+        public SellerResponseDto getSellerInfo (Long sellerId){
+            Client seller = clientRepository.findById(sellerId).orElseThrow(
+                    () -> new RuntimeException("찾으시는 판매자가 없습니다.")
+            );
+            return new SellerResponseDto(seller);
         }
-        return sellerResponseList;
-    }
-    // 판매자 정보 조회
-    @Transactional
-    public SellerResponseDto getSellerInfo(Long sellerId){
-        Client seller = clientRepository.findById(sellerId).orElseThrow(
-            ()-> new RuntimeException("찾으시는 판매자가 없습니다.")
-        );
-        return new SellerResponseDto(seller);
-    }
 
     @Transactional
     public String sendMatching(Long clientId,Long sellerId){

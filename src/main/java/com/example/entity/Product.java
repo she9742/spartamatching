@@ -24,9 +24,14 @@ public class Product {
     private String information;
 
 
-    @JoinColumn
-    @ManyToOne
-    private Client sellerId;
+    @Column
+    private Long sellerId;
+
+    @Column
+    private String username;
+
+    @Column
+    private String category;
 
     @Column(nullable = false)
     private int point;

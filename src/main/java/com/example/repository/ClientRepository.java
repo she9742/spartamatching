@@ -11,6 +11,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ClientRepository extends JpaRepository<Client,Long> {
-	List<Client> findAllBy(Pageable pageable);
 	Optional<Client> findByUsername(String username);
 }

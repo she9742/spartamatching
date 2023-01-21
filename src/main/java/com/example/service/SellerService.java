@@ -5,12 +5,17 @@ import com.example.entity.*;
 import com.example.repository.*;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,7 +27,7 @@ public class SellerService {
     private final TradeReqRepository tradeReqRepository;
     private final TalkRepository talkRepository;
 
-    //판매자 프로필 조회
+    @Transactional //판매자 프로필 조회
     public SellerProfileResponseDto getProfile(Client client){
         return new SellerProfileResponseDto(client);
     }
@@ -33,15 +38,32 @@ public class SellerService {
         return "변경 완료";
     }
 
+//    @Transactional
+//    public List<ProductResponseDto> getMyProduct(Client seller){
+//        List<Product> products = productRepository.findBySellerId(seller.getId());
+//        List<ProductResponseDto> productResponseDtos = new ArrayList<>();
+//        for(Product product : products){
+//            productResponseDtos.add(new ProductResponseDto(product));
+//        }
+//        return productResponseDtos;
+//
+//    }
+//    @Transactional
+//    public List<AllProductResponseDto> getMyProduct(int page, int size, String sortBy, boolean isAsc,Client seller){
+//        Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
+//        Sort sort = Sort.by(direction, sortBy);
+//        Pageable pageable = PageRequest.of(page, size, sort);
+//
+//        List<Product> productList = productRepository.findBySellerId(pageable,seller.getId());
+//        return productList.stream().map(AllProductResponseDto::new).collect(Collectors.toList());
+//
+//    }
     @Transactional
-    public List<ProductResponseDto> getMyProduct(Client seller){
-        List<Product> products = productRepository.findBySellerId(seller.getId());
-        List<ProductResponseDto> productResponseDtos = new ArrayList<>();
-        for(Product product : products){
-            productResponseDtos.add(new ProductResponseDto(product));
-        }
-        return productResponseDtos;
-
+    public Page<AllProductResponseDto> getMyProduct(PageDto pageDto, Client seller) {
+        Pageable pageable = makePage(pageDto);
+        Page<Product> products = productRepository.findBySellerId(pageable,seller.getId());
+        Page<AllProductResponseDto> allProductResponseDtos = products.map(AllProductResponseDto::new);
+        return allProductResponseDtos;
     }
 
 
@@ -85,10 +107,26 @@ public class SellerService {
         return "상품이 삭제되었습니다.";
     }
 
+//    @Transactional
+//    public List<ClientReq> getMatching(Client seller){
+//        List<ClientReq> clientReq = clientReqRepository.findAllBySellerId(seller.getId());
+//        return clientReq;
+//    }
     @Transactional
-    public List<ClientReq> getMatching(Client seller){
-        List<ClientReq> clientReq = clientReqRepository.findAllBySellerId(seller.getId());
-        return clientReq;
+    public Page<ClientReqResponseDto> getMatching(PageDto pageDto,Client seller){
+        Pageable pageable = makePage(pageDto);
+        Page<ClientReq> clientReqs = clientReqRepository.findAllBySellerId(pageable,seller.getId());
+        Page<ClientReqResponseDto> clientResponseDtos = clientReqs.map(ClientReqResponseDto::new);
+        return clientResponseDtos;
+    }
+
+    @Transactional
+    public List<ClientReqResponseDto> getMatching(int page, int size, String sortBy, boolean isAsc){
+        Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+        List<ClientReq> clientReqList = clientReqRepository.findAllBySellerId(pageable);
+        return clientReqList.stream().map(ClientReqResponseDto::new).collect(Collectors.toList());
     }
 
     @Transactional
@@ -110,6 +148,7 @@ public class SellerService {
         List<TradeReq> tradeReqs = tradeReqRepository.findAllBySellerId(seller.getId());
         return tradeReqs;
     }
+
 
     @Transactional
     //TradeReq tradeReq 를통째로 보내는 상황이 없음 + talkId를 컨트롤러에서 보내야한다?
@@ -173,6 +212,10 @@ public class SellerService {
         }
         return "거래가 완료되었습니다.";
     }
-
+    public Pageable makePage(PageDto pageDto) {
+        Sort.Direction direction = pageDto.isAsc() ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, pageDto.getSortBy());
+        return PageRequest.of(pageDto.getPage() - 1, pageDto.getSize(), sort);
+    }
 
 }

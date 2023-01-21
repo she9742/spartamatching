@@ -1,27 +1,26 @@
 package com.example.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 import com.example.dto.*;
 import com.example.entity.Admin;
-import com.example.entity.Product;
+import com.example.entity.Client;
 import com.example.entity.SellerReq;
 import com.example.repository.AdminRepository;
 import com.example.repository.ClientRepository;
 import com.example.repository.ProductRepository;
 import com.example.repository.SellerReqRepository;
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.entity.Client;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -99,21 +98,6 @@ public class AdminService {
         return "포인트를 지급했습니다.";
     }
 
-    //전체 고객 조회
-//    @Transactional(readOnly = true)
-//    public List<AllClientResponseDto> getClientList(){
-//        List<Client> clientList = clientRepository.findAll();
-//        List<AllClientResponseDto> clientResponseList = new ArrayList<>();
-//        for(Client client : clientList){
-//            // 판매자 조회와 다르게 ! 적용
-//
-//            if (!client.getisSeller()){
-//                clientResponseList.add(new AllClientResponseDto(client));
-//            }
-//        }
-//        return clientResponseList;
-//    }
-
     @Transactional(readOnly = true)
     public List<AllClientResponseDto> getClientList() {
         List<Client> clientList = clientRepository.findAll();
@@ -126,18 +110,6 @@ public class AdminService {
         return clientResponseList;
     }
 
-//    // 전체 판매자 조회
-//    @Transactional(readOnly = true)
-//    public List<AllSellerResponseDto> getSellerList() {
-//        List<Client> sellerList = clientRepository.findAll();
-//        List<AllSellerResponseDto> sellerResponseList = new ArrayList<>();
-//        for (Client client : sellerList) {
-//            if (client.getisSeller()) {
-//                sellerResponseList.add(new AllSellerResponseDto(client));
-//            }
-//        }
-//        return sellerResponseList;
-//    }
 
     @Transactional
     public List<SellerReq> getApplySellerList() {

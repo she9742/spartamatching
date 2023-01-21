@@ -20,7 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableGlobalMethodSecurity(securedEnabled = true)
 public class WebSecurityConfig {
 
-    //private final JwtUtil jwtUtil;
+//    private final JwtUtil jwtUtil;
 
     @Bean
     public PasswordEncoder passwordEncoder() {return new BCryptPasswordEncoder();}
