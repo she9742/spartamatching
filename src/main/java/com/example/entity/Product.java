@@ -1,6 +1,7 @@
 package com.example.entity;
 
 import com.example.dto.ProductRequestDto;
+import com.example.dto.ProductResponseDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -44,7 +45,10 @@ public class Product {
     public Product(ProductRequestDto dto,Client client) {
         this.productName = dto.getProductName();
         this.information = dto.getInformation();
-        this.sellerId = client;
+        this.sellerId = client.getId();
+        this.username = client.getUsername();
+        this.category = client.getCategory();
+        this.sellerId = dto.getSellerId();
         this.point = dto.getPoint();
         this.activation = true;
     }

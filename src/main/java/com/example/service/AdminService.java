@@ -99,14 +99,11 @@ public class AdminService {
     }
 
     @Transactional(readOnly = true)
-    public List<AllClientResponseDto> getClientList() {
-        List<Client> clientList = clientRepository.findAll();
-        List<AllClientResponseDto> clientResponseList = new ArrayList<>();
-        for (Client client : clientList) {
-            // 판매자도 Client이므로 포함되어야 한다고 생각함. 맞는듯
+    public Page<AllClientResponseDto> getClientList(PageDto pageDto)  {
+        Pageable pageable=makePage(pageDto);
 
-            clientResponseList.add(new AllClientResponseDto(client));
-        }
+        Page<Client> clientList = clientRepository.findAll(pageable);
+        Page<AllClientResponseDto> clientResponseList = clientList.map(AllClientResponseDto::new);
         return clientResponseList;
     }
 
@@ -133,6 +130,11 @@ public class AdminService {
         return "권한을 부여하였습니다.";
     }
 
+    public Pageable makePage(PageDto pageDto) {
+        Sort.Direction direction = pageDto.isAsc() ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, pageDto.getSortBy());
+        return PageRequest.of(pageDto.getPage() - 1, pageDto.getSize(), sort);
+    }
 }
 
 

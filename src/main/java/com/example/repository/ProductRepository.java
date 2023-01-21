@@ -19,6 +19,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 	List<Product> findBySellerId(Long SellerId);
 	Optional<Client> findByProductId(Long ProductId);
 
+	List<Product> findAllByOrderByModifiedAtDesc(Pageable pageable);
+//	List<Product> findBySellerId(Pageable pageable, Long sellerId);
+	Page<Product> findBySellerId(Pageable pageable, Long sellerId);
+
 	void deleteAllBySellerId(Long sellerId);
 	Page<Product> findAll(Pageable pageable);
 

@@ -4,9 +4,10 @@ import com.example.dto.*;
 import com.example.entity.*;
 import com.example.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,9 +30,8 @@ public class ClientService {
     private final PasswordEncoder passwordEncoder;
 
 
-
     @Transactional
-    public String signup(SignupRequestDto signupRequestDto){
+    public String signup(SignupRequestDto signupRequestDto) {
 
         //비밀번호 인코드
         String password = passwordEncoder.encode(signupRequestDto.getPassword());
@@ -41,7 +42,7 @@ public class ClientService {
             throw new IllegalArgumentException("이미 존재하는 유저입니다.");
         }
 
-        Client client = new Client(signupRequestDto,password);
+        Client client = new Client(signupRequestDto, password);
         clientRepository.save(client);
 
         return "회원가입 완료";
@@ -49,11 +50,11 @@ public class ClientService {
 
 
     @Transactional
-    public String signin(SigninRequestDto signinRequestDto){
+    public String signin(SigninRequestDto signinRequestDto) {
 
         // 사용자 확인
         Client client = clientRepository.findByUsername(signinRequestDto.getUsername()).orElseThrow(
-            () -> new IllegalArgumentException("유저가 존재하지 않습니다")
+                () -> new IllegalArgumentException("유저가 존재하지 않습니다")
         );
         // 비밀번호 확인
         //스프링 시큐리티 내부기능사용 입력된 비밀번호와 저장된 비밀번호 비교
@@ -76,18 +77,18 @@ public class ClientService {
         // 1. talk.getClientId와 clientId 가 일치하는지 확인 해야함
         // 2. 불일치한다면, 불일치 메세지를 날리고, 일치하면 메소드를 실행시킴.
         Talk talk = talkRepository.findById(talkId).orElseThrow(
-            () -> new NullPointerException("해당 톡방이 존재하지 않습니다.")
+                () -> new NullPointerException("해당 톡방이 존재하지 않습니다.")
         );
-        if ((!talk.getClientId().equals(client.getId()))  ||  (!talk.getSellerId().equals(client.getId()))){
+        if ((!talk.getClientId().equals(client.getId())) || (!talk.getSellerId().equals(client.getId()))) {
             throw new IllegalArgumentException("해당 톡방에 접근권한이 없습니다.");
         }
 
         List<Message> messages = messageRepository.findAllByTalk(talkId);
         List<MessageResponseDto> messageResponseDtos = new ArrayList<>();
-        for(Message message : messages) {
+        for (Message message : messages) {
             messageResponseDtos.add(new MessageResponseDto(message));
         }
-        return messageResponseDtos ;
+        return messageResponseDtos;
     }
 
     @Transactional
@@ -95,14 +96,14 @@ public class ClientService {
 
         //톡방 존재여부 확인
         Talk talk = talkRepository.findById(talkId).orElseThrow(
-            () -> new NullPointerException("톡방이 존재하지 않습니다.")
+                () -> new NullPointerException("톡방이 존재하지 않습니다.")
         );
-        if ((!talk.getClientId().equals(client.getId()))  ||  (!talk.getSellerId().equals(client.getId()))){
+        if ((!talk.getClientId().equals(client.getId())) || (!talk.getSellerId().equals(client.getId()))) {
             throw new IllegalArgumentException("해당 톡방에 접근권한이 없습니다.");
         }
         //톡방 활성화되있다면 메세지 전송 아니면 전송X
-        if(talk.isActivation()) {
-            Message message = new Message(talkId,client.getUsername(), messageRequestDto.getContent());
+        if (talk.isActivation()) {
+            Message message = new Message(talkId, client.getUsername(), messageRequestDto.getContent());
             messageRepository.save(message);
             return new MessageResponseDto(message);
         } else {
@@ -112,14 +113,14 @@ public class ClientService {
 
     //프로필 만들기
     @Transactional
-    public ProfileUpdateResponseDto updateProfile(ProfileUpdateRequestDto requestDto, Client  client){
+    public ProfileUpdateResponseDto updateProfile(ProfileUpdateRequestDto requestDto, Client client) {
         client.updateClientProfile(requestDto.getNickname(), requestDto.getImage());
         return new ProfileUpdateResponseDto(client);
     }
 
     // 프로필 가져오기
     @Transactional
-    public ProfileUpdateResponseDto getProfile(Client client){
+    public ProfileUpdateResponseDto getProfile(Client client) {
         return new ProfileUpdateResponseDto(client);
     }
 
@@ -178,88 +179,93 @@ public class ClientService {
             return new SellerResponseDto(seller);
         }
 
-    @Transactional
-    public String sendMatching(Long clientId,Long sellerId){
+        @Transactional
+        public String sendMatching (Long clientId, Long sellerId){
 
-        //내가 보냈는데 내가 없을리가없음
-        //        Client client = clientRepository.findById(clientId).orElseThrow(
-        //                () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
-        //        );
-        Client seller = clientRepository.findById(sellerId).orElseThrow(
-            () -> new IllegalArgumentException("해당 판매자가 존재하지 않습니다.")
-        );
-        clientReqRepository.save(new ClientReq(clientId,sellerId));
-        return "매칭 요청에 성공했습니다.";
-    }
-
-
-    @Transactional
-    //public String buyProduct(Long clientId, Long productId){
-    //public String buyProduct(Client client, Long productId){
-    public String buyProduct(Client client, Long productId){
-        //물건 번호만 가지고 물건을 살수있다?
-        //->안됨. 연결된 판매자와의 물건만 살 수 있어야함
-        //->연결된사람인지 검증수단필요
-        //->Talk가 연결된 판매자만 검증됨
-
-
-
-        //가격입력을 위해 제품정보 로드
-        Product product = productRepository.findById(productId).orElseThrow(
-            () -> new IllegalArgumentException("해당 상품이 존재하지 않습니다.")
-        );
-
-        //해당 셀러와 사용자가 실제 거래중인지 확인
-        Talk talk = talkRepository.findByClientIdAndSellerId(client.getId(),product.getSellerId().getId()).orElseThrow(
-            () -> new IllegalArgumentException("해당 판매자와 거래중이 아닙니다")
-        );
-
-        if(!talk.isActivation()){
-            new IllegalArgumentException("비활성화된 거래입니다.");
+            //내가 보냈는데 내가 없을리가없음
+            //        Client client = clientRepository.findById(clientId).orElseThrow(
+            //                () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
+            //        );
+            Client seller = clientRepository.findById(sellerId).orElseThrow(
+                    () -> new IllegalArgumentException("해당 판매자가 존재하지 않습니다.")
+            );
+            clientReqRepository.save(new ClientReq(clientId, sellerId));
+            return "매칭 요청에 성공했습니다.";
         }
 
 
-        //클라이언트 정보를 통째로 받아오는걸로 수정하면 검색불필요
-        //        Client client = clientRepository.findById(clientId).orElseThrow(
-        //                () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
-        //        );
+        @Transactional
+        //public String buyProduct(Long clientId, Long productId){
+        //public String buyProduct(Client client, Long productId){
+        public String buyProduct (Client client, Long productId){
+            //물건 번호만 가지고 물건을 살수있다?
+            //->안됨. 연결된 판매자와의 물건만 살 수 있어야함
+            //->연결된사람인지 검증수단필요
+            //->Talk가 연결된 판매자만 검증됨
 
-        //셀러아이디와 같이검색하므로 불필요
-        //        Product product = productRepository.findById(productId).orElseThrow(
-        //                () -> new IllegalArgumentException("해당 상품이 존재하지 않습니다.")
-        //        );
 
-        //포인트 비교
+            //가격입력을 위해 제품정보 로드
+            Product product = productRepository.findById(productId).orElseThrow(
+                    () -> new IllegalArgumentException("해당 상품이 존재하지 않습니다.")
+            );
 
-        if (client.getPoint() >= product.getPoint()){
-            tradeReqRepository.save(new TradeReq(client.getId(),product.getSellerId().getId(),productId));
-        } else throw new IllegalArgumentException("잔액이 부족합니다.");
+            //해당 셀러와 사용자가 실제 거래중인지 확인
+            Talk talk = talkRepository.findByClientIdAndSellerId(client.getId(), product.getSellerId()).orElseThrow(
+                    () -> new IllegalArgumentException("해당 판매자와 거래중이 아닙니다")
+            );
 
-        return "물건을 구매하였습니다";
+            if (!talk.isActivation()) {
+                new IllegalArgumentException("비활성화된 거래입니다.");
+            }
 
+
+            //클라이언트 정보를 통째로 받아오는걸로 수정하면 검색불필요
+            //        Client client = clientRepository.findById(clientId).orElseThrow(
+            //                () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
+            //        );
+
+            //셀러아이디와 같이검색하므로 불필요
+            //        Product product = productRepository.findById(productId).orElseThrow(
+            //                () -> new IllegalArgumentException("해당 상품이 존재하지 않습니다.")
+            //        );
+
+            //포인트 비교
+
+            if (client.getPoint() >= product.getPoint()) {
+                tradeReqRepository.save(new TradeReq(client.getId(), product.getSellerId(), productId));
+            } else throw new IllegalArgumentException("잔액이 부족합니다.");
+
+            return "물건을 구매하였습니다";
+
+        }
+
+        @Transactional
+        public String applySeller (Client client, ApplySellerRequestDto applySellerRequestDto){
+
+
+            //현재 판매자 등록 요청이 있는지 확인한다
+            Optional<SellerReq> sellerReq_ck = sellerReqRepository.findByClientId(client.getId());
+            if (sellerReq_ck.isPresent()) {
+                //있다면 오류메시지를 띄우고 취소시킨다
+                throw new IllegalArgumentException("이미 신청한 유저입니다.");
+            }
+            //이미 판매자인지 확인한다
+            if (client.getisSeller()) {
+                throw new IllegalArgumentException("이미 판매자입니다.");
+            }
+            //2.컨트롤러에서 userDetails를 사용하여 확인후 메소드 진입
+            //->컨트롤러 생성후 이방식으로 변경
+
+            //없다면 DB에 등록 요청을 등록한다
+            SellerReq sellerReq = new SellerReq(client.getId(), applySellerRequestDto);
+            sellerReqRepository.save(sellerReq);
+
+            return "판매자 신청을 하였습니다.";
+        }
+        public Pageable makePage (PageDto pageDto){
+            Sort.Direction direction = pageDto.isAsc() ? Sort.Direction.ASC : Sort.Direction.DESC;
+            Sort sort = Sort.by(direction, pageDto.getSortBy());
+            return PageRequest.of(pageDto.getPage() - 1, pageDto.getSize(), sort);
+        }
     }
 
-    @Transactional
-    public String applySeller(Client client,ApplySellerRequestDto applySellerRequestDto){
-
-
-        //현재 판매자 등록 요청이 있는지 확인한다
-        Optional<SellerReq> sellerReq_ck = sellerReqRepository.findByClientId(client.getId());
-        if(sellerReq_ck.isPresent()){
-            //있다면 오류메시지를 띄우고 취소시킨다
-            throw new IllegalArgumentException("이미 신청한 유저입니다.");
-        }
-        //이미 판매자인지 확인한다
-        if(client.getisSeller()){
-            throw new IllegalArgumentException("이미 판매자입니다.");
-        }
-        //2.컨트롤러에서 userDetails를 사용하여 확인후 메소드 진입
-        //->컨트롤러 생성후 이방식으로 변경
-
-        //없다면 DB에 등록 요청을 등록한다
-        SellerReq sellerReq = new SellerReq(client.getId(),applySellerRequestDto);
-        sellerReqRepository.save(sellerReq);
-
-        return "판매자 신청을 하였습니다.";
-    }
-}

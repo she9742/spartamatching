@@ -13,9 +13,11 @@ public class AllProductResponseDto {
 	private int price;
 	private String sellerName;
 
-	public AllProductResponseDto(Product product, Client client) {
+
+
+	public AllProductResponseDto(Product product) {
 		this.productName = product.getProductName();
-		this.category = client.getCategory();
+		this.category = product.getCategory();
 		this.price = product.getPoint();
 		this.sellerName = product.getUsername();
 	}

@@ -4,16 +4,10 @@ import com.example.dto.*;
 import com.example.entity.SellerReq;
 import com.example.service.AdminService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,11 +21,12 @@ public class AdminController {
 
     // 전체 고객 목록 조회
     @GetMapping("/client")
-    public ResponseEntity<List<AllClientResponseDto>> getClientList() {
-        return ResponseEntity.status(HttpStatus.OK).body(adminService.getClientList());
+    public ResponseEntity<Page<AllClientResponseDto>> getClientList(@RequestBody PageDto pageDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(adminService.getClientList(pageDto));
+
     }
 
-    // 서비스 단에서 작업 완료
+
     @GetMapping("/seller/request")
     public ResponseEntity<List<SellerReq>> getApplySellerList() {
         return ResponseEntity.status(HttpStatus.OK).body(adminService.getApplySellerList());
