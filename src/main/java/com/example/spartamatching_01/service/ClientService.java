@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -53,7 +54,7 @@ public class ClientService {
 
 
     @Transactional
-    public MessageResponseDto signin(SigninRequestDto signinRequestDto){
+    public MessageResponseDto signin(SigninRequestDto signinRequestDto, HttpServletResponse response){
 
         // 사용자 확인
         Client client = clientRepository.findByUsername(signinRequestDto.getUsername()).orElseThrow(
@@ -69,6 +70,7 @@ public class ClientService {
 
         String accessToken = jwtUtil.createToken(client.getUsername(), client.getRole());
         String refreshToken1 = jwtUtil.refreshToken(client.getUsername(), client.getRole());
+        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(client.getUsername(),client.getRole()));
         return new MessageResponseDto("accessToken = " + accessToken + "  " + "refreshToken = " + refreshToken1);
         //return new TokenResponseDto(accessToken, refreshToken1);
 

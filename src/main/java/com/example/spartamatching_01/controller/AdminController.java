@@ -14,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -43,8 +44,8 @@ public class AdminController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<MessageResponseDto> adminSignin(@RequestBody AdminSigninRequestDto adminSigninRequestDto) {
-        return ResponseEntity.status(HttpStatus.OK).body(adminService.adminSignin(adminSigninRequestDto));
+    public ResponseEntity<MessageResponseDto> adminSignin(@RequestBody AdminSigninRequestDto adminSigninRequestDto, HttpServletResponse response) {
+        return ResponseEntity.status(HttpStatus.OK).body(adminService.adminSignin(adminSigninRequestDto, response));
     }
 
     //판매자 권한 삭제

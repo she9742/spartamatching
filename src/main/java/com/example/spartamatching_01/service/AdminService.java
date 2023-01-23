@@ -19,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,7 +53,7 @@ public class AdminService {
 
 
     @Transactional
-    public MessageResponseDto adminSignin(AdminSigninRequestDto adminSigninRequestDto) {
+    public MessageResponseDto adminSignin(AdminSigninRequestDto adminSigninRequestDto, HttpServletResponse response) {
 
         // 사용자 확인
         Admin admin = adminRepository.findByUsername(adminSigninRequestDto.getUsername()).orElseThrow(
@@ -67,6 +68,7 @@ public class AdminService {
 
         String accessToken = jwtUtil.createToken(admin.getUsername(), admin.getRole());
         String refreshToken1 = jwtUtil.refreshToken(admin.getUsername(), admin.getRole());
+        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(admin.getUsername(),admin.getRole()));
         return new MessageResponseDto("accessToken = " + accessToken + "\n" + "refreshToken = " + refreshToken1);
 
     }
