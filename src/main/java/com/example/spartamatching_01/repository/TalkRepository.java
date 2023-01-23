@@ -12,6 +12,6 @@ import org.springframework.stereotype.Repository;
 public interface TalkRepository extends JpaRepository<Talk, Long> {
 
 
-	Optional<Talk> findByClientIdAndSellerId(Long clientId,Long sellerId);
+	Optional<Talk> findByClientIdAndProductId(Long clientId,Long productId);
 
 }

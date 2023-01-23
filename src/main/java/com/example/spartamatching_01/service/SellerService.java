@@ -101,10 +101,13 @@ public class SellerService {
         ClientReq clientReq = clientReqRepository.findById(clientReqId).orElseThrow(
                 () -> new NullPointerException("매칭 정보를 찾을수 없습니다.")
         );
-        if (!clientReq.getSellerId().equals(seller.getId())){
+        Product product = productRepository.findById(clientReq.getProductId()).orElseThrow(
+                () -> new NullPointerException("해당 상품이 존재하지 않습니다.")
+        );
+        if (!product.getSellerId().equals(seller.getId())){
             throw new IllegalArgumentException("자신의 거래가 아닙니다");
         }
-        Talk talk = new Talk(clientReq.getClientId(), clientReq.getSellerId()); // 대화방
+        Talk talk = new Talk(clientReq.getClientId(), product.getId()); // 대화방
         talkRepository.save(talk);
         clientReqRepository.delete(clientReq);
         return talk.getId() + "번 대화방이 열렸습니다.";
@@ -154,7 +157,7 @@ public class SellerService {
 //        Talk talk = talkRepository.findById(talkId).orElseThrow(
 //                () -> new IllegalArgumentException("")
 //        );
-        Talk talk = talkRepository.findByClientIdAndSellerId(client.getId(), sellers.getId()).orElseThrow(
+        Talk talk = talkRepository.findByClientIdAndProductId(client.getId(), product.getId()).orElseThrow(
                 () -> new IllegalArgumentException("거래중인 대상이 올바르지 않습니다")
         );
         //해당 거래방이 활성화된 거래방인지 체크

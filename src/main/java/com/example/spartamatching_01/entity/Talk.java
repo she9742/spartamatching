@@ -19,7 +19,7 @@ public class  Talk {
     private Long clientId;
 
     @Column(nullable = false)
-    private Long sellerId;
+    private Long productId;
 
     @Column(nullable = false)
     private boolean activation;
@@ -28,9 +28,9 @@ public class  Talk {
     @OneToMany
     private List<Message> messages = new ArrayList<>();
 
-    public Talk(Long client, Long seller) {
-        this.clientId = client;
-        this.sellerId = seller;
+    public Talk(Long clientId, Long productId) {
+        this.clientId = clientId;
+        this.productId = productId;
         this.activation = true;
     }
 
