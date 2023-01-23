@@ -8,6 +8,6 @@ public class MessageRequestDto {
     private String Content;
 
     public MessageRequestDto(String content) {
-        Content = content;
+        this.Content = content;
     }
 }

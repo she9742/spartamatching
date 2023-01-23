@@ -122,7 +122,7 @@ public class AdminService {
         // 1. DB의 sellerReq를 확인한다.
         // 2. sellerReq를 보낸 Id의 Client를 찾는다.
         // 3. Client의 getisSeller를 true로 바꾼다.
-        SellerReq sellerReq = sellerReqRepository.findByClientId(sellerReqId).orElseThrow(
+        SellerReq sellerReq = sellerReqRepository.findById(sellerReqId).orElseThrow(
                 () -> new IllegalArgumentException("해당 요청을 찾을 수 없습니다.")
         );
         Client client = clientRepository.findById(sellerReq.getClientId()).orElseThrow(
