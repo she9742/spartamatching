@@ -129,10 +129,10 @@ public class JwtUtil {
 
     // 인증 객체 생성
     public Authentication createAuthentication(String username,String role) {
-        if(role=="admin"){
+        if(role=="ADMIN"){
             UserDetails adminDetails = adminDetailsService.loadUserByUsername(username);
             return new UsernamePasswordAuthenticationToken(adminDetails, null, adminDetails.getAuthorities());
-        }else{//role==user
+        }else{//role==USER
             UserDetails clientDetails = clientDetailsService.loadUserByUsername(username);
             return new UsernamePasswordAuthenticationToken(clientDetails, null, clientDetails.getAuthorities());
         }

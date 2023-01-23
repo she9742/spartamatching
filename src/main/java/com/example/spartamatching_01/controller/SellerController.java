@@ -25,7 +25,7 @@ public class SellerController {
 
     //판매 상품 등록
     @PostMapping("/products")
-    public ResponseEntity<ProductResponseDto> enrollMyProdcut(@RequestBody ProductRequestDto requestDto, @AuthenticationPrincipal ClientDetailsImpl clientDetails){
+    public ResponseEntity<ProductResponseDto> enrollMyProduct(@RequestBody ProductRequestDto requestDto, @AuthenticationPrincipal ClientDetailsImpl clientDetails){
         return ResponseEntity.status(HttpStatus.CREATED).body(sellerService.enrollMyProduct(requestDto, clientDetails.getClient()));
     }
     //판매 상품 수정
@@ -74,6 +74,12 @@ public class SellerController {
     @PostMapping("/sell/{tradeReqId}")
     public ResponseEntity<String> sellProduct(@PathVariable Long tradeReqId,@AuthenticationPrincipal ClientDetailsImpl clientDetails){
     return ResponseEntity.status(HttpStatus.OK).body(sellerService.sellProduct(tradeReqId,clientDetails.getClient()));
+    }
+
+    //셀러 프로필 업데이트
+    @PutMapping("/profile")
+    public ResponseEntity<String> updateSellerProfile(@RequestBody SellerProfileUpdateRequestDto requestDto, @AuthenticationPrincipal ClientDetailsImpl clientDetails) {
+        return ResponseEntity.status(HttpStatus.OK).body(sellerService.updateProfile(requestDto,clientDetails.getClient()));
     }
 
 

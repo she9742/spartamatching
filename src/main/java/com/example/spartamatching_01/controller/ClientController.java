@@ -52,7 +52,7 @@ public class ClientController {
     }
 
     //전체 판매 상품 조회
-    @GetMapping("/prodcuts")
+    @GetMapping("/products")
     public ResponseEntity<Page<AllProductResponseDto>> getAllProduct(@RequestBody PageDto pageDto) {
         return ResponseEntity.status(HttpStatus.OK).body(clientService.getAllProducts(pageDto));
     }

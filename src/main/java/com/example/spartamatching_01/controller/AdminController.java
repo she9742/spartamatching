@@ -4,13 +4,17 @@ import com.example.spartamatching_01.dto.*;
 import com.example.spartamatching_01.entity.Admin;
 import com.example.spartamatching_01.entity.SellerReq;
 import com.example.spartamatching_01.jwt.JwtUtil;
+import com.example.spartamatching_01.security.AdminDetailsImpl;
 import com.example.spartamatching_01.service.AdminService;
 import com.example.spartamatching_01.service.ClientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,13 +30,15 @@ public class AdminController {
     private final JwtUtil jwtUtil;
 
     // 전체 고객 목록 조회
+
+    @Secured("ROLE_ADMIN")
     @GetMapping("/client")
-    public ResponseEntity<Page<AllClientResponseDto>> getClientList(@RequestBody PageDto pageDto) {
+    public ResponseEntity<Page<AllClientResponseDto>> getClientList(@RequestBody PageDto pageDto,@AuthenticationPrincipal AdminDetailsImpl adminDetails) {
         return ResponseEntity.status(HttpStatus.OK).body(adminService.getClientList(pageDto));
 
     }
 
-    // 서비스 단에서 작업 완료
+    @Secured("ROLE_ADMIN")
     @GetMapping("/seller/request")
     public ResponseEntity<List<SellerReq>> getApplySellerList() {
         return ResponseEntity.status(HttpStatus.OK).body(adminService.getApplySellerList());
@@ -44,28 +50,32 @@ public class AdminController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<MessageResponseDto> adminSignin(@RequestBody AdminSigninRequestDto adminSigninRequestDto, HttpServletResponse response) {
-        return ResponseEntity.status(HttpStatus.OK).body(adminService.adminSignin(adminSigninRequestDto, response));
+    public ResponseEntity<AdminMessageResponseDto> adminSignin(@RequestBody AdminSigninRequestDto adminSigninRequestDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(adminService.adminSignin(adminSigninRequestDto));
     }
 
     //판매자 권한 삭제
-    @PutMapping("/seller/disenroll/{sellerId}")
+    @Secured("ROLE_ADMIN")
+    @PutMapping("/seller/disenroll/{id}")
     public ResponseEntity<String> rollbackClient(@PathVariable Long sellerId) {
         return ResponseEntity.status(HttpStatus.OK).body(adminService.rollbackClient(sellerId));
     }
 
     //포인트 부여
+    @Secured("ROLE_ADMIN")
     @PostMapping("/givepoint")
     public ResponseEntity<String> withdraw(@RequestBody WithdrawPointRequestDto requestDto) {
         return ResponseEntity.status(HttpStatus.OK).body(adminService.withdraw(requestDto));
     }
 
-
+    @Secured("ROLE_ADMIN")
     @PostMapping("/seller/enroll/{id}")
     public ResponseEntity<String> approveSellerReq(@PathVariable Long id){
         return ResponseEntity.status(HttpStatus.OK).body(adminService.approveSellerReq(id));
 
     }
+
+    @Secured("ROLE_ADMIN")
     @PostMapping("/refresh")
     public TokenResponseDto adminRefresh(HttpServletRequest request, @RequestBody TokenRequestDto tokenRequestDto){
         //bearer 제거
