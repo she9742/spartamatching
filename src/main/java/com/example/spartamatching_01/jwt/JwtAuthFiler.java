@@ -86,11 +86,11 @@ public class JwtAuthFiler extends OncePerRequestFilter {
 
         //토큰이 들고있는 권한이 어드민이라면
         if(info.get(JwtUtil.AUTHORIZATION_KEY).equals("ADMIN")){
-            setAuthentication(info.getSubject(),"admin");
+            setAuthentication(info.getSubject(),"ADMIN");
         }
         //토큰이 들고있는 권한이 유저라면
         if(info.get(JwtUtil.AUTHORIZATION_KEY).equals("USER")){
-            setAuthentication(info.getSubject(),"user");
+            setAuthentication(info.getSubject(),"USER");
         }
         //토큰이 권한을 들고있지않다면
         if (info.get(JwtUtil.AUTHORIZATION_KEY) == null) {
