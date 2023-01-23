@@ -49,7 +49,7 @@ public class AdminController {
     }
 
     //판매자 권한 삭제
-    @PutMapping("/seller/disenroll/{id}")
+    @PutMapping("/seller/disenroll/{sellerId}")
     public ResponseEntity<String> rollbackClient(@PathVariable Long sellerId) {
         return ResponseEntity.status(HttpStatus.OK).body(adminService.rollbackClient(sellerId));
     }

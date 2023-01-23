@@ -120,6 +120,7 @@ public class ClientService {
     @Transactional
     public ProfileUpdateResponseDto updateProfile(ProfileUpdateRequestDto requestDto, Client client) {
         client.updateClientProfile(requestDto.getNickname(), requestDto.getImage());
+        clientRepository.save(client);
         return new ProfileUpdateResponseDto(client);
     }
 
