@@ -3,7 +3,6 @@ package com.example.spartamatching_01.service;
 import com.example.spartamatching_01.dto.*;
 import com.example.spartamatching_01.entity.*;
 import com.example.spartamatching_01.jwt.JwtUtil;
-//import com.example.spartamatching_01.redis.CacheKey;
 import com.example.spartamatching_01.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -35,8 +34,6 @@ public class ClientService {
     private final SellerReqRepository sellerReqRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
-//    private final RefreshTokenRedisRepository refreshTokenRedisRepository;
-//    private final LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
 
     @Transactional
     public String signup(SignupRequestDto signupRequestDto) {
