@@ -81,9 +81,9 @@ public class ClientController {
     }
 
 
-    @PostMapping("/sellers/{sellerId}")
-    public ResponseEntity<String> sendMatching(@PathVariable Long sellerId, @AuthenticationPrincipal ClientDetailsImpl clientDetails){
-        return ResponseEntity.status(HttpStatus.OK).body(clientService.sendMatching(clientDetails.getClient().getId(), sellerId));
+    @PostMapping("/sellers/{productId}")
+    public ResponseEntity<String> sendMatching(@PathVariable Long productId, @AuthenticationPrincipal ClientDetailsImpl clientDetails){
+        return ResponseEntity.status(HttpStatus.OK).body(clientService.sendMatching(clientDetails.getClient().getId(), productId));
     }
 
 

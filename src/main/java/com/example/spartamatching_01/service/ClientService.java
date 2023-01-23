@@ -87,7 +87,10 @@ public class ClientService {
         Talk talk = talkRepository.findById(talkId).orElseThrow(
                 () -> new NullPointerException("해당 톡방이 존재하지 않습니다.")
         );
-        if ((!talk.getClientId().equals(client.getId())) || (!talk.getSellerId().equals(client.getId()))) {
+        Product product = productRepository.findById(talk.getProductId()).orElseThrow(
+                () -> new IllegalArgumentException("해당 상품이 존재하지 않습니다.")
+        );
+        if ((!talk.getClientId().equals(client.getId())) || (!product.getSellerId().equals(client.getId()))) {
             throw new IllegalArgumentException("해당 톡방에 접근권한이 없습니다.");
         }
 
@@ -106,7 +109,10 @@ public class ClientService {
         Talk talk = talkRepository.findById(talkId).orElseThrow(
                 () -> new NullPointerException("톡방이 존재하지 않습니다.")
         );
-        if ((!talk.getClientId().equals(client.getId())) || (!talk.getSellerId().equals(client.getId()))) {
+        Product product = productRepository.findById(talk.getProductId()).orElseThrow(
+                () -> new IllegalArgumentException("해당 상품이 존재하지 않습니다.")
+        );
+        if ((!talk.getClientId().equals(client.getId())) || (!product.getSellerId().equals(client.getId()))) {
             throw new IllegalArgumentException("해당 톡방에 접근권한이 없습니다.");
         }
         //톡방 활성화되있다면 메세지 전송 아니면 전송X
@@ -161,16 +167,15 @@ public class ClientService {
         }
 
         @Transactional
-        public String sendMatching (Long clientId, Long sellerId){
+        public String sendMatching (Long clientId, Long productId){
 
-            //내가 보냈는데 내가 없을리가없음
-            //        Client client = clientRepository.findById(clientId).orElseThrow(
-            //                () -> new IllegalArgumentException("해당 유저가 존재하지 않습니다.")
-            //        );
-            Client seller = clientRepository.findById(sellerId).orElseThrow(
+            Product product = productRepository.findById(productId).orElseThrow(
+                    () -> new NullPointerException("해당 상품이 존재하지 않습니다.")
+            );
+            Client seller = clientRepository.findById(product.getSellerId()).orElseThrow(
                     () -> new IllegalArgumentException("해당 판매자가 존재하지 않습니다.")
             );
-            clientReqRepository.save(new ClientReq(clientId, sellerId));
+            clientReqRepository.save(new ClientReq(clientId, productId,product.getSellerId()));
             return "매칭 요청에 성공했습니다.";
         }
 
@@ -189,7 +194,7 @@ public class ClientService {
             );
 
             //해당 셀러와 사용자가 실제 거래중인지 확인
-            Talk talk = talkRepository.findByClientIdAndSellerId(client.getId(), product.getSellerId()).orElseThrow(
+            Talk talk = talkRepository.findByClientIdAndProductId(client.getId(), product.getSellerId()).orElseThrow(
                     () -> new IllegalArgumentException("해당 판매자와 거래중이 아닙니다")
             );
 
