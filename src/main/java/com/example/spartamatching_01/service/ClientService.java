@@ -71,6 +71,8 @@ public class ClientService {
         String accessToken = jwtUtil.createToken(client.getUsername(), client.getRole());
         String refreshToken1 = jwtUtil.refreshToken(client.getUsername(), client.getRole());
 
+        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(client.getUsername(),client.getRole()));
+
         return new MessageResponseDto("accessToken = " + accessToken + "\n" + "refreshToken = " + refreshToken1);
 
         //return new TokenResponseDto(accessToken, refreshToken1);

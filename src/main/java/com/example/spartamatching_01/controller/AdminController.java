@@ -50,8 +50,8 @@ public class AdminController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<AdminMessageResponseDto> adminSignin(@RequestBody AdminSigninRequestDto adminSigninRequestDto) {
-        return ResponseEntity.status(HttpStatus.OK).body(adminService.adminSignin(adminSigninRequestDto));
+    public ResponseEntity<AdminMessageResponseDto> adminSignin(@RequestBody AdminSigninRequestDto adminSigninRequestDto, HttpServletResponse response) {
+        return ResponseEntity.status(HttpStatus.OK).body(adminService.adminSignin(adminSigninRequestDto,response));
     }
 
     //판매자 권한 삭제
