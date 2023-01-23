@@ -53,7 +53,6 @@ public class JwtAuthFiler extends OncePerRequestFilter {
     }
 
     public void setAuthentication(String username,String role) {
-        System.out.println("1-2번지점  " + username);
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         Authentication authentication = jwtUtil.createAuthentication(username,role);
         context.setAuthentication(authentication);
