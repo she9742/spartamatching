@@ -84,6 +84,7 @@ public class AdminService {
         }
 
         client.rollbackClient();
+        clientRepository.save(client);
         productRepository.deleteAllBySellerId(sellerId);
 
         return "판매자 권한을 제거하였습니다";

@@ -144,7 +144,7 @@ public class ClientService {
         @Transactional(readOnly = true)
         public Page<AllSellerResponseDto> getAllSellers (PageDto pageDto){
             Pageable pageable = makePage(pageDto);
-            Page<Client> sellerList = clientRepository.findAll(pageable);
+            Page<Client> sellerList = clientRepository.findAllByIsSeller(pageable,true);
             Page<AllSellerResponseDto> sellerResponseList = sellerList.map(AllSellerResponseDto::new);
             return sellerResponseList;
         }
