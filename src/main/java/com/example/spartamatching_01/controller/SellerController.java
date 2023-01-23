@@ -78,7 +78,7 @@ public class SellerController {
 
     //셀러 프로필 업데이트
     @PutMapping("/profile")
-    public ResponseEntity<String> updateSellerProfile(@RequestBody SellerProfileUpdateRequestDto requestDto, @AuthenticationPrincipal ClientDetailsImpl clientDetails) {
+    public ResponseEntity<SellerProfileResponseDto> updateSellerProfile(@RequestBody SellerProfileUpdateRequestDto requestDto, @AuthenticationPrincipal ClientDetailsImpl clientDetails) {
         return ResponseEntity.status(HttpStatus.OK).body(sellerService.updateProfile(requestDto,clientDetails.getClient()));
     }
 
