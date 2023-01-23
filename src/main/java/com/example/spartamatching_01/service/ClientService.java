@@ -137,7 +137,7 @@ public class ClientService {
     @Transactional(readOnly = true)
     public Page<AllProductResponseDto> getAllProducts(PageDto pageDto) {
         Pageable pageable = makePage(pageDto);
-        Page<Product> AllProducts = productRepository.findAll(pageable);
+        Page<Product> AllProducts = productRepository.findAllByActivation(pageable,true);
         Page<AllProductResponseDto> allProductsResponse = AllProducts.map(AllProductResponseDto::new);
         return allProductsResponse;
     }
