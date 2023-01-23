@@ -1,4 +1,4 @@
-package com.example.controller;
+package com.example.spartamatching_01.controller;
 
 
 import com.example.spartamatching_01.dto.*;
@@ -25,7 +25,7 @@ public class SellerController {
 
     //판매 상품 등록
     @PostMapping("/products")
-    public ResponseEntity<ProductResponseDto> enrollMyProdcut(@RequestBody ProductRequestDto requestDto, @AuthenticationPrincipal ClientDetailsImpl clientDetails){
+    public ResponseEntity<ProductResponseDto> enrollMyProduct(@RequestBody ProductRequestDto requestDto, @AuthenticationPrincipal ClientDetailsImpl clientDetails){
         return ResponseEntity.status(HttpStatus.CREATED).body(sellerService.enrollMyProduct(requestDto, clientDetails.getClient()));
     }
     //판매 상품 수정
