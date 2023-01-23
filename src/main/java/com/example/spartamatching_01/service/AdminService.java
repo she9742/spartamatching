@@ -98,6 +98,7 @@ public class AdminService {
                 () -> new NullPointerException("사용자를 찾을 수 없습니다.")
         );
         client.deposit(requestDto.getPoint());
+        clientRepository.save(client);
         return "포인트를 지급했습니다.";
     }
 
