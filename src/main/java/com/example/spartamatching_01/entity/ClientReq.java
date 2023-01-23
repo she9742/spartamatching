@@ -19,12 +19,15 @@ public class ClientReq {
     private Long clientId;
 
     @Column(nullable = false)
+    private Long productId;
+    @Column(nullable = false)
     private Long sellerId;
 
 
 
-    public ClientReq(Long clientId, Long sellerId) {
+    public ClientReq(Long clientId, Long productId,Long sellerId) {
         this.clientId = clientId;
+        this.productId = productId;
         this.sellerId = sellerId;
     }
 

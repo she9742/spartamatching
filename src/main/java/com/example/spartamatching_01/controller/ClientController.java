@@ -64,7 +64,7 @@ public class ClientController {
     }
 
     //판매자 선택 조회
-    @GetMapping("/seller/{id}")
+    @GetMapping("/seller/{sellerId}")
     public ResponseEntity<SellerResponseDto> getSellerInfo(@PathVariable Long sellerId) {
         return ResponseEntity.status(HttpStatus.OK).body(clientService.getSellerInfo(sellerId));
     }
@@ -76,20 +76,20 @@ public class ClientController {
     }
 
     @PostMapping("/talk/{talkId}")
-    public ResponseEntity<MessageResponseDto> sendMessage(@PathVariable Long talkId, @RequestBody MessageRequestDto messageRequestDto, @AuthenticationPrincipal ClientDetailsImpl clientDetails) {
+    public ResponseEntity<List<MessageResponseDto>> sendMessage(@PathVariable Long talkId, @RequestBody MessageRequestDto messageRequestDto, @AuthenticationPrincipal ClientDetailsImpl clientDetails) {
         return ResponseEntity.status(HttpStatus.OK).body(clientService.sendMessages(talkId,clientDetails.getClient(),messageRequestDto));
     }
 
 
-    @PostMapping("/sellers/{sellerId}")
-    public ResponseEntity<String> sendMatching(@PathVariable Long sellerId,Long clientId){
-        return ResponseEntity.status(HttpStatus.OK).body(clientService.sendMatching(clientId,sellerId));
+    @PostMapping("/sellers/{productId}")
+    public ResponseEntity<String> sendMatching(@PathVariable Long productId, @AuthenticationPrincipal ClientDetailsImpl clientDetails){
+        return ResponseEntity.status(HttpStatus.OK).body(clientService.sendMatching(clientDetails.getClient().getId(), productId));
     }
 
 
-    @PostMapping("/buy/{productid}")
-    public ResponseEntity<String> buyProduct(Client client, @PathVariable Long productId){
-        return ResponseEntity.status(HttpStatus.OK).body(clientService.buyProduct(client,productId));
+    @PostMapping("/buy/{productId}")
+    public ResponseEntity<String> buyProduct(@PathVariable Long productId, @AuthenticationPrincipal ClientDetailsImpl clientDetails){
+        return ResponseEntity.status(HttpStatus.OK).body(clientService.buyProduct(clientDetails.getClient(),productId));
     }
 
 

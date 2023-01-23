@@ -13,7 +13,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ClientReqRepository extends JpaRepository<ClientReq, Long> {
 
-
-
     Page<ClientReq> findAllBySellerId(Pageable pageable, Long id);
 }
