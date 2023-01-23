@@ -16,6 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -31,8 +32,8 @@ public class ClientController {
         return ResponseEntity.status(HttpStatus.CREATED).body(clientService.signup(signupRequestDto));
     }
     @PostMapping("/signin")
-    public ResponseEntity<MessageResponseDto> signin(@RequestBody SigninRequestDto signinRequestDto) {
-        return ResponseEntity.status(HttpStatus.OK).body(clientService.signin(signinRequestDto));
+    public ResponseEntity<MessageResponseDto> signin(@RequestBody SigninRequestDto signinRequestDto, HttpServletResponse response) {
+        return ResponseEntity.status(HttpStatus.OK).body(clientService.signin(signinRequestDto,response));
     }
 
     @PostMapping("/seller")

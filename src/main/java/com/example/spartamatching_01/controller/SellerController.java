@@ -64,6 +64,7 @@ public class SellerController {
             @AuthenticationPrincipal ClientDetailsImpl clientDetails) {
         return ResponseEntity.status(HttpStatus.OK).body(sellerService.getProfile(clientDetails.getClient()));
     }
+
     // 판매 상품 조회 페이징 필요
     @GetMapping("/products")
     public ResponseEntity<Page<AllProductResponseDto>> getMyProduct(@RequestBody PageDto pageDto,@AuthenticationPrincipal ClientDetailsImpl clientDetails ){

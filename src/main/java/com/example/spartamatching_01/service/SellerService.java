@@ -1,5 +1,6 @@
 package com.example.spartamatching_01.service;
 
+
 import com.example.spartamatching_01.dto.*;
 import com.example.spartamatching_01.entity.*;
 import com.example.spartamatching_01.repository.*;
@@ -30,9 +31,10 @@ public class SellerService {
     }
 
     @Transactional  //판매자 프로필 수정
-    public String updateProfile(SellerProfileUpdateRequestDto dto, Client client){
+    public SellerProfileResponseDto updateProfile(SellerProfileUpdateRequestDto dto, Client client){
         client.updateSellerProfile(dto);
-        return "변경 완료";
+        clientRepository.save(client);
+        return new SellerProfileResponseDto(client);
     }
 
 

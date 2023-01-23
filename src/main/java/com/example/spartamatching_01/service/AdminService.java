@@ -19,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,6 +53,7 @@ public class AdminService {
 
 
     @Transactional
+
     public AdminMessageResponseDto adminSignin(AdminSigninRequestDto adminSigninRequestDto) {
 
         // 사용자 확인
@@ -67,6 +69,7 @@ public class AdminService {
 
         String accessToken = jwtUtil.createToken(admin.getUsername(), admin.getRole());
         String refreshToken1 = jwtUtil.refreshToken(admin.getUsername(), admin.getRole());
+
         return new AdminMessageResponseDto("accessToken = " + accessToken + "  " + "refreshToken = " + refreshToken1);
 
     }
@@ -82,6 +85,7 @@ public class AdminService {
         }
 
         client.rollbackClient();
+        clientRepository.save(client);
         productRepository.deleteAllBySellerId(sellerId);
 
         return "판매자 권한을 제거하였습니다";

@@ -1,6 +1,5 @@
 package com.example.spartamatching_01.repository;
 
-import java.util.List;
 import java.util.Optional;
 import com.example.spartamatching_01.entity.Client;
 import org.springframework.data.domain.Page;
@@ -11,6 +10,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ClientRepository extends JpaRepository<Client,Long> {
 	Optional<Client> findByUsername(String username);
-	Page<Client> findAll(Pageable pageable);
-
+	Page<Client> findAllByIsSeller(Pageable pageable, boolean isSeller);
 }

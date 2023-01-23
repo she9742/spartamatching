@@ -11,6 +11,8 @@ public class SellerProfileUpdateRequestDto {
     private String about;
     private String category;
 
+
+
     public SellerProfileUpdateRequestDto(Client client){
         this.nickname = client.getNickname();
         this.image = client.getImage();
