@@ -90,7 +90,7 @@ public class ClientService {
         Product product = productRepository.findById(talk.getProductId()).orElseThrow(
                 () -> new IllegalArgumentException("해당 상품이 존재하지 않습니다.")
         );
-        if ((!talk.getClientId().equals(client.getId())) || (!product.getSellerId().equals(client.getId()))) {
+        if ((!talk.getClientId().equals(client.getId())) && (!product.getSellerId().equals(client.getId()))) {
             throw new IllegalArgumentException("해당 톡방에 접근권한이 없습니다.");
         }
 
@@ -103,7 +103,7 @@ public class ClientService {
     }
 
     @Transactional
-    public MessageResponseDto sendMessages(Long talkId, Client client, MessageRequestDto messageRequestDto) {
+    public List<MessageResponseDto> sendMessages(Long talkId, Client client, MessageRequestDto messageRequestDto) {
 
         //톡방 존재여부 확인
         Talk talk = talkRepository.findById(talkId).orElseThrow(
@@ -112,16 +112,22 @@ public class ClientService {
         Product product = productRepository.findById(talk.getProductId()).orElseThrow(
                 () -> new IllegalArgumentException("해당 상품이 존재하지 않습니다.")
         );
-        if ((!talk.getClientId().equals(client.getId())) || (!product.getSellerId().equals(client.getId()))) {
+        if ((!talk.getClientId().equals(client.getId())) && (!product.getSellerId().equals(client.getId()))) {
             throw new IllegalArgumentException("해당 톡방에 접근권한이 없습니다.");
         }
         //톡방 활성화되있다면 메세지 전송 아니면 전송X
         if (talk.isActivation()) {
             Message message = new Message(talkId, client.getUsername(), messageRequestDto.getContent());
             messageRepository.save(message);
-            return new MessageResponseDto(message);
+            List<Message> messages = messageRepository.findAllByTalk(talkId);
+            List<MessageResponseDto> messageResponseDtos = new ArrayList<>();
+            for (Message message1 : messages) {
+                messageResponseDtos.add(new MessageResponseDto(message1));
+            }
+            return messageResponseDtos;
+
         } else {
-            return new MessageResponseDto("종료된 톡방에는 메시지를 보낼 수 없습니다.");
+            throw new IllegalArgumentException("종료된 톡방에는 메시지를 보낼 수 없습니다.");
         }
     }
 

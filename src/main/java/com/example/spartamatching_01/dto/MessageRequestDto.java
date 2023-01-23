@@ -5,9 +5,6 @@ import lombok.Setter;
 
 @Getter
 public class MessageRequestDto {
-    private String Content;
-
-    public MessageRequestDto(String content) {
-        this.Content = content;
-    }
+    private String content;
+    
 }

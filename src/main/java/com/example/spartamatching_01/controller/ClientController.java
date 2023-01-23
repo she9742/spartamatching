@@ -76,7 +76,7 @@ public class ClientController {
     }
 
     @PostMapping("/talk/{talkId}")
-    public ResponseEntity<MessageResponseDto> sendMessage(@PathVariable Long talkId, @RequestBody MessageRequestDto messageRequestDto, @AuthenticationPrincipal ClientDetailsImpl clientDetails) {
+    public ResponseEntity<List<MessageResponseDto>> sendMessage(@PathVariable Long talkId, @RequestBody MessageRequestDto messageRequestDto, @AuthenticationPrincipal ClientDetailsImpl clientDetails) {
         return ResponseEntity.status(HttpStatus.OK).body(clientService.sendMessages(talkId,clientDetails.getClient(),messageRequestDto));
     }
 
