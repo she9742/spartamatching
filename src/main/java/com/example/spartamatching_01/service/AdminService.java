@@ -54,7 +54,7 @@ public class AdminService {
 
     @Transactional
 
-    public AdminMessageResponseDto adminSignin(AdminSigninRequestDto adminSigninRequestDto) {
+    public AdminMessageResponseDto adminSignin(AdminSigninRequestDto adminSigninRequestDto,HttpServletResponse response) {
 
         // 사용자 확인
         Admin admin = adminRepository.findByUsername(adminSigninRequestDto.getUsername()).orElseThrow(
@@ -69,6 +69,7 @@ public class AdminService {
 
         String accessToken = jwtUtil.createToken(admin.getUsername(), admin.getRole());
         String refreshToken1 = jwtUtil.refreshToken(admin.getUsername(), admin.getRole());
+        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(admin.getUsername(),admin.getRole()));
 
         return new AdminMessageResponseDto("accessToken = " + accessToken + "  " + "refreshToken = " + refreshToken1);
 
