@@ -52,7 +52,7 @@ public class AdminService {
 
 
     @Transactional
-    public MessageResponseDto adminSignin(AdminSigninRequestDto adminSigninRequestDto) {
+    public AdminMessageResponseDto adminSignin(AdminSigninRequestDto adminSigninRequestDto) {
 
         // 사용자 확인
         Admin admin = adminRepository.findByUsername(adminSigninRequestDto.getUsername()).orElseThrow(
@@ -67,7 +67,7 @@ public class AdminService {
 
         String accessToken = jwtUtil.createToken(admin.getUsername(), admin.getRole());
         String refreshToken1 = jwtUtil.refreshToken(admin.getUsername(), admin.getRole());
-        return new MessageResponseDto("accessToken = " + accessToken + "\n" + "refreshToken = " + refreshToken1);
+        return new AdminMessageResponseDto("accessToken = " + accessToken + "  " + "refreshToken = " + refreshToken1);
 
     }
 
@@ -124,7 +124,7 @@ public class AdminService {
                 () -> new IllegalArgumentException("존재하지 않는 사용자 입니다.")
         );
         client.updateSeller(client.getNickname(), client.getImage(), sellerReq);
-
+        sellerReqRepository.delete(sellerReq);
         return "권한을 부여하였습니다.";
     }
 

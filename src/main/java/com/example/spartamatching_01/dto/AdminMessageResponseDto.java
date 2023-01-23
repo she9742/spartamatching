@@ -2,19 +2,18 @@ package com.example.spartamatching_01.dto;
 
 import com.example.spartamatching_01.entity.Message;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-public class MessageResponseDto {
+public class AdminMessageResponseDto {
     private String writer;
     private String content;
 
-    public MessageResponseDto(Message message) {
+    public AdminMessageResponseDto(Message message) {
         this.writer = message.getWriter();
         this.content = message.getContent();
     }
-    public MessageResponseDto(String content) {
+    public AdminMessageResponseDto(String content) {
         this.content = content;
-        this.writer = "사용자";
+        this.writer = "관리자";
     }
 }
