@@ -3,6 +3,7 @@ package com.example.spartamatching_01.controller;
 
 import com.example.spartamatching_01.dto.*;
 import com.example.spartamatching_01.entity.Client;
+import com.example.spartamatching_01.jwt.JwtAuthFiler;
 import com.example.spartamatching_01.jwt.JwtUtil;
 import com.example.spartamatching_01.security.ClientDetailsImpl;
 import com.example.spartamatching_01.service.AdminService;
@@ -32,7 +33,7 @@ public class ClientController {
         return ResponseEntity.status(HttpStatus.CREATED).body(clientService.signup(signupRequestDto));
     }
     @PostMapping("/signin")
-    public ResponseEntity<MessageResponseDto> signin(@RequestBody SigninRequestDto signinRequestDto, HttpServletResponse response) {
+    public ResponseEntity<TokenResponseDto> signin(@RequestBody SigninRequestDto signinRequestDto, HttpServletResponse response) {
         return ResponseEntity.status(HttpStatus.OK).body(clientService.signin(signinRequestDto,response));
     }
 
@@ -94,10 +95,10 @@ public class ClientController {
 
 
     @PostMapping("/refresh")
-    public TokenResponseDto clientRefresh(HttpServletRequest request, @RequestBody TokenRequestDto tokenRequestDto){
+    public TokenResponseDto clientRefresh(HttpServletRequest request ,@RequestBody TokenRequestDto tokenRequestDto){
         //bearer 제거
-        String resolvedAccessToken = jwtUtil.resolveAccessToken(tokenRequestDto.getAccessToken());
 
+        String resolvedAccessToken = jwtUtil.resolveAccessToken(tokenRequestDto.getAccessToken());
         //Access 토큰 username가져오기
         //인증을 확인하고 authenticationAccessToken 변수에 토큰저장
         Authentication authenticationAccessToken = jwtUtil.getAuthentication(resolvedAccessToken);

@@ -3,8 +3,10 @@ package com.example.spartamatching_01.service;
 import com.example.spartamatching_01.dto.*;
 import com.example.spartamatching_01.entity.*;
 import com.example.spartamatching_01.jwt.JwtUtil;
+//import com.example.spartamatching_01.redis.CacheKey;
 import com.example.spartamatching_01.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.example.spartamatching_01.entity.UserRoleEnum.USER;
+
 @Service
 @RequiredArgsConstructor
 public class ClientService {
@@ -31,7 +35,8 @@ public class ClientService {
     private final SellerReqRepository sellerReqRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
-
+//    private final RefreshTokenRedisRepository refreshTokenRedisRepository;
+//    private final LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
 
     @Transactional
     public String signup(SignupRequestDto signupRequestDto) {
@@ -54,7 +59,7 @@ public class ClientService {
 
 
     @Transactional
-    public MessageResponseDto signin(SigninRequestDto signinRequestDto, HttpServletResponse response){
+    public TokenResponseDto signin(SigninRequestDto signinRequestDto, HttpServletResponse response){
 
         // 사용자 확인
         Client client = clientRepository.findByUsername(signinRequestDto.getUsername()).orElseThrow(
@@ -70,17 +75,15 @@ public class ClientService {
 
         String accessToken = jwtUtil.createToken(client.getUsername(), client.getRole());
         String refreshToken1 = jwtUtil.refreshToken(client.getUsername(), client.getRole());
-
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(client.getUsername(),client.getRole()));
 
-        return new MessageResponseDto("accessToken = " + accessToken + "\n" + "refreshToken = " + refreshToken1);
-
-        //return new TokenResponseDto(accessToken, refreshToken1);
+        return new TokenResponseDto(accessToken, refreshToken1);
 
 
     }
 
-    @Transactional
+
+        @Transactional
     public List<MessageResponseDto> getMessages(Long talkId, Client client) {
         // 1. talk.getClientId와 clientId 가 일치하는지 확인 해야함
         // 2. 불일치한다면, 불일치 메세지를 날리고, 일치하면 메소드를 실행시킴.
@@ -242,7 +245,8 @@ public class ClientService {
 
     public TokenResponseDto reissue(String username, UserRoleEnum role) {
         String newCreatedToken = jwtUtil.createToken(username, role);
-        String refreshToken1 = jwtUtil.refreshToken(username, role);
-        return new TokenResponseDto(newCreatedToken, refreshToken1);
+        //String refreshToken1 = jwtUtil.refreshToken(username, role);
+        //return new TokenResponseDto(newCreatedToken, refreshToken1);
+        return new TokenResponseDto(newCreatedToken);
     }
 }

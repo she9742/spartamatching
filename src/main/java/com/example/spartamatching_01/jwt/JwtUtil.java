@@ -36,7 +36,7 @@ public class JwtUtil {
     public static final String AUTHORIZATION_KEY = "auth";  // 사용자 권한 값의 KEY.
     public static final String BEARER_PREFIX = "Bearer "; //토큰 식별자.
     public static final String REFRESH_PREFIX = "Refres "; //토큰 식별자.
-    private static final long ACCESS_TOKEN_TIME = 60 * 60 * 1000L; //1 hour // 60min X 60sec X 1000ms
+    private static final long ACCESS_TOKEN_TIME = 30 * 1000L; //1 hour // 60min X 60sec X 1000ms
     private static final Long REFRESH_TOKEN_TIME = 14 * 24 * 60 * 60 * 1000L; // 14 day
     @Value("${jwt.secret.key}")
     private String secretKey;
@@ -48,6 +48,7 @@ public class JwtUtil {
         byte[] bytes = Base64.getDecoder().decode(secretKey);
         key = Keys.hmacShaKeyFor(bytes);
     }
+
 
     public String resolveAccessToken(String bearerToken) {
         //헤더가 null이 아니고 &&  헤더가 해당 Bearer 식별자로 시작한다면 식별자 제거
@@ -163,6 +164,10 @@ public class JwtUtil {
 
 
     }
+
+
+
+
 
 
 

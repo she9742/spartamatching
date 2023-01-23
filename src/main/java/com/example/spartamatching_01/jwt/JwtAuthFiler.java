@@ -52,6 +52,8 @@ public class JwtAuthFiler extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+
+
     public void setAuthentication(String username,String role) {
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         Authentication authentication = jwtUtil.createAuthentication(username,role);

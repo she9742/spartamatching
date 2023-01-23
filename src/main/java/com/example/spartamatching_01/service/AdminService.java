@@ -71,7 +71,7 @@ public class AdminService {
         String refreshToken1 = jwtUtil.refreshToken(admin.getUsername(), admin.getRole());
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(admin.getUsername(),admin.getRole()));
 
-        return new AdminMessageResponseDto("accessToken = " + accessToken + "  " + "refreshToken = " + refreshToken1);
+        return new AdminMessageResponseDto("accessToken = " + accessToken + "     " + "refreshToken = " + refreshToken1);
 
     }
 

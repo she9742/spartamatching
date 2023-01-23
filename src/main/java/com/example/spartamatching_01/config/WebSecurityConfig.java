@@ -57,6 +57,7 @@ public class WebSecurityConfig {
                 .antMatchers("/seller/**").permitAll()
                 .antMatchers("/admin/**").permitAll()
                 .anyRequest().authenticated()
+                .and().logout().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().addFilterBefore(new JwtAuthFiler(jwtUtil), UsernamePasswordAuthenticationFilter.class);
         http.formLogin().disable();
         // 401 Error 처리, Authorization 즉, 인증과정에서 실패할 시 처리

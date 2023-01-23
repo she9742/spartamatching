@@ -17,4 +17,6 @@ public class MessageResponseDto {
         this.content = content;
         this.writer = "사용자";
     }
+
+
 }
