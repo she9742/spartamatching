@@ -1,19 +1,19 @@
 package com.example.spartamatching_01.entity;
 
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
-@Entity
 @Getter
+@Entity
 @NoArgsConstructor
-public class  Talk {
+public class Matching {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(nullable = false)
     private Long clientId;
@@ -21,20 +21,15 @@ public class  Talk {
     @Column(nullable = false)
     private Long productId;
 
-    @Column
-    private boolean activation;
+    @Column(nullable = false)
+    private Long sellerId;
 
-    @JoinColumn
-    @OneToMany
-    private List<Message> messages = new ArrayList<>();
 
-    public Talk(Long clientId, Long productId) {
+
+    public Matching(Long clientId, Long productId, Long sellerId) {
         this.clientId = clientId;
         this.productId = productId;
-        this.activation = true;
+        this.sellerId = sellerId;
     }
 
-    public void closeTalk() {
-        this.activation = false;
-    }
 }

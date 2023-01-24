@@ -5,27 +5,30 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+
 @Getter
-@Entity
 @NoArgsConstructor
-public class Message {
+@Entity
+public class Trade {
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-
-    @JoinColumn
-    @Column(nullable = false)
-    private Long talk;
+    private Long id;
 
     @Column(nullable = false)
-    private String writer;
+    private Long clientId;
 
     @Column(nullable = false)
-    private String content;
+    private Long sellerId;
 
-    public Message(Long talk, String writer, String content) {
-        this.talk = talk;
-        this.writer = writer;
-        this.content = content;
+    @Column(nullable = false)
+    private Long productId;
+
+
+    public TradeReq(Long clientId, Long sellerId,Long produectId) {
+        this.clientId = clientId;
+        this.sellerId = sellerId;
+        this.produectId = produectId;
     }
 }

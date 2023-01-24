@@ -1,6 +1,5 @@
 package com.example.spartamatching_01.jwt;
 
-import com.example.spartamatching_01.dto.AuthenticatedUserDto;
 import com.example.spartamatching_01.entity.UserRoleEnum;
 import com.example.spartamatching_01.security.AdminDetailsServiceImpl;
 import com.example.spartamatching_01.security.ClientDetailsServiceImpl;
@@ -119,21 +118,9 @@ public class JwtUtil {
         }
     }
 
-    // 토큰 유효성 검사 후 인증된 사용자 정보 가져오기
-    public AuthenticatedUserDto validateTokenAndGetInfo(String token) {
-        if (validateToken(token)) {
-            Claims claims = getUserInfoFromToken(token);
-            String username = claims.getSubject();
-            String role = String.valueOf(claims.get("auth").toString());
-            return new AuthenticatedUserDto(role, username);
-        }else {
-            throw new IllegalArgumentException("유효하지 않은 토큰!!");
-        }
-    }
-
     // 인증 객체 생성
     public Authentication createAuthentication(String username,String role) {
-        if(role=="ADMIN"){
+        if(role.equals("ADMIN")){
             UserDetails adminDetails = adminDetailsService.loadUserByUsername(username);
             return new UsernamePasswordAuthenticationToken(adminDetails, null, adminDetails.getAuthorities());
         }else{//role==USER
@@ -167,7 +154,7 @@ public class JwtUtil {
 
 
     }
-
+    //남은 시간 계산
     public long getRemainMilliSeconds(String token) {
         Claims info = getUserInfoFromToken(token);
         Date expiration = info.getExpiration();

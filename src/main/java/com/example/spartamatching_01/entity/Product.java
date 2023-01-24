@@ -1,7 +1,7 @@
 package com.example.spartamatching_01.entity;
 
 
-import com.example.spartamatching_01.dto.ProductRequestDto;
+import com.example.spartamatching_01.dto.seller.ProductRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -21,7 +21,6 @@ public class Product {
 
     @Column
     private String information;
-
 
     @Column
     private Long sellerId;

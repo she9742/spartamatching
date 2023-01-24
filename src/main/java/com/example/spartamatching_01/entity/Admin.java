@@ -2,7 +2,7 @@ package com.example.spartamatching_01.entity;
 
 import javax.persistence.*;
 
-import com.example.spartamatching_01.dto.AdminSignupRequestDto;
+import com.example.spartamatching_01.dto.admin.AdminSignupRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -35,8 +35,4 @@ public class Admin {
 		this.image = adminSignupRequestDto.getImage();
 		this.role = UserRoleEnum.ADMIN;
 	}
-
-//	public void withdraw(int point){
-//		this.point = this.point - point;
-//	}
 }

@@ -29,26 +29,32 @@ public class ClientController {
     private final AdminService adminService;
     private final JwtUtil jwtUtil;
 
+    //회원가입
     @PostMapping("/signup")
     public ResponseEntity<String> signup(@RequestBody SignupRequestDto signupRequestDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(clientService.signup(signupRequestDto));
     }
+
+    //로그인
     @PostMapping("/signin")
-    public ResponseEntity<TokenResponseDto> signin(@RequestBody SigninRequestDto signinRequestDto, HttpServletResponse response) {
+    public ResponseEntity<SigninResponseDto> signin(@RequestBody SigninRequestDto signinRequestDto, HttpServletResponse response) {
         return ResponseEntity.status(HttpStatus.OK).body(clientService.signin(signinRequestDto,response));
     }
 
-    @PostMapping("/seller")
+    //판매자 요청
+    @PostMapping("/sellers")
     public ResponseEntity<String> applySeller(@RequestBody ApplySellerRequestDto applySellerRequestDto, @AuthenticationPrincipal ClientDetailsImpl clientDetails) {
         return ResponseEntity.status(HttpStatus.OK).body(clientService.applySeller(clientDetails.getClient(),applySellerRequestDto));
     }
 
-    @PutMapping("/profile")
+    //사용자 정보 업데이트
+    @PatchMapping("/profiles")
     public ResponseEntity<ProfileUpdateResponseDto> updateProfile(@RequestBody ProfileUpdateRequestDto requestDto, @AuthenticationPrincipal ClientDetailsImpl clientDetails) {
         return ResponseEntity.status(HttpStatus.OK).body(clientService.updateProfile(requestDto,clientDetails.getClient()));
     }
 
-    @GetMapping("/profile")
+    //사용자 정보 조회
+    @GetMapping("/profiles")
     public ResponseEntity<ProfileUpdateResponseDto> getProfile(@AuthenticationPrincipal ClientDetailsImpl clientDetails) {
         return ResponseEntity.status(HttpStatus.OK).body(clientService.getProfile(clientDetails.getClient()));
     }
@@ -66,37 +72,39 @@ public class ClientController {
     }
 
     //판매자 선택 조회
-    @GetMapping("/seller/{sellerId}")
+    @GetMapping("/sellers/{sellerId}")
     public ResponseEntity<SellerResponseDto> getSellerInfo(@PathVariable Long sellerId) {
         return ResponseEntity.status(HttpStatus.OK).body(clientService.getSellerInfo(sellerId));
     }
 
     //전체메세지조회
-    @GetMapping("/talk/{talkId}")
+    @GetMapping("/talks/{talkId}")
     public ResponseEntity<List<MessageResponseDto>> getMessages(@PathVariable Long talkId, @AuthenticationPrincipal ClientDetailsImpl clientDetails) {
         return ResponseEntity.status(HttpStatus.OK).body(clientService.getMessages(talkId,clientDetails.getClient()));
     }
 
-    @PostMapping("/talk/{talkId}")
-    public ResponseEntity<List<MessageResponseDto>> sendMessage(@PathVariable Long talkId, @RequestBody MessageRequestDto messageRequestDto, @AuthenticationPrincipal ClientDetailsImpl clientDetails) {
+    //메시지 전송
+    @PostMapping("/talks/{talkId}")
+    public ResponseEntity<List<MessageResponseDto>> sendMessages(@PathVariable Long talkId, @RequestBody MessageRequestDto messageRequestDto, @AuthenticationPrincipal ClientDetailsImpl clientDetails) {
         return ResponseEntity.status(HttpStatus.OK).body(clientService.sendMessages(talkId,clientDetails.getClient(),messageRequestDto));
     }
 
-
-    @PostMapping("/sellers/{productId}")
+    //판매자에게 매칭 요청하기
+    @PostMapping("/matching/{productId}")
     public ResponseEntity<String> sendMatching(@PathVariable Long productId, @AuthenticationPrincipal ClientDetailsImpl clientDetails){
         return ResponseEntity.status(HttpStatus.OK).body(clientService.sendMatching(clientDetails.getClient().getId(), productId));
     }
 
 
+    //물건 구매 요청 보내기
     @PostMapping("/buy/{productId}")
     public ResponseEntity<String> buyProduct(@PathVariable Long productId, @AuthenticationPrincipal ClientDetailsImpl clientDetails){
         return ResponseEntity.status(HttpStatus.OK).body(clientService.buyProduct(clientDetails.getClient(),productId));
     }
 
-
+    //토큰 재발급
     @PostMapping("/refresh")
-    public TokenResponseDto clientRefresh(HttpServletRequest request ,@RequestBody TokenRequestDto tokenRequestDto){
+    public ReissueResponseDto clientRefresh(HttpServletRequest request , @RequestBody TokenRequestDto tokenRequestDto){
         //bearer 제거
         String resolvedAccessToken = jwtUtil.resolveAccessToken(tokenRequestDto.getAccessToken());
 
@@ -121,13 +129,15 @@ public class ClientController {
         throw new IllegalStateException("리프레시 토큰과 엑세스토큰의 사용자가 일치하지 않습니다.");
     }
 
-    @PostMapping("/logout")
-    public void logout(@RequestHeader("Authorization") String accessToken,
+    //로그아웃
+    @PostMapping("/signout")
+    public ResponseEntity<String> signout(@RequestHeader("Authorization") String accessToken,
                        @RequestHeader("RefreshToken") String refreshToken) {
         String username = jwtUtil.getUserInfoFromToken(resolveToken(accessToken)).getSubject();
-        clientService.logout(new TokenResponseDto(accessToken,refreshToken), username);
+        return ResponseEntity.status(HttpStatus.CREATED).body(clientService.signout(new SignoutRequestDto(accessToken,refreshToken), username));
     }
 
+    //로그아웃 메소드 보조
     private String resolveToken(String token) {
         return token.substring(7);
     }

@@ -1,6 +1,10 @@
 package com.example.spartamatching_01.service;
 
-import com.example.spartamatching_01.dto.*;
+import com.example.spartamatching_01.dto.client.*;
+import com.example.spartamatching_01.dto.common.AllProductResponseDto;
+import com.example.spartamatching_01.dto.common.PageDto;
+import com.example.spartamatching_01.dto.common.ReissueResponseDto;
+import com.example.spartamatching_01.dto.common.SignoutRequestDto;
 import com.example.spartamatching_01.entity.*;
 import com.example.spartamatching_01.jwt.JwtUtil;
 import com.example.spartamatching_01.redis.CacheKey;
@@ -31,13 +35,13 @@ public class ClientService {
     private final MessageRepository messageRepository;
     private final ClientRepository clientRepository;
     private final ProductRepository productRepository;
-    private final ClientReqRepository clientReqRepository;
-    private final TradeReqRepository tradeReqRepository;
-    private final SellerReqRepository sellerReqRepository;
+    private final MatchingRepository matchingRepository;
+    private final TradeRepository tradeRepository;
+    private final ApplicantRepository applicantRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final RefreshTokenRedisRepository refreshTokenRedisRepository;
-    private final LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
+    private final SignoutAccessTokenRedisRepository signoutAccessTokenRedisRepository;
 
     @Transactional
     public String signup(SignupRequestDto signupRequestDto) {
@@ -60,7 +64,7 @@ public class ClientService {
 
 
     @Transactional
-    public TokenResponseDto signin(SigninRequestDto signinRequestDto, HttpServletResponse response){
+    public SigninResponseDto signin(SigninRequestDto signinRequestDto, HttpServletResponse response){
 
         // 사용자 확인
         Client client = clientRepository.findByUsername(signinRequestDto.getUsername()).orElseThrow(
@@ -68,7 +72,6 @@ public class ClientService {
         );
 
         // 비밀번호 확인
-        //스프링 시큐리티 내부기능사용 입력된 비밀번호와 저장된 비밀번호 비교
         if (!passwordEncoder.matches(signinRequestDto.getPassword(), client.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 올바르지 않습니다");
         }
@@ -77,31 +80,29 @@ public class ClientService {
         RefreshToken refreshToken = saveRefreshToken(client.getUsername());
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(client.getUsername(),client.getRole()));
 
-        return new TokenResponseDto(accessToken,refreshToken.getRefreshToken());
+        return new SigninResponseDto(accessToken,refreshToken.getRefreshToken());
     }
 
     private RefreshToken saveRefreshToken(String username) {
         return refreshTokenRedisRepository.save(RefreshToken.createRefreshToken(username, jwtUtil.refreshToken(username,USER),jwtUtil.getRefreshTokenTime()));
-                //jwtTokenUtil.generateRefreshToken(username), REFRESH_TOKEN_EXPIRATION_TIME.getValue()));
     }
 
 
     @CacheEvict(value = CacheKey.USER, key = "#username")
-    public void logout(TokenResponseDto tokenResponseDto, String username) {
-        String accessToken = resolveToken(tokenResponseDto.getAccessToken());
+    public String signout(SignoutRequestDto signoutRequestDto, String username) {
+        String accessToken = resolveToken(signoutRequestDto.getAccessToken());
         long remainMilliSeconds = jwtUtil.getRemainMilliSeconds(accessToken);
         refreshTokenRedisRepository.deleteById(username);
-        logoutAccessTokenRedisRepository.save(LogoutAccessToken.of(accessToken, username, remainMilliSeconds));
+        signoutAccessTokenRedisRepository.save(SignoutAccessToken.of(accessToken, username, remainMilliSeconds));
+        return "로그아웃 완료";
     }
 
     private String resolveToken(String token) {
         return token.substring(7);
     }
 
-        @Transactional
+    @Transactional
     public List<MessageResponseDto> getMessages(Long talkId, Client client) {
-        // 1. talk.getClientId와 clientId 가 일치하는지 확인 해야함
-        // 2. 불일치한다면, 불일치 메세지를 날리고, 일치하면 메소드를 실행시킴.
         Talk talk = talkRepository.findById(talkId).orElseThrow(
                 () -> new NullPointerException("해당 톡방이 존재하지 않습니다.")
         );
@@ -163,7 +164,7 @@ public class ClientService {
         return new ProfileUpdateResponseDto(client);
     }
 
-    // 전체 판매상품 목록 조회 (혜은)
+    // 전체 판매상품 목록 조회
     @Transactional(readOnly = true)
     public Page<AllProductResponseDto> getAllProducts(PageDto pageDto) {
         Pageable pageable = makePage(pageDto);
@@ -173,71 +174,65 @@ public class ClientService {
     }
 
 
-        // 전체 판매자 목록 조회
-        @Transactional(readOnly = true)
-        public Page<AllSellerResponseDto> getAllSellers (PageDto pageDto){
-            Pageable pageable = makePage(pageDto);
-            Page<Client> sellerList = clientRepository.findAllByIsSeller(pageable,true);
-            Page<AllSellerResponseDto> sellerResponseList = sellerList.map(AllSellerResponseDto::new);
-            return sellerResponseList;
-        }
-        // 판매자 정보 조회
-        @Transactional
-        public SellerResponseDto getSellerInfo (Long sellerId){
-            Client seller = clientRepository.findById(sellerId).orElseThrow(
-                    () -> new RuntimeException("찾으시는 판매자가 없습니다.")
-            );
-            return new SellerResponseDto(seller);
-        }
+    // 전체 판매자 목록 조회
+    @Transactional(readOnly = true)
+    public Page<AllSellerResponseDto> getAllSellers (PageDto pageDto){
+        Pageable pageable = makePage(pageDto);
+        Page<Client> sellerList = clientRepository.findAllByIsSeller(pageable,true);
+        Page<AllSellerResponseDto> sellerResponseList = sellerList.map(AllSellerResponseDto::new);
+        return sellerResponseList;
+    }
 
-        @Transactional
-        public String sendMatching (Long clientId, Long productId){
+    // 판매자 정보 조회
+    @Transactional
+    public SellerResponseDto getSellerInfo (Long sellerId){
+        Client seller = clientRepository.findById(sellerId).orElseThrow(
+                () -> new RuntimeException("찾으시는 판매자가 없습니다.")
+        );
+        return new SellerResponseDto(seller);
+    }
 
-            Product product = productRepository.findById(productId).orElseThrow(
-                    () -> new NullPointerException("해당 상품이 존재하지 않습니다.")
-            );
-            Client seller = clientRepository.findById(product.getSellerId()).orElseThrow(
-                    () -> new IllegalArgumentException("해당 판매자가 존재하지 않습니다.")
-            );
-            clientReqRepository.save(new ClientReq(clientId, productId,product.getSellerId()));
-            return "매칭 요청에 성공했습니다.";
-        }
+    @Transactional
+    public String sendMatching (Long clientId, Long productId){
 
-
-        @Transactional
-        public String buyProduct (Client client, Long productId){
-            //물건 번호만 가지고 물건을 살수있다?
-            //->안됨. 연결된 판매자와의 물건만 살 수 있어야함
-            //->연결된사람인지 검증수단필요
-            //->Talk가 연결된 판매자만 검증됨
+        Product product = productRepository.findById(productId).orElseThrow(
+                () -> new NullPointerException("해당 상품이 존재하지 않습니다.")
+        );
+        Client seller = clientRepository.findById(product.getSellerId()).orElseThrow(
+                () -> new IllegalArgumentException("해당 판매자가 존재하지 않습니다.")
+        );
+        matchingRepository.save(new Matching(clientId, productId,product.getSellerId()));
+        return "매칭 요청에 성공했습니다.";
+    }
 
 
-            //가격입력을 위해 제품정보 로드
-            Product product = productRepository.findById(productId).orElseThrow(
-                    () -> new IllegalArgumentException("해당 상품이 존재하지 않습니다.")
-            );
+    @Transactional
+    public String buyProduct (Client client, Long productId){
+        //가격입력을 위해 제품정보 로드
+        Product product = productRepository.findById(productId).orElseThrow(
+                () -> new IllegalArgumentException("해당 상품이 존재하지 않습니다.")
+        );
 
-            //해당 셀러와 사용자가 실제 거래중인지 확인
-            Talk talk = talkRepository.findByClientIdAndProductId(client.getId(), product.getSellerId()).orElseThrow(
-                    () -> new IllegalArgumentException("해당 판매자와 거래중이 아닙니다")
-            );
+        //해당 셀러와 사용자가 실제 거래중인지 확인
+        Talk talk = talkRepository.findByClientIdAndProductId(client.getId(), product.getSellerId()).orElseThrow(
+                () -> new IllegalArgumentException("해당 판매자와 거래중이 아닙니다")
+        );
 
-            if (!talk.isActivation()) {
-                new IllegalArgumentException("비활성화된 거래입니다.");
-            }
-
-            //포인트 비교
-
-            if (client.getPoint() >= product.getPoint()) {
-                tradeReqRepository.save(new TradeReq(client.getId(), product.getSellerId(), productId));
-            } else throw new IllegalArgumentException("잔액이 부족합니다.");
-
-            return "물건을 구매하였습니다";
-
+        if (!talk.isActivation()) {
+            new IllegalArgumentException("비활성화된 거래입니다.");
         }
 
+        //포인트 비교
+        if (client.getPoint() >= product.getPoint()) {
+            tradeRepository.save(new Trade(client.getId(), product.getSellerId(), productId));
+        } else throw new IllegalArgumentException("잔액이 부족합니다.");
 
-    public Pageable makePage (PageDto pageDto){
+        return "물건을 구매하였습니다";
+
+    }
+
+
+    public Pageable makePage(PageDto pageDto){
         Sort.Direction direction = pageDto.isAsc() ? Sort.Direction.ASC : Sort.Direction.DESC;
         Sort sort = Sort.by(direction, pageDto.getSortBy());
         return PageRequest.of(pageDto.getPage() - 1, pageDto.getSize(), sort);
@@ -246,21 +241,19 @@ public class ClientService {
     @Transactional
     public String applySeller(Client client,ApplySellerRequestDto applySellerRequestDto){
         //현재 판매자 등록 요청이 있는지 확인한다
-        Optional<SellerReq> sellerReq_ck = sellerReqRepository.findByClientId(client.getId());
+        Optional<Applicant> sellerReq_ck = applicantRepository.findByClientId(client.getId());
         if(sellerReq_ck.isPresent()){
             //있다면 오류메시지를 띄우고 취소시킨다
             throw new IllegalArgumentException("이미 신청한 유저입니다.");
         }
         //이미 판매자인지 확인한다
-        if(client.getisSeller()){
+        if(client.isSeller()){
             throw new IllegalArgumentException("이미 판매자입니다.");
         }
-        //2.컨트롤러에서 userDetails를 사용하여 확인후 메소드 진입
-        //->컨트롤러 생성후 이방식으로 변경
 
         //없다면 DB에 등록 요청을 등록한다
-        SellerReq sellerReq = new SellerReq(client.getId(),applySellerRequestDto);
-        sellerReqRepository.save(sellerReq);
+        Applicant applicant = new Applicant(client.getId(),applySellerRequestDto);
+        applicantRepository.save(applicant);
 
         return "판매자 신청을 하였습니다.";
     }
@@ -269,18 +262,11 @@ public class ClientService {
         return clientRepository.findByUsername(name).orElseThrow();
     }
 
-//    public TokenResponseDto reissue(String username, UserRoleEnum role) {
-//        String newCreatedToken = jwtUtil.createToken(username, role);
-//        //String refreshToken1 = jwtUtil.refreshToken(username, role);
-//        //return new TokenResponseDto(newCreatedToken, refreshToken1);
-//        return new TokenResponseDto(newCreatedToken);
-//    }
 
-    public TokenResponseDto reissue(String refreshToken) {
+    public ReissueResponseDto reissue(String refreshToken) {
         refreshToken = resolveToken(refreshToken);
         String username = jwtUtil.getUserInfoFromToken(refreshToken).getSubject();
         RefreshToken redisRefreshToken = refreshTokenRedisRepository.findById(username).orElseThrow(NoSuchElementException::new);
-        System.out.println(refreshToken + "테스트 위치2  " + resolveToken(redisRefreshToken.getRefreshToken()));
         //전달받은 리프래쉬토큰이 DB에 저장된 리프레시 토큰과 같다면
         if (refreshToken.equals(resolveToken(redisRefreshToken.getRefreshToken()))) {
             return reissueRefreshToken(refreshToken, username);
@@ -289,14 +275,14 @@ public class ClientService {
     }
 
 
-    private TokenResponseDto reissueRefreshToken(String refreshToken, String username) {
+    private ReissueResponseDto reissueRefreshToken(String refreshToken, String username) {
         //전달받은 리프래쉬토큰이 DB에 저장된 리프레시 토큰과 같으며 + 리프레시토큰의 남은시간이 리프레시토큰의 총 경과시간지났으면 새로운 리프레시토큰 생성후 저장
         if (lessThanReissueExpirationTimesLeft(refreshToken)) {
             String accessToken = jwtUtil.createToken(username, USER);
-            return new TokenResponseDto(accessToken,saveRefreshToken(username).getRefreshToken());
+            return new ReissueResponseDto(accessToken,saveRefreshToken(username).getRefreshToken());
         }
         //전달받은 리프래쉬토큰이 DB에 저장된 리프레시 토큰과 같으며 + 리프레시토큰의 남은시간이 리프레시토큰의 총 경과시간을 지나지 않았으면 리프레시토큰 그대로 재사용
-        return new TokenResponseDto(jwtUtil.createToken(username, USER),refreshToken);
+        return new ReissueResponseDto(jwtUtil.createToken(username, USER),refreshToken);
     }
 
     private boolean lessThanReissueExpirationTimesLeft(String refreshToken) {
