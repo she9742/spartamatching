@@ -56,7 +56,7 @@ public class SellerService {
     //자신의 상품 등록
     @Transactional
     public ProductResponseDto enrollMyProduct(ProductRequestDto dto, Client seller){
-        if(!seller.getisSeller()){
+        if(!seller.isSeller()){
             throw new IllegalArgumentException("상품을 등록할 권한이 없습니다.");
         }
         Product product = new Product(dto,seller);
@@ -120,9 +120,9 @@ public class SellerService {
     }
 
     @Transactional
-    public List<TradeReq> getTradeReq(Client seller) {
-        List<TradeReq> tradeReqs = tradeReqRepository.findAllBySellerId(seller.getId());
-        return tradeReqs;
+    public List<Trade> getTradeList(Client seller) {
+        List<Trade> trade = tradeRepository.findAllBySellerId(seller.getId());
+        return trade;
     }
 
 

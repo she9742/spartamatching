@@ -1,14 +1,18 @@
 package com.example.spartamatching_01.controller;
 
 
-import com.example.spartamatching_01.dto.*;
+import com.example.spartamatching_01.dto.client.*;
+import com.example.spartamatching_01.dto.common.AllProductResponseDto;
+import com.example.spartamatching_01.dto.common.PageDto;
+import com.example.spartamatching_01.dto.common.ReissueResponseDto;
+import com.example.spartamatching_01.dto.common.SignoutRequestDto;
+import com.example.spartamatching_01.dto.security.TokenRequestDto;
 import com.example.spartamatching_01.entity.Client;
-import com.example.spartamatching_01.jwt.JwtAuthFiler;
+
 import com.example.spartamatching_01.jwt.JwtUtil;
 import com.example.spartamatching_01.security.ClientDetailsImpl;
-import com.example.spartamatching_01.service.AdminService;
 import com.example.spartamatching_01.service.ClientService;
-import io.jsonwebtoken.Claims;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -26,7 +30,6 @@ import java.util.List;
 @RequestMapping("/client")
 public class ClientController {
     private final ClientService clientService;
-    private final AdminService adminService;
     private final JwtUtil jwtUtil;
 
     //회원가입

@@ -126,11 +126,11 @@ public class AdminService {
     }
 
     @Transactional
-    public String approveSellerReq(Long sellerReqId) {
+    public String approveSeller(Long sellerReqId) {
         // 1. DB의 sellerReq를 확인한다.
         // 2. sellerReq를 보낸 Id의 Client를 찾는다.
         // 3. Client의 getisSeller를 true로 바꾼다.
-        SellerReq sellerReq = sellerReqRepository.findById(sellerReqId).orElseThrow(
+        Applicant applicant = applicantRepository.findById(sellerReqId).orElseThrow(
                 () -> new IllegalArgumentException("해당 요청을 찾을 수 없습니다.")
         );
         Client client = clientRepository.findById(applicant.getClientId()).orElseThrow(
