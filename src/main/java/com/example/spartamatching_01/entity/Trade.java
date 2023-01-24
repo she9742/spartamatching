@@ -26,9 +26,9 @@ public class Trade {
     private Long productId;
 
 
-    public TradeReq(Long clientId, Long sellerId,Long produectId) {
+    public Trade(Long clientId, Long sellerId,Long productId) {
         this.clientId = clientId;
         this.sellerId = sellerId;
-        this.produectId = produectId;
+        this.productId = productId;
     }
 }
