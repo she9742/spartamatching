@@ -5,7 +5,7 @@ import com.example.spartamatching_01.exception.CustomAuthenticationEntryPoint;
 import com.example.spartamatching_01.jwt.JwtAuthFiler;
 import com.example.spartamatching_01.jwt.JwtUtil;
 
-import com.example.spartamatching_01.repository.LogoutAccessTokenRedisRepository;
+import com.example.spartamatching_01.repository.SignoutAccessTokenRedisRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -30,7 +30,7 @@ public class WebSecurityConfig {
     private final JwtUtil jwtUtil;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
-    private final LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
+    private final SignoutAccessTokenRedisRepository signoutAccessTokenRedisRepository;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -59,17 +59,12 @@ public class WebSecurityConfig {
                 .antMatchers("/admin/**").permitAll()
                 //.anyRequest().authenticated()
                 .and().logout().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and().addFilterBefore(new JwtAuthFiler(jwtUtil,logoutAccessTokenRedisRepository), UsernamePasswordAuthenticationFilter.class);
+                .and().addFilterBefore(new JwtAuthFiler(jwtUtil, signoutAccessTokenRedisRepository), UsernamePasswordAuthenticationFilter.class);
         http.formLogin().disable();
         // 401 Error 처리, Authorization 즉, 인증과정에서 실패할 시 처리
         http.exceptionHandling().authenticationEntryPoint(customAuthenticationEntryPoint);
         // 403 Error 처리, 인증과는 별개로 추가적인 권한이 충족되지 않는 경우
         http.exceptionHandling().accessDeniedHandler(customAccessDeniedHandler);
-
-//        http.formLogin().loginPage("/client/signin").permitAll();
-//        http.formLogin().loginPage("/admin/signin").permitAll();
-
-
 
         return http.build();
     }

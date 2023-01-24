@@ -1,12 +1,13 @@
 package com.example.spartamatching_01.service;
 
 
-import com.example.spartamatching_01.dto.*;
+import com.example.spartamatching_01.dto.admin.*;
+import com.example.spartamatching_01.dto.client.SigninResponseDto;
+import com.example.spartamatching_01.dto.common.PageDto;
+import com.example.spartamatching_01.dto.common.ReissueResponseDto;
 import com.example.spartamatching_01.entity.*;
-import com.example.spartamatching_01.redis.CacheKey;
 import com.example.spartamatching_01.repository.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static com.example.spartamatching_01.entity.UserRoleEnum.ADMIN;
@@ -29,7 +31,7 @@ public class AdminService {
 
     private final ClientRepository clientRepository;
     private final AdminRepository adminRepository;
-    private final SellerReqRepository sellerReqRepository;
+    private final ApplicantRepository applicantRepository;
     private final PasswordEncoder passwordEncoder;
     private final ProductRepository productRepository;
     private final JwtUtil jwtUtil;
@@ -54,48 +56,49 @@ public class AdminService {
 
 
     @Transactional
-
-    public AdminMessageResponseDto adminSignin(AdminSigninRequestDto adminSigninRequestDto,HttpServletResponse response) {
+    public AdminSigninResponseDto adminSignin(AdminSigninRequestDto adminSigninRequestDto, HttpServletResponse response) {
 
         // 사용자 확인
         Admin admin = adminRepository.findByUsername(adminSigninRequestDto.getUsername()).orElseThrow(
                 () -> new IllegalArgumentException("관리자가 존재하지 않습니다")
         );
+
         // 비밀번호 확인
-        //스프링 시큐리티 내부기능사용 입력된 비밀번호와 저장된 비밀번호 비교
         if (!passwordEncoder.matches(adminSigninRequestDto.getPassword(), admin.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 올바르지 않습니다");
         }
 
+        //엑세스토큰, 리프레시토큰 생성 및 반환
         String accessToken = jwtUtil.createToken(admin.getUsername(), admin.getRole());
         RefreshToken refreshToken = saveRefreshToken(admin.getUsername());
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(admin.getUsername(),admin.getRole()));
 
-        return new AdminMessageResponseDto(accessToken,refreshToken.getRefreshToken());
+        return new AdminSigninResponseDto(accessToken,refreshToken.getRefreshToken());
     }
 
+    //리프레시 토큰 저장
     private RefreshToken saveRefreshToken(String username) {
         return refreshTokenRedisRepository.save(RefreshToken.createRefreshToken(username, jwtUtil.refreshToken(username,ADMIN),jwtUtil.getRefreshTokenTime()));
     }
 
 
-
+    @Transactional
     public String rollbackClient(Long sellerId) {
         Client client = clientRepository.findById(sellerId).orElseThrow(
                 () -> new NullPointerException("해당된 사용자가 없습니다")
         );
 
-        if(!client.getisSeller()){
+        if(!client.isSeller()){
             throw new IllegalArgumentException("판매자로 등록되어 있는 사용자가 아닙니다.");
         }
 
         client.rollbackClient();
         clientRepository.save(client);
         productRepository.deleteAllBySellerId(sellerId);
-
         return "판매자 권한을 제거하였습니다";
     }
 
+    @Transactional
     public String withdraw(WithdrawPointRequestDto requestDto) {
 
         Client client = clientRepository.findById(requestDto.getClientId()).orElseThrow(
@@ -117,9 +120,9 @@ public class AdminService {
 
 
     @Transactional
-    public List<SellerReq> getApplySellerList() {
-        List<SellerReq> sellerReqs = sellerReqRepository.findAll();
-        return sellerReqs;
+    public List<Applicant> getApplySellerList() {
+        List<Applicant> applicants = applicantRepository.findAll();
+        return applicants;
     }
 
     @Transactional
@@ -130,11 +133,11 @@ public class AdminService {
         SellerReq sellerReq = sellerReqRepository.findById(sellerReqId).orElseThrow(
                 () -> new IllegalArgumentException("해당 요청을 찾을 수 없습니다.")
         );
-        Client client = clientRepository.findById(sellerReq.getClientId()).orElseThrow(
+        Client client = clientRepository.findById(applicant.getClientId()).orElseThrow(
                 () -> new IllegalArgumentException("존재하지 않는 사용자 입니다.")
         );
-        client.updateSeller(client.getNickname(), client.getImage(), sellerReq);
-        sellerReqRepository.delete(sellerReq);
+        client.updateSeller(client.getNickname(), client.getImage(), applicant);
+        applicantRepository.delete(applicant);
         return "권한을 부여하였습니다.";
     }
 
@@ -148,6 +151,38 @@ public class AdminService {
     public Admin findByAdmin(String name) {
         return adminRepository.findByUsername(name).orElseThrow();
     }
+
+
+    public ReissueResponseDto reissue(String refreshToken) {
+        refreshToken = resolveToken(refreshToken);
+        String username = jwtUtil.getUserInfoFromToken(refreshToken).getSubject();
+        RefreshToken redisRefreshToken = refreshTokenRedisRepository.findById(username).orElseThrow(NoSuchElementException::new);
+        //전달받은 리프래쉬토큰이 DB에 저장된 리프레시 토큰과 같다면
+        if (refreshToken.equals(resolveToken(redisRefreshToken.getRefreshToken()))) {
+            return reissueRefreshToken(refreshToken, username);
+        }
+        throw new IllegalArgumentException("토큰이 일치하지 않습니다.");
+    }
+
+
+    private ReissueResponseDto reissueRefreshToken(String refreshToken, String username) {
+        //전달받은 리프래쉬토큰이 DB에 저장된 리프레시 토큰과 같으며 + 리프레시토큰의 남은시간이 리프레시토큰의 총 경과시간지났으면 새로운 리프레시토큰 생성후 저장
+        if (lessThanReissueExpirationTimesLeft(refreshToken)) {
+            String accessToken = jwtUtil.createToken(username, ADMIN);
+            return new ReissueResponseDto(accessToken,saveRefreshToken(username).getRefreshToken());
+        }
+        //전달받은 리프래쉬토큰이 DB에 저장된 리프레시 토큰과 같으며 + 리프레시토큰의 남은시간이 리프레시토큰의 총 경과시간을 지나지 않았으면 리프레시토큰 그대로 재사용
+        return new ReissueResponseDto(jwtUtil.createToken(username, ADMIN),refreshToken);
+    }
+
+    private boolean lessThanReissueExpirationTimesLeft(String refreshToken) {
+        return jwtUtil.getRemainMilliSeconds(refreshToken) < jwtUtil.getRefreshTokenTime();
+    }
+
+    private String resolveToken(String token) {
+        return token.substring(7);
+    }
+
 
 }
 

@@ -1,8 +1,8 @@
 package com.example.spartamatching_01.entity;
 
 
-import com.example.spartamatching_01.dto.SellerProfileUpdateRequestDto;
-import com.example.spartamatching_01.dto.SignupRequestDto;
+import com.example.spartamatching_01.dto.seller.SellerProfileUpdateRequestDto;
+import com.example.spartamatching_01.dto.client.SignupRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -65,24 +65,20 @@ public class Client {
     public void updateClientProfile(String nickname, String image){
         this.nickname = nickname;
         this.image = image;
-        //닉네임 이미지
     }
 
     public void updateSellerProfile(SellerProfileUpdateRequestDto dto){
-        //닉네임 이미지 어바웃 카테코리
         this.nickname = dto.getNickname();
         this.image = dto.getImage();
         this.about =dto.getAbout();
         this.category = dto.getCategory();
-
     }
 
-    public void updateSeller(String nickname, String image,SellerReq sellerReq){
-        //닉네임 이미지 어바웃 카테고리
+    public void updateSeller(String nickname, String image, Applicant applicant){
         this.nickname = nickname;
         this.image = image;
-        this.about = sellerReq.getAbout();
-        this.category = sellerReq.getCategory();
+        this.about = applicant.getAbout();
+        this.category = applicant.getCategory();
         this.isSeller = true;
     }
 
@@ -97,7 +93,7 @@ public class Client {
         this.point = this.point - point;
     }
 
-    public boolean getisSeller(){
+    public boolean isSeller(){
         if(isSeller){
             return true;
         }

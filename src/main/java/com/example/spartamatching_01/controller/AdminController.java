@@ -1,8 +1,10 @@
 package com.example.spartamatching_01.controller;
-
-import com.example.spartamatching_01.dto.*;
+import com.example.spartamatching_01.dto.admin.*;
+import com.example.spartamatching_01.dto.common.PageDto;
+import com.example.spartamatching_01.dto.common.ReissueResponseDto;
+import com.example.spartamatching_01.dto.security.TokenRequestDto;
 import com.example.spartamatching_01.entity.Admin;
-import com.example.spartamatching_01.entity.SellerReq;
+import com.example.spartamatching_01.entity.Applicant;
 import com.example.spartamatching_01.jwt.JwtUtil;
 import com.example.spartamatching_01.security.AdminDetailsImpl;
 import com.example.spartamatching_01.service.AdminService;
@@ -16,21 +18,19 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("/admins")
 public class AdminController {
     private final ClientService clientService;
     private final AdminService adminService;
     private final JwtUtil jwtUtil;
 
     // 전체 고객 목록 조회
-
     @Secured("ROLE_ADMIN")
     @GetMapping("/client")
     public ResponseEntity<Page<AllClientResponseDto>> getClientList(@RequestBody PageDto pageDto,@AuthenticationPrincipal AdminDetailsImpl adminDetails) {
@@ -38,25 +38,28 @@ public class AdminController {
 
     }
 
+    //판매자 등록 요청자 조회
     @Secured("ROLE_ADMIN")
-    @GetMapping("/seller/request")
-    public ResponseEntity<List<SellerReq>> getApplySellerList() {
+    @GetMapping("/applicants")
+    public ResponseEntity<List<Applicant>> getApplySellerList() {
         return ResponseEntity.status(HttpStatus.OK).body(adminService.getApplySellerList());
     }
 
+    //회원가입
     @PostMapping("/signup")
     public ResponseEntity<String> adminSignup(@RequestBody AdminSignupRequestDto adminSignupRequestDto) {
         return ResponseEntity.status(HttpStatus.OK).body(adminService.adminSignup(adminSignupRequestDto));
     }
 
+    //로그인
     @PostMapping("/signin")
-    public ResponseEntity<AdminMessageResponseDto> adminSignin(@RequestBody AdminSigninRequestDto adminSigninRequestDto, HttpServletResponse response) {
+    public ResponseEntity<AdminSigninResponseDto> adminSignin(@RequestBody AdminSigninRequestDto adminSigninRequestDto, HttpServletResponse response) {
         return ResponseEntity.status(HttpStatus.OK).body(adminService.adminSignin(adminSigninRequestDto,response));
     }
 
     //판매자 권한 삭제
     @Secured("ROLE_ADMIN")
-    @PutMapping("/seller/disenroll/{id}")
+    @PutMapping("/deregisters/{sellerId}")
     public ResponseEntity<String> rollbackClient(@PathVariable Long sellerId) {
         return ResponseEntity.status(HttpStatus.OK).body(adminService.rollbackClient(sellerId));
     }
@@ -69,15 +72,16 @@ public class AdminController {
     }
 
     @Secured("ROLE_ADMIN")
-    @PostMapping("/seller/enroll/{id}")
-    public ResponseEntity<String> approveSellerReq(@PathVariable Long id){
-        return ResponseEntity.status(HttpStatus.OK).body(adminService.approveSellerReq(id));
+    @PostMapping("/registers/{id}")
+    public ResponseEntity<String> approveSeller(@PathVariable Long id){
+        return ResponseEntity.status(HttpStatus.OK).body(adminService.approveSeller(id));
 
     }
 
+    // 토큰 재발급
     @Secured("ROLE_ADMIN")
     @PostMapping("/refresh")
-    public TokenResponseDto adminRefresh(HttpServletRequest request ,@RequestBody TokenRequestDto tokenRequestDto){
+    public ReissueResponseDto adminRefresh(HttpServletRequest request , @RequestBody TokenRequestDto tokenRequestDto){
         //bearer 제거
         String resolvedAccessToken = jwtUtil.resolveAccessToken(tokenRequestDto.getAccessToken());
 
@@ -97,7 +101,7 @@ public class AdminController {
 
         //두개 비교 후 맞으면 재발행 ->엑세스토큰과 리프레시토큰의 유저정보가 같은지 확인하는작업
         if (accessUser == refreshUser) {
-            return clientService.reissue(refreshToken);
+            return adminService.reissue(refreshToken);
         }
         throw new IllegalStateException("리프레시 토큰과 엑세스토큰의 사용자가 일치하지 않습니다.");
     }

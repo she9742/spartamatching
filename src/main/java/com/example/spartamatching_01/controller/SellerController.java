@@ -1,8 +1,14 @@
 package com.example.spartamatching_01.controller;
 
 
-import com.example.spartamatching_01.dto.*;
-import com.example.spartamatching_01.entity.TradeReq;
+import com.example.spartamatching_01.dto.common.AllProductResponseDto;
+import com.example.spartamatching_01.dto.common.PageDto;
+import com.example.spartamatching_01.dto.common.ProductResponseDto;
+import com.example.spartamatching_01.dto.seller.ApplicantResponseDto;
+import com.example.spartamatching_01.dto.seller.ProductRequestDto;
+import com.example.spartamatching_01.dto.seller.SellerProfileResponseDto;
+import com.example.spartamatching_01.dto.seller.SellerProfileUpdateRequestDto;
+import com.example.spartamatching_01.entity.Trade;
 import com.example.spartamatching_01.security.ClientDetailsImpl;
 import com.example.spartamatching_01.service.SellerService;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +22,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/seller")
+@RequestMapping("/sellers")
 public class SellerController {
 
     private final SellerService sellerService;
@@ -40,44 +46,45 @@ public class SellerController {
         return ResponseEntity.status(HttpStatus.OK).body(sellerService.deleteMyProduct(id,clientDetails.getClient()));
     }
 
-    // 고객의 매칭요청 목록을 조회 이거로 페이징하는게 나을듯
-    @GetMapping("/clientLists")
-    public ResponseEntity<Page<ClientReqResponseDto>> getMatching(@RequestBody PageDto pageDto, @AuthenticationPrincipal ClientDetailsImpl clientDetails){
+    // 고객의 매칭요청 목록을 조회
+    @GetMapping("/client-list")
+    public ResponseEntity<Page<ApplicantResponseDto>> getMatching(@RequestBody PageDto pageDto, @AuthenticationPrincipal ClientDetailsImpl clientDetails){
         return ResponseEntity.status(HttpStatus.OK).body(sellerService.getMatching(pageDto,clientDetails.getClient()));
     }
 
     // 고객의 거래요청 목록을 조회
-    @GetMapping("/tradeLists")
-    public ResponseEntity<List<TradeReq>> getTradeReq(@AuthenticationPrincipal ClientDetailsImpl clientDetails){
-        return ResponseEntity.status(HttpStatus.OK).body(sellerService.getTradeReq(clientDetails.getClient()));
+    @GetMapping("/trade-list")
+    public ResponseEntity<List<Trade>> getTradeList(@AuthenticationPrincipal ClientDetailsImpl clientDetails){
+        return ResponseEntity.status(HttpStatus.OK).body(sellerService.getTradeList(clientDetails.getClient()));
     }
 
     // 고객의 요청을 처리
-    @PostMapping("/clients/{clientReqId}")
-    public ResponseEntity<String> approveMatching(@PathVariable Long clientReqId ,@AuthenticationPrincipal ClientDetailsImpl clientDetails){
-        return ResponseEntity.status(HttpStatus.OK).body(sellerService.approveMatching(clientReqId,clientDetails.getClient()));
+    @PostMapping("/approve/{clientId}")
+    public ResponseEntity<String> approveMatching(@PathVariable Long clientId ,@AuthenticationPrincipal ClientDetailsImpl clientDetails){
+        return ResponseEntity.status(HttpStatus.OK).body(sellerService.approveMatching(clientId,clientDetails.getClient()));
     }
 
     // 프로필 조회
-    @GetMapping("/profile")
+    @GetMapping("/profiles")
     public ResponseEntity<SellerProfileResponseDto> getProfile(
             @AuthenticationPrincipal ClientDetailsImpl clientDetails) {
         return ResponseEntity.status(HttpStatus.OK).body(sellerService.getProfile(clientDetails.getClient()));
     }
 
-    // 판매 상품 조회 페이징 필요
+    // 자신의 판매 상품 조회
     @GetMapping("/products")
-    public ResponseEntity<Page<AllProductResponseDto>> getMyProduct(@RequestBody PageDto pageDto,@AuthenticationPrincipal ClientDetailsImpl clientDetails ){
+    public ResponseEntity<Page<AllProductResponseDto>> getMyProduct(@RequestBody PageDto pageDto, @AuthenticationPrincipal ClientDetailsImpl clientDetails ){
         return ResponseEntity.status(HttpStatus.OK).body(sellerService.getMyProduct(pageDto,clientDetails.getClient()));
     }
 
-    @PostMapping("/sell/{tradeReqId}")
-    public ResponseEntity<String> sellProduct(@PathVariable Long tradeReqId,@AuthenticationPrincipal ClientDetailsImpl clientDetails){
-    return ResponseEntity.status(HttpStatus.OK).body(sellerService.sellProduct(tradeReqId,clientDetails.getClient()));
+    //물건 판매 확정
+    @PostMapping("/sell/{tradeId}")
+    public ResponseEntity<String> sellProduct(@PathVariable Long tradeId,@AuthenticationPrincipal ClientDetailsImpl clientDetails){
+    return ResponseEntity.status(HttpStatus.OK).body(sellerService.sellProduct(tradeId,clientDetails.getClient()));
     }
 
     //셀러 프로필 업데이트
-    @PutMapping("/profile")
+    @PatchMapping("/profiles")
     public ResponseEntity<SellerProfileResponseDto> updateSellerProfile(@RequestBody SellerProfileUpdateRequestDto requestDto, @AuthenticationPrincipal ClientDetailsImpl clientDetails) {
         return ResponseEntity.status(HttpStatus.OK).body(sellerService.updateProfile(requestDto,clientDetails.getClient()));
     }
