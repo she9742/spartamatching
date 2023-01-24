@@ -3,6 +3,7 @@ package com.example.spartamatching_01.service;
 import com.example.spartamatching_01.dto.*;
 import com.example.spartamatching_01.entity.*;
 import com.example.spartamatching_01.jwt.JwtUtil;
+import com.example.spartamatching_01.redis.CacheKey;
 import com.example.spartamatching_01.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static com.example.spartamatching_01.entity.UserRoleEnum.USER;
@@ -34,6 +36,8 @@ public class ClientService {
     private final SellerReqRepository sellerReqRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final RefreshTokenRedisRepository refreshTokenRedisRepository;
+    private final LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
 
     @Transactional
     public String signup(SignupRequestDto signupRequestDto) {
@@ -62,23 +66,37 @@ public class ClientService {
         Client client = clientRepository.findByUsername(signinRequestDto.getUsername()).orElseThrow(
                 () -> new IllegalArgumentException("유저가 존재하지 않습니다")
         );
+
         // 비밀번호 확인
         //스프링 시큐리티 내부기능사용 입력된 비밀번호와 저장된 비밀번호 비교
         if (!passwordEncoder.matches(signinRequestDto.getPassword(), client.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 올바르지 않습니다");
         }
 
-
-
         String accessToken = jwtUtil.createToken(client.getUsername(), client.getRole());
-        String refreshToken1 = jwtUtil.refreshToken(client.getUsername(), client.getRole());
+        RefreshToken refreshToken = saveRefreshToken(client.getUsername());
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(client.getUsername(),client.getRole()));
 
-        return new TokenResponseDto(accessToken, refreshToken1);
-
-
+        return new TokenResponseDto(accessToken,refreshToken.getRefreshToken());
     }
 
+    private RefreshToken saveRefreshToken(String username) {
+        return refreshTokenRedisRepository.save(RefreshToken.createRefreshToken(username, jwtUtil.refreshToken(username,USER),jwtUtil.getRefreshTokenTime()));
+                //jwtTokenUtil.generateRefreshToken(username), REFRESH_TOKEN_EXPIRATION_TIME.getValue()));
+    }
+
+
+    @CacheEvict(value = CacheKey.USER, key = "#username")
+    public void logout(TokenResponseDto tokenResponseDto, String username) {
+        String accessToken = resolveToken(tokenResponseDto.getAccessToken());
+        long remainMilliSeconds = jwtUtil.getRemainMilliSeconds(accessToken);
+        refreshTokenRedisRepository.deleteById(username);
+        logoutAccessTokenRedisRepository.save(LogoutAccessToken.of(accessToken, username, remainMilliSeconds));
+    }
+
+    private String resolveToken(String token) {
+        return token.substring(7);
+    }
 
         @Transactional
     public List<MessageResponseDto> getMessages(Long talkId, Client client) {
@@ -251,10 +269,37 @@ public class ClientService {
         return clientRepository.findByUsername(name).orElseThrow();
     }
 
-    public TokenResponseDto reissue(String username, UserRoleEnum role) {
-        String newCreatedToken = jwtUtil.createToken(username, role);
-        //String refreshToken1 = jwtUtil.refreshToken(username, role);
-        //return new TokenResponseDto(newCreatedToken, refreshToken1);
-        return new TokenResponseDto(newCreatedToken);
+//    public TokenResponseDto reissue(String username, UserRoleEnum role) {
+//        String newCreatedToken = jwtUtil.createToken(username, role);
+//        //String refreshToken1 = jwtUtil.refreshToken(username, role);
+//        //return new TokenResponseDto(newCreatedToken, refreshToken1);
+//        return new TokenResponseDto(newCreatedToken);
+//    }
+
+    public TokenResponseDto reissue(String refreshToken) {
+        refreshToken = resolveToken(refreshToken);
+        String username = jwtUtil.getUserInfoFromToken(refreshToken).getSubject();
+        RefreshToken redisRefreshToken = refreshTokenRedisRepository.findById(username).orElseThrow(NoSuchElementException::new);
+        System.out.println(refreshToken + "테스트 위치2  " + resolveToken(redisRefreshToken.getRefreshToken()));
+        //전달받은 리프래쉬토큰이 DB에 저장된 리프레시 토큰과 같다면
+        if (refreshToken.equals(resolveToken(redisRefreshToken.getRefreshToken()))) {
+            return reissueRefreshToken(refreshToken, username);
+        }
+        throw new IllegalArgumentException("토큰이 일치하지 않습니다.");
+    }
+
+
+    private TokenResponseDto reissueRefreshToken(String refreshToken, String username) {
+        //전달받은 리프래쉬토큰이 DB에 저장된 리프레시 토큰과 같으며 + 리프레시토큰의 남은시간이 리프레시토큰의 총 경과시간지났으면 새로운 리프레시토큰 생성후 저장
+        if (lessThanReissueExpirationTimesLeft(refreshToken)) {
+            String accessToken = jwtUtil.createToken(username, USER);
+            return new TokenResponseDto(accessToken,saveRefreshToken(username).getRefreshToken());
+        }
+        //전달받은 리프래쉬토큰이 DB에 저장된 리프레시 토큰과 같으며 + 리프레시토큰의 남은시간이 리프레시토큰의 총 경과시간을 지나지 않았으면 리프레시토큰 그대로 재사용
+        return new TokenResponseDto(jwtUtil.createToken(username, USER),refreshToken);
+    }
+
+    private boolean lessThanReissueExpirationTimesLeft(String refreshToken) {
+        return jwtUtil.getRemainMilliSeconds(refreshToken) < jwtUtil.getRefreshTokenTime();
     }
 }

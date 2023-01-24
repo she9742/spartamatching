@@ -5,15 +5,13 @@ import lombok.Getter;
 
 @Getter
 public class AdminMessageResponseDto {
-    private String writer;
-    private String content;
+    private String accessToken;
+    private String refreshToken;
 
-    public AdminMessageResponseDto(Message message) {
-        this.writer = message.getWriter();
-        this.content = message.getContent();
-    }
-    public AdminMessageResponseDto(String content) {
-        this.content = content;
-        this.writer = "관리자";
+
+
+    public AdminMessageResponseDto(String accessToken,String refreshToken){
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
     }
 }

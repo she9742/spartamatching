@@ -8,6 +8,7 @@ import com.example.spartamatching_01.jwt.JwtUtil;
 import com.example.spartamatching_01.security.ClientDetailsImpl;
 import com.example.spartamatching_01.service.AdminService;
 import com.example.spartamatching_01.service.ClientService;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -97,8 +98,8 @@ public class ClientController {
     @PostMapping("/refresh")
     public TokenResponseDto clientRefresh(HttpServletRequest request ,@RequestBody TokenRequestDto tokenRequestDto){
         //bearer 제거
-
         String resolvedAccessToken = jwtUtil.resolveAccessToken(tokenRequestDto.getAccessToken());
+
         //Access 토큰 username가져오기
         //인증을 확인하고 authenticationAccessToken 변수에 토큰저장
         Authentication authenticationAccessToken = jwtUtil.getAuthentication(resolvedAccessToken);
@@ -115,9 +116,21 @@ public class ClientController {
 
         //두개 비교 후 맞으면 재발행 ->엑세스토큰과 리프레시토큰의 유저정보가 같은지 확인하는작업
         if (accessUser == refreshUser) {
-            return clientService.reissue(refreshUser.getUsername(), refreshUser.getRole());
+            return clientService.reissue(refreshToken);
         }
         throw new IllegalStateException("리프레시 토큰과 엑세스토큰의 사용자가 일치하지 않습니다.");
     }
+
+    @PostMapping("/logout")
+    public void logout(@RequestHeader("Authorization") String accessToken,
+                       @RequestHeader("RefreshToken") String refreshToken) {
+        String username = jwtUtil.getUserInfoFromToken(resolveToken(accessToken)).getSubject();
+        clientService.logout(new TokenResponseDto(accessToken,refreshToken), username);
+    }
+
+    private String resolveToken(String token) {
+        return token.substring(7);
+    }
+
 
 }

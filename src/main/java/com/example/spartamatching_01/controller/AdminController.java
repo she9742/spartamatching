@@ -77,7 +77,7 @@ public class AdminController {
 
     @Secured("ROLE_ADMIN")
     @PostMapping("/refresh")
-    public TokenResponseDto adminRefresh(HttpServletRequest request, @RequestBody TokenRequestDto tokenRequestDto){
+    public TokenResponseDto adminRefresh(HttpServletRequest request ,@RequestBody TokenRequestDto tokenRequestDto){
         //bearer 제거
         String resolvedAccessToken = jwtUtil.resolveAccessToken(tokenRequestDto.getAccessToken());
 
@@ -97,7 +97,7 @@ public class AdminController {
 
         //두개 비교 후 맞으면 재발행 ->엑세스토큰과 리프레시토큰의 유저정보가 같은지 확인하는작업
         if (accessUser == refreshUser) {
-            return clientService.reissue(refreshUser.getUsername(), refreshUser.getRole());
+            return clientService.reissue(refreshToken);
         }
         throw new IllegalStateException("리프레시 토큰과 엑세스토큰의 사용자가 일치하지 않습니다.");
     }

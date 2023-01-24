@@ -2,14 +2,11 @@ package com.example.spartamatching_01.service;
 
 
 import com.example.spartamatching_01.dto.*;
-import com.example.spartamatching_01.entity.Admin;
-import com.example.spartamatching_01.entity.Client;
-import com.example.spartamatching_01.entity.SellerReq;
-import com.example.spartamatching_01.repository.AdminRepository;
-import com.example.spartamatching_01.repository.ClientRepository;
-import com.example.spartamatching_01.repository.ProductRepository;
-import com.example.spartamatching_01.repository.SellerReqRepository;
+import com.example.spartamatching_01.entity.*;
+import com.example.spartamatching_01.redis.CacheKey;
+import com.example.spartamatching_01.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +20,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Optional;
 
+import static com.example.spartamatching_01.entity.UserRoleEnum.ADMIN;
+import static com.example.spartamatching_01.entity.UserRoleEnum.USER;
+
 @Service
 @RequiredArgsConstructor
 public class AdminService {
@@ -33,6 +33,7 @@ public class AdminService {
     private final PasswordEncoder passwordEncoder;
     private final ProductRepository productRepository;
     private final JwtUtil jwtUtil;
+    private final RefreshTokenRedisRepository refreshTokenRedisRepository;
 
     @Transactional
     public String adminSignup(AdminSignupRequestDto adminSignupRequestDto) {
@@ -66,14 +67,17 @@ public class AdminService {
             throw new IllegalArgumentException("비밀번호가 올바르지 않습니다");
         }
 
-
         String accessToken = jwtUtil.createToken(admin.getUsername(), admin.getRole());
-        String refreshToken1 = jwtUtil.refreshToken(admin.getUsername(), admin.getRole());
+        RefreshToken refreshToken = saveRefreshToken(admin.getUsername());
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(admin.getUsername(),admin.getRole()));
 
-        return new AdminMessageResponseDto("accessToken = " + accessToken + "     " + "refreshToken = " + refreshToken1);
-
+        return new AdminMessageResponseDto(accessToken,refreshToken.getRefreshToken());
     }
+
+    private RefreshToken saveRefreshToken(String username) {
+        return refreshTokenRedisRepository.save(RefreshToken.createRefreshToken(username, jwtUtil.refreshToken(username,ADMIN),jwtUtil.getRefreshTokenTime()));
+    }
+
 
 
     public String rollbackClient(Long sellerId) {
@@ -139,6 +143,8 @@ public class AdminService {
         Sort sort = Sort.by(direction, pageDto.getSortBy());
         return PageRequest.of(pageDto.getPage() - 1, pageDto.getSize(), sort);
     }
+
+
     public Admin findByAdmin(String name) {
         return adminRepository.findByUsername(name).orElseThrow();
     }

@@ -5,6 +5,7 @@ import com.example.spartamatching_01.exception.CustomAuthenticationEntryPoint;
 import com.example.spartamatching_01.jwt.JwtAuthFiler;
 import com.example.spartamatching_01.jwt.JwtUtil;
 
+import com.example.spartamatching_01.repository.LogoutAccessTokenRedisRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -29,7 +30,7 @@ public class WebSecurityConfig {
     private final JwtUtil jwtUtil;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
-
+    private final LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -56,9 +57,9 @@ public class WebSecurityConfig {
                 .antMatchers("/client/**").permitAll()
                 .antMatchers("/seller/**").permitAll()
                 .antMatchers("/admin/**").permitAll()
-                .anyRequest().authenticated()
+                //.anyRequest().authenticated()
                 .and().logout().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and().addFilterBefore(new JwtAuthFiler(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+                .and().addFilterBefore(new JwtAuthFiler(jwtUtil,logoutAccessTokenRedisRepository), UsernamePasswordAuthenticationFilter.class);
         http.formLogin().disable();
         // 401 Error 처리, Authorization 즉, 인증과정에서 실패할 시 처리
         http.exceptionHandling().authenticationEntryPoint(customAuthenticationEntryPoint);

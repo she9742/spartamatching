@@ -48,7 +48,9 @@ public class JwtUtil {
         byte[] bytes = Base64.getDecoder().decode(secretKey);
         key = Keys.hmacShaKeyFor(bytes);
     }
-
+    public static Long getRefreshTokenTime() {
+        return REFRESH_TOKEN_TIME;
+    }
 
     public String resolveAccessToken(String bearerToken) {
         //헤더가 null이 아니고 &&  헤더가 해당 Bearer 식별자로 시작한다면 식별자 제거
@@ -93,6 +95,7 @@ public class JwtUtil {
 
     // 토큰 검증
     public boolean validateToken(String token) {
+
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
@@ -165,7 +168,12 @@ public class JwtUtil {
 
     }
 
-
+    public long getRemainMilliSeconds(String token) {
+        Claims info = getUserInfoFromToken(token);
+        Date expiration = info.getExpiration();
+        Date now = new Date();
+        return expiration.getTime() - now.getTime();
+    }
 
 
 

@@ -3,6 +3,7 @@ package com.example.spartamatching_01.jwt;
 
 import com.example.spartamatching_01.dto.SecurityExceptionDto;
 import com.example.spartamatching_01.entity.UserRoleEnum;
+import com.example.spartamatching_01.repository.LogoutAccessTokenRedisRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ import java.io.IOException;
 public class JwtAuthFiler extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
 
 
     @Override
@@ -33,6 +35,7 @@ public class JwtAuthFiler extends OncePerRequestFilter {
 
         //AccessToken 인증,인가 체크
         if (accessToken != null) {
+            checkLogout(accessToken);
             if (accessToken.startsWith(JwtUtil.BEARER_PREFIX)) {    //일반키값으로 시작한다면
                 String resolvedAccessToken = jwtUtil.resolveAccessToken(accessToken);
                 if(validCheck(resolvedAccessToken, response)){
@@ -52,6 +55,14 @@ public class JwtAuthFiler extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+        private void checkLogout(String accessToken) {
+        if (logoutAccessTokenRedisRepository.existsById(resolveToken(accessToken))) {
+            throw new IllegalArgumentException("이미 로그아웃된 회원입니다.");
+        }
+    }
+    private String resolveToken(String token) {
+        return token.substring(7);
+    }
 
 
     public void setAuthentication(String username,String role) {
