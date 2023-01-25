@@ -39,7 +39,8 @@
 | 판매자 선택 조회 	| Get 	| /Client/sellers/{sellerId}	| Header Authorization :Bearer <JWT> | {“nickname” : “string”“image” : “string”“category”:“string”“about” : “string”}|
 | 전체 메세지 조회 	| Get 	| /client/talks/{talkId}	| Header Authorization :Bearer <JWT> |{”writer” : ”String”,”message” : “String”}|
 | 메시지 전송 	| Post 	| /client/talks/{talkId}	| Header Authorization :Bearer <JWT>{”content” : “String”} |{”writer” : ”String”,”message” : “String”}|
-| 판매자에게 매칭 요청 	| Post 	| /client/matching/{productId}	| Header Authorization :Bearer <JWT>,sellerId |“판매자에게 매칭요청을보냈습니다.”|
+| 판매자에게 매칭 요청 	| Post 	| /client/matching
+    /{productId}	| Header Authorization :Bearer <JWT>,sellerId |“판매자에게 매칭요청을보냈습니다.”|
 | 물건 구매 요청 	| Post 	| /client/buy/{productId}	| Header Authorization :Bearer <JWT> |“물건을 구매하였습니다.”|
 | 토큰 재발급 	| Post 	| /client/refresh	| Header Authorization :Bearer <JWT> |{”accessToken” : “String”,”refreshToken” : “String” }|
 | 판매 상품 등록 	| POST 	| /seller/products 	| Header Authorization :<br>Bearer <JWT><br>{<br>“productname” : “String”,<br>    “category” : “String”,<br>    “point” : “int”<br>} 	| {<br>“productname” : “String”,<br>    “category” : “String”,<br>    “point” : “int”<br>} 	|
