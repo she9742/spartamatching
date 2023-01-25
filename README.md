@@ -42,8 +42,6 @@
 | 판매자에게 매칭 요청 	| Post 	| /client/matching/{productId}	| Header Authorization :Bearer <JWT>,sellerId |“판매자에게 매칭요청을보냈습니다.”|
 | 물건 구매 요청 	| Post 	| /client/buy/{productId}	| Header Authorization :Bearer <JWT> |“물건을 구매하였습니다.”|
 | 토큰 재발급 	| Post 	| /client/refresh	| Header Authorization :Bearer <JWT> |{”accessToken” : “String”,”refreshToken” : “String” }|
-| API 	| Method 	| URL 	| Request 	| Response 	|
-|:---:	|---	|---	|---	|---	|
 | 판매 상품 등록 	| POST 	| /seller/products 	| Header Authorization :<br>Bearer <JWT><br>{<br>“productname” : “String”,<br>    “category” : “String”,<br>    “point” : “int”<br>} 	| {<br>“productname” : “String”,<br>    “category” : “String”,<br>    “point” : “int”<br>} 	|
 | 판매 상품 수정 	| PATCH 	| /seller/products/{id} 	| Header Authorization :<br>Bearer <JWT>,<br>productId<br>{<br>“productname” : “String”,<br>”information” : “String”.<br>“point” : “int”<br>} 	| {<br>“productname” : “String”,<br>”information” : “String”.<br>“point” : “int”<br>} 	|
 | 판매 상품 삭제 	| PUT 	| /seller/products/{id} 	| Header Authorization :<br>Bearer <JWT>,<br>productId 	| “삭제완료!” 	|
