@@ -35,6 +35,14 @@
 | 프로필 설정 | Patch 	| /Client/profiles 	| Header Authorization : Bearer <JWT>{“about” : “string”,“image” : “string”}} |“프로필 설정 완료” 	|
 | 프로필 조회 | Get 	| /Client/profiles 	| Header Authorization : Bearer |{“nickname” :  “string”“image” : “string”}	|
 | 전체 상품 조회 	| Get 	| /Client/products	| Header Authorization :Bearer <JWT>{”page” : int,”size” : int,”sortBy” : String,”orderBy”: boolean} | {“productname” : “string”“category” : “string”“price” : “int”“sellername” : “string”}|
+| 전체 판매자 조회 	| Get 	| /Client/sellers	| Header Authorization :Bearer <JWT>{”page” : int,”size” : int,”sortBy” : String,”orderBy”: boolean} | {“nickname” : “string”“image” : “string”“category” : “string”“about” : “string”}|
+| 판매자 선택 조회 	| Get 	| /Client/sellers/{sellerId}	| Header Authorization :Bearer <JWT> | {“nickname” : “string”“image” : “string”“category”:“string”“about” : “string”}|
+| 전체 메세지 조회 	| Get 	| /client/talks/{talkId}	| Header Authorization :Bearer <JWT> |{”writer” : ”String”,”message” : “String”}|
+| 메시지 전송 	| Post 	| /client/talks/{talkId}	| Header Authorization :Bearer <JWT>{”content” : “String”} |{”writer” : ”String”,”message” : “String”}|
+| 판매자에게 매칭 요청 	| Post 	| /client/matching/{productId}	| Header Authorization :Bearer <JWT>,sellerId |“판매자에게 매칭요청을보냈습니다.”|
+| 물건 구매 요청 	| Post 	| /client/buy/{productId}	| Header Authorization :Bearer <JWT> |“물건을 구매하였습니다.”|
+| 토큰 재발급 	| Post 	| /client/refresh	| Header Authorization :Bearer <JWT> |{”accessToken” : “String”,”refreshToken” : “String” }|
+
 
 
 
