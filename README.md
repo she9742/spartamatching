@@ -39,5 +39,4 @@
 <img src="https://s3.us-west-2.amazonaws.com/secure.notion-static.com/a6271166-4ef0-4006-953d-1667535f57e0/%ED%99%94%EB%A9%B4_%EC%BA%A1%EC%B2%98_2023-01-23_224706.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20230125%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230125T005732Z&X-Amz-Expires=86400&X-Amz-Signature=6b90e8402eac4580a3fc949542fe3c8b41b46458425ef3f3c7d504f68135d7fd&X-Amz-SignedHeaders=host&response-content-disposition=filename%3D%22%25ED%2599%2594%25EB%25A9%25B4%2520%25EC%25BA%25A1%25EC%25B2%2598%25202023-01-23%2520224706.png%22&x-id=GetObject">
 
 
-<img src="https://www.notion.so/bf93e0e75e954651841b74823a43d988#2380adbc32b7487492062213ce776356">
 
