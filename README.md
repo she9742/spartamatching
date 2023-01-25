@@ -29,7 +29,13 @@
 | API 	| Method 	| URL 	| Request 	| Response 	|
 |:---:	|---	|---	|---	|---	|
 | 고객 로그아웃 	| POST 	| /users/signout 	| Header Authorization :<br>Bearer <JWT> 	| “로그아웃 되었습니다” 	|
-| 회원가입 	| POST 	| /Client/signin 	| {“username” : “string”, “nickname” : “string”, “password” : “string”, “image”: “string”,} | “로그아웃 되었습니다” 	|
+| 회원가입 	| POST 	| /Client/signup 	| {“username” : “string”, “nickname” : “string”, “password” : “string”, “image”: “string”,} | “회원 가입이 완료되었습니다.” 	|
+| 로그인 	| POST 	| /Client/signin 	| {“username” : “string”,“password” : “string” ,} | “로그인 되었습니다.” 	|
+| 판매자 권한요청 	| POST 	| /Client/sellers 	| {Header Authorization : Bearer <JWT>{“about” : “string”,“category” : “string”} |“판매자권한 요청을 관리자에게 보냈습니다.”	|
+| 프로필 설정 | Patch 	| /Client/profiles 	| Header Authorization : Bearer <JWT>{“about” : “string”,“image” : “string”}} |“프로필 설정 완료” 	|
+| 프로필 조회 | Get 	| /Client/profiles 	| Header Authorization : Bearer |{“nickname” :  “string”“image” : “string”}	|
+| 전체 상품 조회 	| Get 	| /Client/products	| Header Authorization :Bearer <JWT>{”page” : int,”size” : int,”sortBy” : String,”orderBy”: boolean} | {“productname” : “string”“category” : “string”“price” : “int”“sellername” : “string”}|
+
 
 
 
