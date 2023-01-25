@@ -42,6 +42,18 @@
 | 판매자에게 매칭 요청 	| Post 	| /client/matching/{productId}	| Header Authorization :Bearer <JWT>,sellerId |“판매자에게 매칭요청을보냈습니다.”|
 | 물건 구매 요청 	| Post 	| /client/buy/{productId}	| Header Authorization :Bearer <JWT> |“물건을 구매하였습니다.”|
 | 토큰 재발급 	| Post 	| /client/refresh	| Header Authorization :Bearer <JWT> |{”accessToken” : “String”,”refreshToken” : “String” }|
+| API 	| Method 	| URL 	| Request 	| Response 	|
+|:---:	|---	|---	|---	|---	|
+| 판매 상품 등록 	| POST 	| /seller/products 	| Header Authorization :<br>Bearer <JWT><br>{<br>“productname” : “String”,<br>    “category” : “String”,<br>    “point” : “int”<br>} 	| {<br>“productname” : “String”,<br>    “category” : “String”,<br>    “point” : “int”<br>} 	|
+| 판매 상품 수정 	| PATCH 	| /seller/products/{id} 	| Header Authorization :<br>Bearer <JWT>,<br>productId<br>{<br>“productname” : “String”,<br>”information” : “String”.<br>“point” : “int”<br>} 	| {<br>“productname” : “String”,<br>”information” : “String”.<br>“point” : “int”<br>} 	|
+| 판매 상품 삭제 	| PUT 	| /seller/products/{id} 	| Header Authorization :<br>Bearer <JWT>,<br>productId 	| “삭제완료!” 	|
+| 고객 요청 목록 조회 	| GET 	| /seller/client-lists 	| Header Authorization :<br>Bearer <JWT><br>{<br>”page” : int,<br>”size” : int,<br>”sortBy” : int,<br>”orderBy”: boolean<br>} 	| {<br>”matchingId” : “Long”<br>”clientId” : “Long”<br>} 	|
+| 거래 요청 조회 	| GET 	| /seller/trade-lists 	| Header Authorization :<br>Bearer <JWT><br>{<br>”seller” : Client<br>} 	| {<br>List<Trade><br>} 	|
+| 고객 요청 처리 	| POST 	| /seller/approve/{clientId} 	| Header Authorization :<br>Bearer <JWT> 	| “고객 요청을 수락하였습니다” 	|
+| 프로필 조회 	| GET 	| /seller/profiles 	| Header Authorization :<br>Bearer <JWT> 	| {<br>”nickname” : “String”<br>”image”: “String”<br>”category” : “String”<br>”about” : “String”<br>} 	|
+| 자신의 판매 상품 조회 	| GET 	| /seller/products 	| Header Authorization :<br>Bearer <JWT><br>{<br>”page” : int,<br>”size” : int,<br>”sortBy” : int,<br>”orderBy”: boolean<br>} 	| {<br>“productname” : “String”,<br>”information” : “String”.<br>“category” : “String”,<br>“point” : “int”<br>} 	|
+| 물건 판매 확정 	| POST 	| /sell/{tradeId} 	| Header Authorization :<br>Bearer <JWT> 	| “거래가 완료되었습니다” 	|
+| 프로필 설정 	| PATCH 	| /seller/profiles 	| Header Authorization :<br>Bearer <JWT><br>{<br>  “nickname” :  “string”,<br>    “image : “string”<br>} 	| “프로필 설정 완료” 	|
 
 
 
