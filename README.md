@@ -54,6 +54,16 @@
 | 자신의 판매 상품 조회 	| GET 	| /seller/products 	| Header Authorization :<br>Bearer <JWT><br>{<br>”page” : int,<br>”size” : int,<br>”sortBy” : int,<br>”orderBy”: boolean<br>} 	| {<br>“productname” : “String”,<br>”information” : “String”.<br>“category” : “String”,<br>“point” : “int”<br>} 	|
 | 물건 판매 확정 	| POST 	| /sell/{tradeId} 	| Header Authorization :<br>Bearer <JWT> 	| “거래가 완료되었습니다” 	|
 | 프로필 설정 	| PATCH 	| /seller/profiles 	| Header Authorization :<br>Bearer <JWT><br>{<br>  “nickname” :  “string”,<br>    “image : “string”<br>} 	| “프로필 설정 완료” 	|
+| 고객목록조회 | GET | /admin/client | Header Authorization : Bearer <JWT> {"page" : "int", "size" : "int", "sortBy" : "int", "orderBy" : "boolean" | {”nickname” : ”String”, ”image” : “String”} |
+| 판매자 등록 요청 조회 | GET | /admin/applicants | Header Authorization : Bearer <JWT> | {”nickname” : “String”,”image” : “String”} |
+| 관리자 회원가입 | POST | /admin/signup | {“username” : “String”, “nickname” : “String”, “password” : “String”,“image”: “String”} | “회원가입이 완료 되었습니다” |
+| 관리자 로그인 | POST | /admin/signin | {“username” : “String”, “password” : “String”} | “로그인 되었습니다” |
+| 판매자 권한 삭제 | PUT | /admin/seller/disenroll/{id} | Header Authorization : Bearer <JWT>, sellerId | “판매자 권한 비활성화 완료” |
+| 포인트 부여 | POST | /admin/points | Header Authorization : Bearer <JWT> userId | “포인트를 충전시켰습니다” |
+| 판매자 권한 등록 | POST | /admin/register/{id} | Header Authorization : Bearer <JWT> userId | “판매자 권한 등록 완료” |
+| 토큰 재발급 | POST | /admin/refresh | Header Authorization : Bearer <JWT> | {”accessToken” : “String”, ”refreshToken” : “String”} |
+| 대화목록조회 | POST | /talk/{id} | Header Authorization : Bearer <JWT> | {”writer” : ”String”, ”message” : “String”} |
+| 메시지전송 | POST | /talk/{id} | Header Authorization : Bearer <JWT> {”content” : “String”} | {”writer” : ”String”, ”message” : “String”} |
 
 
 
