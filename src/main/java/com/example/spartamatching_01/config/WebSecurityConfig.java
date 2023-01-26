@@ -1,6 +1,11 @@
 package com.example.spartamatching_01.config;
 
+import com.example.spartamatching_01.exception.CustomAccessDeniedHandler;
+import com.example.spartamatching_01.exception.CustomAuthenticationEntryPoint;
+import com.example.spartamatching_01.jwt.JwtAuthFiler;
+import com.example.spartamatching_01.jwt.JwtUtil;
 
+import com.example.spartamatching_01.repository.SignoutAccessTokenRedisRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +27,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class WebSecurityConfig {
 
 
+    private final JwtUtil jwtUtil;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
+    private final SignoutAccessTokenRedisRepository signoutAccessTokenRedisRepository;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -34,5 +43,29 @@ public class WebSecurityConfig {
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
     }
 
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.csrf().disable();
 
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+        http.authorizeRequests().antMatchers("/client/signup").permitAll()
+                .antMatchers("/client/signin").permitAll()
+                .antMatchers("/admin/signup").permitAll()
+                .antMatchers("/admin/signin").permitAll()
+                .antMatchers("/h2-console/**").permitAll()
+                .antMatchers("/client/**").permitAll()
+                .antMatchers("/seller/**").permitAll()
+                .antMatchers("/admin/**").permitAll()
+                //.anyRequest().authenticated()
+                .and().logout().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and().addFilterBefore(new JwtAuthFiler(jwtUtil, signoutAccessTokenRedisRepository), UsernamePasswordAuthenticationFilter.class);
+        http.formLogin().disable();
+        // 401 Error 처리, Authorization 즉, 인증과정에서 실패할 시 처리
+        http.exceptionHandling().authenticationEntryPoint(customAuthenticationEntryPoint);
+        // 403 Error 처리, 인증과는 별개로 추가적인 권한이 충족되지 않는 경우
+        http.exceptionHandling().accessDeniedHandler(customAccessDeniedHandler);
+
+        return http.build();
+    }
 }
